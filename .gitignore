@@ -4,6 +4,7 @@
 *.csproj
 *.sln
 *.dll
+*.pdb
 *.bak
 .vs/
 obj/
