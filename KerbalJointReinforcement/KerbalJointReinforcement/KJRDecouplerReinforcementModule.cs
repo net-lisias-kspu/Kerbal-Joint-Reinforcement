@@ -2,6 +2,8 @@
 Kerbal Joint Reinforcement, v3.3.3
 Copyright 2015, Michael Ferrara, aka Ferram4
 
+Developers: Michael Ferrara (aka Ferram4), Meiru
+
     This file is part of Kerbal Joint Reinforcement.
 
     Kerbal Joint Reinforcement is free software: you can redistribute it and/or modify
@@ -50,17 +52,29 @@ namespace KerbalJointReinforcement
                 }
         }
 
-        public override void OnStart(PartModule.StartState state)
+        public void OnDestroy()
         {
-            base.OnStart(state);
-
-            if (part.parent == null)
-                return;
-
-            //if (part.attachMode == AttachModes.SRF_ATTACH)
-            //    radiallyAttached = true;
+            if(joints.Count > 0)
+            {
+                GameEvents.onVesselCreate.Remove(OnVesselWasModified);
+                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
+            }
         }
 
+        public void OnPartPack()
+        {
+            if(joints.Count > 0)
+            {
+                GameEvents.onVesselCreate.Remove(OnVesselWasModified);
+                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
+        	}
+
+            foreach(ConfigurableJoint j in joints)
+                GameObject.Destroy(j);
+
+            joints.Clear();
+            neighbours.Clear();
+        }
 
         public void OnPartUnpack()
         {
@@ -76,16 +90,18 @@ namespace KerbalJointReinforcement
 
         private void OnVesselWasModified(Vessel v)
         {
-            foreach (Part p in neighbours)
+            if(part.vessel == v)
             {
-                if (p.vessel == part.vessel)
-                    continue;
+                int i = 0;
+                while((i < neighbours.Count) && (neighbours[i].vessel == v)) ++i;
 
+                if(i < neighbours.Count)
+                {
                 if (KJRJointUtils.debug)
-                    Debug.Log("Decoupling part " + part.partInfo.title + "; destroying all extra joints");
+                        Debug.Log("Decoupling part, destroying all extra joints of " + part.partInfo.title);
 
                 BreakAllInvalidJointsAndRebuild();
-                break;
+                }
             }
         }
 
@@ -94,12 +110,16 @@ namespace KerbalJointReinforcement
             List<Part> childParts = new List<Part>();
             List<Part> parentParts = new List<Part>();
 
-            parentParts = KJRJointUtils.DecouplerPartStiffeningList(part.parent, false, true);
+            parentParts = KJRJointUtils.DecouplerPartStiffeningListParents(part.parent);
+
             foreach (Part p in part.children)
             {
-                childParts.AddRange(KJRJointUtils.DecouplerPartStiffeningList(p, true, true));
+                if(KJRJointUtils.IsJointAdjustmentAllowed(p))
+                {
+                    childParts.AddRange(KJRJointUtils.DecouplerPartStiffeningListChildren(p));
                 if (!childParts.Contains(p))
                     childParts.Add(p);
+            }
             }
 
             neighbours.Clear();
@@ -120,14 +140,17 @@ namespace KerbalJointReinforcement
 
             foreach (Part p in parentParts)
             {
-                if (p == null || p.rb == null || p.Modules.Contains("ProceduralFairingDecoupler") || !KJRJointUtils.JointAdjustmentValid(p))
+                if(p == null || p.rb == null || p.Modules.Contains("ProceduralFairingDecoupler"))
                     continue;
                 foreach (Part q in childParts)
                 {
-                    if (q == null || q.rb == null || q.Modules.Contains("ProceduralFairingDecoupler") || p == q || !KJRJointUtils.JointAdjustmentValid(q))
+                    if(q == null || q.rb == null || p == q || q.Modules.Contains("ProceduralFairingDecoupler"))
                         continue;
 
-                    StrutConnectParts(p, q);
+                    if(p.vessel != q.vessel)
+                        continue;
+
+                    joints.Add(KJRJointUtils.BuildJoint(p, q));
 
                     if (KJRJointUtils.debug)
                         debugString.AppendLine(p.partInfo.title + " connected to part " + q.partInfo.title);
@@ -136,80 +159,24 @@ namespace KerbalJointReinforcement
 
             if (joints.Count > 0)
             {
-                GameEvents.onVesselWasModified.Add(OnVesselWasModified);
                 GameEvents.onVesselCreate.Add(OnVesselWasModified);
+                GameEvents.onVesselWasModified.Add(OnVesselWasModified);
             }
 
             if (KJRJointUtils.debug)
                 Debug.Log(debugString.ToString());
         }
 
-        public void OnPartPack()
-        {
-            if (joints.Count > 0)
-            {
-                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
-                GameEvents.onVesselCreate.Remove(OnVesselWasModified);
-            }
-
-            foreach (ConfigurableJoint j in joints)
-                GameObject.Destroy(j);
-
-            joints.Clear();
-            neighbours.Clear();
-        }
-
-        public void OnDestroy()
-        {
-            if (joints.Count > 0)
-            {
-                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
-                GameEvents.onVesselCreate.Remove(OnVesselWasModified);
-            }
-        }
-
         private void BreakAllInvalidJointsAndRebuild()
         {
-            GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
             GameEvents.onVesselCreate.Remove(OnVesselWasModified);
+            GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
 
             foreach (ConfigurableJoint j in joints)
                 GameObject.Destroy(j);
 
             joints.Clear();
 
-            var vessels = new List<Vessel>();
-
-            foreach (Part n in neighbours)
-            {
-                if (n.vessel == null || vessels.Contains(n.vessel))
-                    continue;
-
-                vessels.Add(n.vessel);
-
-                foreach (Part p in n.vessel.Parts)
-                {
-                    if (p.Modules.Contains<LaunchClamp>())
-                        continue;
-
-                    ConfigurableJoint[] possibleConnections = p.GetComponents<ConfigurableJoint>();
-
-                    if (possibleConnections == null)
-                        continue;
-
-                    foreach (ConfigurableJoint j in possibleConnections)
-                    {
-                        if (j.connectedBody == null)
-                        {
-                            GameObject.Destroy(j);
-                            continue;
-                        }
-                        Part cp = j.connectedBody.GetComponent<Part>();
-                        if (cp != null && cp.vessel != p.vessel)
-                            GameObject.Destroy(j);
-                    }
-                }
-            }
             neighbours.Clear();
 
             if (part.parent == null || part.children.Count == 0)
@@ -220,39 +187,6 @@ namespace KerbalJointReinforcement
                 return;
 
             AddExtraJoints();
-        }
-
-        private void StrutConnectParts(Part partWithJoint, Part partConnectedByJoint)
-        {
-            Rigidbody rigidBody = partConnectedByJoint.rb;
-            float breakForce = KJRJointUtils.decouplerAndClampJointStrength;
-            float breakTorque = KJRJointUtils.decouplerAndClampJointStrength;
-            Vector3 anchor, axis;
-
-            anchor = Vector3.zero;
-            axis = Vector3.right;
-
-            ConfigurableJoint newJoint;
-
-            newJoint = partWithJoint.gameObject.AddComponent<ConfigurableJoint>();
-
-            newJoint.connectedBody = rigidBody;
-            newJoint.anchor = anchor;
-            newJoint.connectedAnchor = partWithJoint.transform.worldToLocalMatrix.MultiplyPoint(partConnectedByJoint.transform.position);
-            newJoint.axis = axis;
-            newJoint.secondaryAxis = Vector3.forward;
-            newJoint.breakForce = breakForce;
-            newJoint.breakTorque = breakTorque;
-
-            newJoint.xMotion = newJoint.yMotion = newJoint.zMotion = ConfigurableJointMotion.Locked;
-            newJoint.angularXMotion = newJoint.angularYMotion = newJoint.angularZMotion = ConfigurableJointMotion.Locked;
-
-
-            newJoint.breakForce = breakForce;
-            newJoint.breakTorque = breakTorque;
-
-            joints.Add(newJoint);
-
         }
     }
 

@@ -1,2 +1,10 @@
 /KerbalJointReinforcement/KerbalJointReinforcement/bin/*
 /KerbalJointReinforcement/KerbalJointReinforcement/obj/Debug/*
+
+*.csproj
+*.sln
+*.dll
+*.bak
+.vs/
+obj/
+bin/
