@@ -1,3 +1,6 @@
+NOTE:  This is an unofficial fork of KJR, with some changes merged and compiled for KSP 1.4.x
+=============================================================================================
+
 Kerbal Joint Reinforcement, v3.3.3
 ==========================
 
