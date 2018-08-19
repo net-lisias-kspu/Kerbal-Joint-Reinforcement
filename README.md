@@ -99,9 +99,15 @@ These types are currently not used, but removing the a in front of them will cau
 | string	| adecouplerStiffeningExtensionType6	| ModuleAnchoredDecoupler	| Decoupler stiffening will look for parts beyond this part type to add to stiffening |
 | string	| adecouplerStiffeningExtensionType7	| ProceduralFairingBase		| Decoupler stiffening will look for parts beyond this part type to add to stiffening |
 
+
 ## License
 
 GPL3. See [here](./LICENSE).
+
+
+## Dependencies
+
+* [KSP API Extensions/L](https://github.com/net-lisias-ksp/KSPAPIExtensions)
 
 
 ## UPSTREAM
