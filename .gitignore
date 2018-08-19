@@ -1,2 +1,11 @@
-/KerbalJointReinforcement/KerbalJointReinforcement/bin/*
-/KerbalJointReinforcement/KerbalJointReinforcement/obj/Debug/*
+.vs
+bin
+obj
+Archive
+GameData/*/Plugins/*.dll
+GameData/*/README.md
+GameData/*/LICENSE
+GameData/*/CHANGES.md
+GameData/*/CHANGE_LOG.md
+GameData/*/*.version
+Source/*/Properties/Version.cs
