@@ -1,5 +1,13 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2015-0113: 3.1 (ferram4) for KSP 0.90
+	+ Features
+		- Set multipart joints to account for large mass ratios in choosing which parts to join
+		- Set Decoupler Stiffenning to require the connection of immediate decoupler children to stiffen things even further
+	+ BugFixes
+		- Fixed a decoupling issues with multipart joints
+		- Fixed multipart joint lock-to-worldspace issues
+		- Fixed some issues on loading very large, heavy parts
 * 2014-1229: 3.0.1 (ferram4) for KSP 0.90
 	+ BugFixes
 		- Fix some issues involving multipart joints
