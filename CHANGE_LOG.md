@@ -1,5 +1,10 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2015-0326: 3.1.2 (ferram4) for KSP 0.90
+	+ Features
+		- Added code to slightly stiffen connections between symmetrically-connected parts attached to a central part; should reduce some physics weirdness
+	+ BugFixes
+		- Fixed issue where undocking was impossible.
 * 2015-0115: 3.1.1 (ferram4) for KSP 0.90
 	+ BugFixes
 		- Fixed a serious lock-to-worldspace issue involving multipart joints and physicsless parts
