@@ -1,5 +1,14 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2014-1228: 3.0 (ferram4) for KSP 0.90
+	+ Features
+		- MultiPart joints: weak, but stiff connections along a stack that will add even more stiffness without making the connection cheatingly strong
+		- Proper, guaranteed application of stiffened properties, regardless of stock joint parameters
+		- Updated default config values for greater sanity
+		- Refactoring of code for sanity
+	+ BugFixes
+		- Longstanding issue with radially-attached parts that were larger than their parent are now fixed
+		- Many NREs from bad events or bad states now avoided
 * 2014-1216: 2.4.5 (ferram4) for KSP 0.90
 	+ Features
 		- KSP 0.90 compatibility
