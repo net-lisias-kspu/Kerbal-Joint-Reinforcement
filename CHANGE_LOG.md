@@ -1,5 +1,11 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2016-0420: 3.1.5 (ferram4) for KSP 1.1
+	+ Features
+		- Updated to be compatible with KSP 1.1
+		- Very minor efficiency improvements in physics easing and stiffening of joints
+		- Fully exempt EVAs from all KJR effects
+		- Update config parameters to function with stock fixing of never-breakable joints bug
 * 2015-0622: 3.1.4 (ferram4) for KSP 1.0.5
 	+ Misc
 		- Fixed issue with .version file and compatible KSP versions
