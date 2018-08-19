@@ -1,5 +1,10 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2014-1007: 2.4.4 (ferram4) for KSP 0.25
+	+ Features
+		- KSP 0.25 compatibility
+		- Update CompatibilityChecker
+		- Shutdown functionality if CompatibilityChecker returns warnings
 * 2014-0820: 2.4.3 (ferram4) for KSP 0.24.2
 	+ 0.24.2 compatibility
 * 2014-0724: 2.4.2 (ferram4) for KSP 0.24.1
