@@ -1,5 +1,11 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2016-1027: 3.3.0 (ferram4) for KSP 1.2
+	+ Features
+		- Recompile to fix for KSP 1.2
+		- Update method of handling multi-part-joints to ensure compatibility with Konstruction mod
+		- Removal of old symmetry-based multi-part stabilization due to ineffectiveness in all situations to reduce overhead
+		- Implementation of new vessel-part-tree leaf-based stabilization for greater stability on space stations and other convoluted shapes
 * 2016-0630: 3.2 (ferram4) for KSP 1.1.3
 	+ Features
 		- Recompile to ensure KSP 1.1.3 compatibility
