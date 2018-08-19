@@ -1,5 +1,8 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2015-0115: 3.1.1 (ferram4) for KSP 0.90
+	+ BugFixes
+		- Fixed a serious lock-to-worldspace issue involving multipart joints and physicsless parts
 * 2015-0113: 3.1 (ferram4) for KSP 0.90
 	+ Features
 		- Set multipart joints to account for large mass ratios in choosing which parts to join
