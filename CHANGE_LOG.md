@@ -1,5 +1,10 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2016-0429: 3.1.6 (ferram4) for KSP 1.1.1
+	+ Features
+		- Update to ensure KSP 1.1.1 compatibility
+		- Minor optimization in joint setups
+		- Remove B9 pWings from stiffening exemption, as it is unnecessary
 * 2016-0420: 3.1.5 (ferram4) for KSP 1.1
 	+ Features
 		- Updated to be compatible with KSP 1.1
