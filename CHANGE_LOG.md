@@ -1,5 +1,9 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2014-1229: 3.0.1 (ferram4) for KSP 0.90
+	+ BugFixes
+		- Fix some issues involving multipart joints
+		- More null checking for situations that shouldn't happen, but might
 * 2014-1228: 3.0 (ferram4) for KSP 0.90
 	+ Features
 		- MultiPart joints: weak, but stiff connections along a stack that will add even more stiffness without making the connection cheatingly strong
