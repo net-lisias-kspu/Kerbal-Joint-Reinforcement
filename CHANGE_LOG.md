@@ -1,5 +1,7 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2015-0427: 3.1.3 (ferram4) for KSP 1.0
+	+ Update for KSP 1.0
 * 2015-0326: 3.1.2 (ferram4) for KSP 0.90
 	+ Features
 		- Added code to slightly stiffen connections between symmetrically-connected parts attached to a central part; should reduce some physics weirdness
