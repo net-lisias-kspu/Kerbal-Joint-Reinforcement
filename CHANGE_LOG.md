@@ -1,5 +1,9 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2016-0630: 3.2 (ferram4) for KSP 1.1.3
+	+ Features
+		- Recompile to ensure KSP 1.1.3 compatibility
+		- Change multi-part-joint system to stabilize space stations and similar vehicles with very large masses connected by very flexy parts
 * 2016-0430: 3.1.7 (ferram4) for KSP 1.1.2
 	+ Features
 		- Recompile to ensure KSP 1.1.2 compatibility, especially within CompatibilityChecker utility
