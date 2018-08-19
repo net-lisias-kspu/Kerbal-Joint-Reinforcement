@@ -1,5 +1,8 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2016-1029: 3.3.1 (ferram4) for KSP 1.2
+	+ Bugfixes
+		- Fix a critical bug involving unphysical forces applied to vessels on load / unload of other vessels and SOI switches
 * 2016-1027: 3.3.0 (ferram4) for KSP 1.2
 	+ Features
 		- Recompile to fix for KSP 1.2
