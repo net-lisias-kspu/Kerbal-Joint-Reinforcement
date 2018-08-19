@@ -1,5 +1,9 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2014-1216: 2.4.5 (ferram4) for KSP 0.90
+	+ Features
+		- KSP 0.90 compatibility
+		- Include some extra checks to prevent errors from occurring
 * 2014-1007: 2.4.4 (ferram4) for KSP 0.25
 	+ Features
 		- KSP 0.25 compatibility
