@@ -1,5 +1,8 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2015-0622: 3.1.4 (ferram4) for KSP 1.0.5
+	+ Misc
+		- Fixed issue with .version file and compatible KSP versions
 * 2015-0427: 3.1.3 (ferram4) for KSP 1.0
 	+ Update for KSP 1.0
 * 2015-0326: 3.1.2 (ferram4) for KSP 0.90
