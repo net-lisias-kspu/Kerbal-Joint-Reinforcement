@@ -1,5 +1,7 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2014-0724: 2.4.2 (ferram4) for KSP 0.24.1
+	+ 0.24.1 compatibility
 * 2014-0718: 2.4.1 (ferram4) for KSP 2.4
 	+ Bugfixes:
 	+ Included JsonFx.dll, which is required by ModStats
