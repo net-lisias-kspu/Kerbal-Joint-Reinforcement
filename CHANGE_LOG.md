@@ -1,5 +1,8 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2016-0430: 3.1.7 (ferram4) for KSP 1.1.2
+	+ Features
+		- Recompile to ensure KSP 1.1.2 compatibility, especially within CompatibilityChecker utility
 * 2016-0429: 3.1.6 (ferram4) for KSP 1.1.1
 	+ Features
 		- Update to ensure KSP 1.1.1 compatibility
