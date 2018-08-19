@@ -10,7 +10,10 @@ clean() {
 	fi
 }
 
-FILE=$PACKAGE-$VERSION.zip
+KSP=$(git rev-parse --abbrev-ref HEAD)
+KSP=${KSP/\//_}
+
+FILE=$PACKAGE-$VERSION-$KSP.zip
 echo $FILE
 clean
 zip -r $FILE ./GameData/* -x ".*"
