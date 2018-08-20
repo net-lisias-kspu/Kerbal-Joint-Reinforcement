@@ -1,23 +1,35 @@
-# Kerbal Joint Reinforcement /L
+# Kerbal Joint Reinforcement /L Experimental
 
 Physics stabilizer plugin for Kerbal Space Program. Fork by Lisias.
 
-This branch is confirmed to be KSP 1.5, 1.4, 1.3 and 1.2 compatible, with configuration/settings files saved to `<KSP_ROOT>/PluginData`.
+This branch is confirmed to be KSP 1.2 to 1.5.1 compatible, with configuration/settings files saved to `<KSP_ROOT>/PluginData`.
 
-This fork has assured backward compatibility with ferram4's KJR.
+This is the last fork **have no** assured backward compatibility with ferram4's KJR.
 
 
 ## In a Hurry
 
+This is kind of "Take Over", where I will develop the plugin to meet my own needs. This probably will break the expected behaviour from previous versions.
+
+If you need an updated, consistent and stable version from the Ferram4's KJR, but want some minor but cool features, this is the branch for you. On the other hand, if you prefer a classical and well known approach, perhaps you should try [the cannonical branch](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/master).
+
 * [Latest Release](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/releases)
-* [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/)
-* [Binaries](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/Archive)
-* [Change Log](./CHANGE_LOG.md)
+    + [Binaries](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/Archive)
+* [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/experimental)
+* [Issue Tracker](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/issues)
+* Documentation	
+	+ [Homepage](http://ksp.lisias.net/add-ons/KerbalJointReinforcement) on L Aerospace KSP Division
+	+ [Project's README](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/blob/master/README.md)
+	+ [Change Log](./CHANGE_LOG.md)
+	+ [TODO](./TODO.md) list
+* Official Distribution Sites:
+	+ [Homepage](http://ksp.lisias.net/add-ons/KerbalJointReinforcement) on L Aerospace
+	+ [Source and Binaries](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement) on GitHub.
 
 
 ## Description
 
-This is still about the original fork. It's unlikely to change.
+This is still about the original fork. It's going to change. Eventually.
 
 ### EXCITING FEATURES!
 
@@ -102,8 +114,6 @@ These types are currently not used, but removing the a in front of them will cau
 ## License
 
 GPL3. See [here](./LICENSE).
-
-Please note the copyrights and trademarks in [NOTICE](./NOTICE).
 
 
 ## Dependencies
