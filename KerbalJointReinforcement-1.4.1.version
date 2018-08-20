@@ -1,6 +1,6 @@
 {
 	"NAME":		"Kerbal Joint Reinforcement /L",
-	"URL":		"https://raw.githubusercontent.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/KerbalJointReinforcement-${KSPV}.version",
+	"URL":		"https://raw.githubusercontent.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/KerbalJointReinforcement-1.4.1.version",
 	"DOWNLOAD":	"https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/releases",
 	"CHANGE_LOG":	"https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/blob/CHANGE_LOG.md",
 	"CHANGE_LOG_URL":"https://raw.githubusercontent.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/CHANGES.md",
@@ -16,19 +16,18 @@
 		"BUILD":2
 		},
 	"KSP_VERSION":{
-		"MAJOR":${KSPA[0]},
-		"MINOR":${KSPA[1]},
-		"PATCH":${KSPA[2]}
+		"MAJOR":1,
+		"MINOR":4,
+		"PATCH":1
 		},
 	"KSP_VERSION_MIN":{
-		"MAJOR":${KSPA[0]},
-		"MINOR":${KSPA[1]},
+		"MAJOR":1,
+		"MINOR":4,
 		"PATCH":0
 		},
 	"KSP_VERSION_MAX":{
-		"MAJOR":${KSPA[0]},
-		"MINOR":${KSPA[1]},
+		"MAJOR":1,
+		"MINOR":4,
 		"PATCH":99
 		}
 }
-
