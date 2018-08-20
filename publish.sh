@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+echo "Need maintainance! Implement KSPV!"
+exit -1
+
 source ./CONFIG.inc
 
 VERSIONFILE=$PACKAGE.version
