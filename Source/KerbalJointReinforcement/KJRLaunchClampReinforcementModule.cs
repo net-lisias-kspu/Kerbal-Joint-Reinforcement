@@ -2,6 +2,8 @@
 Kerbal Joint Reinforcement, v3.3.3
 Copyright 2015, Michael Ferrara, aka Ferram4
 
+Developers: Michael Ferrara (aka Ferram4), Meiru
+
     This file is part of Kerbal Joint Reinforcement.
 
     Kerbal Joint Reinforcement is free software: you can redistribute it and/or modify
@@ -28,14 +30,31 @@ namespace KerbalJointReinforcement
     //This class adds an extra joint between a launch clamp and the part it is connected to for stiffness
     public class KJRLaunchClampReinforcementModule : PartModule
     {
-        private List<ConfigurableJoint> joints;
+        private List<ConfigurableJoint> joints = new List<ConfigurableJoint>();
         private List<Part> neighbours = new List<Part>();
         //private bool decoupled = false;
 
         public override void OnAwake()
         {
             base.OnAwake();
-            joints = new List<ConfigurableJoint>();
+        }
+
+        public void OnDestroy()
+        {
+            if (joints.Count > 0)
+                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
+        }
+
+        public void OnPartPack()
+        {
+            if (joints.Count > 0)
+                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
+
+            foreach (ConfigurableJoint j in joints)
+                GameObject.Destroy(j);
+
+            joints.Clear();
+            neighbours.Clear();
         }
 
         public void OnPartUnpack()
@@ -53,7 +72,7 @@ namespace KerbalJointReinforcement
             }
 
             if (part.parent.Rigidbody != null)
-                StrutConnectParts(part, part.parent);
+                joints.Add(KJRJointUtils.BuildJoint(part, part.parent));
 
             if (KJRJointUtils.debug)
             {
@@ -67,35 +86,20 @@ namespace KerbalJointReinforcement
 
         private void OnVesselWasModified(Vessel v)
         {
-            foreach (Part p in neighbours)
+            if (part.vessel == v)
             {
-                if (p.vessel == part.vessel)
-                    continue;
+                foreach (Part p in neighbours)
+                {
+                    if (p.vessel == part.vessel)
+                        continue;
 
-                if (KJRJointUtils.debug)
-                    Debug.Log("Decoupling part " + part.partInfo.title + "; destroying all extra joints");
+                    if (KJRJointUtils.debug)
+                        Debug.Log("Decoupling part " + part.partInfo.title + "; destroying all extra joints");
 
-                BreakAllInvalidJoints();
-                return;
+                    BreakAllInvalidJoints();
+                    return;
+                }
             }
-        }
-
-        public void OnPartPack()
-        {
-            if (joints.Count > 0)
-                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
-
-            foreach (ConfigurableJoint j in joints)
-                GameObject.Destroy(j);
-
-            joints.Clear();
-            neighbours.Clear();
-        }
-
-        public void OnDestroy()
-        {
-            if (joints.Count > 0)
-                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
         }
 
         private void BreakAllInvalidJoints()
@@ -121,7 +125,6 @@ namespace KerbalJointReinforcement
                     if (p.Modules.Contains<LaunchClamp>())
                         continue;
 
-
                     ConfigurableJoint[] possibleConnections = p.GetComponents<ConfigurableJoint>();
 
                     if (possibleConnections == null)
@@ -141,32 +144,6 @@ namespace KerbalJointReinforcement
                 }
             }
             neighbours.Clear();
-        }
-
-
-        private void StrutConnectParts(Part partWithJoint, Part partConnectedByJoint)
-        {
-            Rigidbody rigidBody = partConnectedByJoint.rb;
-            float breakForce = KJRJointUtils.decouplerAndClampJointStrength;
-            float breakTorque = KJRJointUtils.decouplerAndClampJointStrength;
-            Vector3 anchor, axis;
-            anchor = Vector3.zero;
-            axis = Vector3.right;
-            ConfigurableJoint newJoint;
-
-            newJoint = partWithJoint.gameObject.AddComponent<ConfigurableJoint>();
-
-            newJoint.connectedBody = rigidBody;
-            newJoint.anchor = anchor;
-            newJoint.axis = axis;
-            newJoint.secondaryAxis = Vector3.forward;
-            newJoint.breakForce = breakForce;
-            newJoint.breakTorque = breakTorque;
-
-            newJoint.xMotion = newJoint.yMotion = newJoint.zMotion = ConfigurableJointMotion.Locked;
-            newJoint.angularXMotion = newJoint.angularYMotion = newJoint.angularZMotion = ConfigurableJointMotion.Locked;
-
-            joints.Add(newJoint);
         }
     }
 }

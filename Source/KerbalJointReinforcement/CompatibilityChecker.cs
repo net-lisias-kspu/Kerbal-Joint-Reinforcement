@@ -64,7 +64,17 @@ namespace KerbalJointReinforcement
             // Even if you don't lock down functionality, you should return true if your users
             // can expect a future update to be available.
             //
-            return (Versioning.version_major == 1 && Versioning.version_minor == 3) || (Versioning.version_major == 0 && Versioning.version_minor == 1 && Versioning.Revision == 3);
+
+#if _KSP_1_4_1
+            return (Versioning.version_major == 1 && Versioning.version_minor == 4)
+                || (Versioning.version_major == 0 && Versioning.version_minor == 1 && Versioning.Revision == 4);
+#elif _KSP_1_3_1
+            return (Versioning.version_major == 1 && Versioning.version_minor == 3)
+                || (Versioning.version_major == 0 && Versioning.version_minor == 1 && Versioning.Revision == 3);
+#else
+            return (Versioning.version_major == 1 && Versioning.version_minor == 2)
+                || (Versioning.version_major == 0 && Versioning.version_minor == 1 && Versioning.Revision == 2);
+#endif
 
             /*-----------------------------------------------*\
             | IMPLEMENTERS SHOULD NOT EDIT BEYOND THIS POINT! |
@@ -185,7 +195,11 @@ namespace KerbalJointReinforcement
 
             if ((incompatible.Length > 0) || (incompatibleUnity.Length > 0))// || IsWin64())
             {
+#if _KSP_1_4_1 || _KSP_1_3_1
                 PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), "CompatibilityChecker", "Incompatible Mods Detected", message, "OK", true, HighLogic.UISkin);
+#else
+                PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), "CompatibilityChecker", message, "OK", true, HighLogic.UISkin);
+#endif
             }
         }
 
