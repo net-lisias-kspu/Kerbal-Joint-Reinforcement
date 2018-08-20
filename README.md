@@ -1,24 +1,23 @@
-# Kerbal Joint Reinforcement /L :: KSP 1.3
+# Kerbal Joint Reinforcement /L :: KSP  1.4+; 1.5 Updated
 
 Physics stabilizer plugin for Kerbal Space Program. Fork by Lisias.
 
-This branch is KSP 1.3 exclusive.
+This branch is KSP 1.5, 1.4, 1.3 and (perhaps?) 1.2 compatible, with configuration/settings files saved to `<KSP_ROOT>/PluginData`.
+
+This fork has assured backward compatibility with ferram4's KJR.
+
 
 ## In a Hurry
 
-This is kind of "Take Over", where I will develop the plugin to meet my own needs. This probably will break the expected behaviour from previous versions. If you need a updated, consistent and stable version for the Ferram4's KJR, I suggest LGG's fork (see below).
-
 * [Latest Release](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/releases)
-* [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement)
+* [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/KSP/1.4)
 * [Binaries](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/Archive)
 * [Change Log](./CHANGE_LOG.md)
-* For KSP
-	+ [1.4](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement)
-	+ [1.3 and before](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/KSP/1.3)
+
 
 ## Description
 
-This is still about the original fork. Expect it to change.
+This is still about the original fork. It's unlikely to change.
 
 ### EXCITING FEATURES!
 
@@ -104,6 +103,8 @@ These types are currently not used, but removing the a in front of them will cau
 
 GPL3. See [here](./LICENSE).
 
+Please note the copyrights and trademarks in [NOTICE](./NOTICE).
+
 
 ## Dependencies
 
@@ -116,7 +117,8 @@ GPL3. See [here](./LICENSE).
 	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/50911-13-kerbal-joint-reinforcement-v333-72417/)
 	+ [SpaceDock](http://spacedock.info/mod/153/Kerbal%20Joint%20Reinforcement)
 	+ [GitHub](https://github.com/ferram4/Kerbal-Joint-Reinforcement)
-* [linuxgurugamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/) (LGG) Unofficial stable fork.
+* [linuxgurugamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/) Parallel fork
 	+ [GitHub](https://github.com/linuxgurugamer/Kerbal-Joint-Reinforcement)
 * [oeteletroll](https://forum.kerbalspaceprogram.com/index.php?/profile/144573-peteletroll/) Parallel?
 	+ [GitHub](https://github.com/peteletroll/Kerbal-Joint-Reinforcement)
+

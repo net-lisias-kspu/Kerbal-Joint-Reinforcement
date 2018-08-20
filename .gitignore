@@ -5,6 +5,7 @@ Archive
 GameData/*/Plugins/*.dll
 GameData/*/README.md
 GameData/*/LICENSE
+GameData/*/NOTICE
 GameData/*/CHANGES.md
 GameData/*/CHANGE_LOG.md
 GameData/*/*.version
