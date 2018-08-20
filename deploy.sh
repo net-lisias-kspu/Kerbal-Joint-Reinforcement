@@ -53,6 +53,8 @@ deploy_ver
 cp CHANGE_LOG.md "./GameData/$TARGETDIR"
 cp README.md  "./GameData/$TARGETDIR"
 cp LICENSE "./GameData/$TARGETDIR"
+cp NOTICE "./GameData/$TARGETDIR"
+
 for dll in $PLUGINS ; do
     deploy_dev $dll
     deploy $dll
