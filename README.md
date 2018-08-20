@@ -1,24 +1,29 @@
-# Kerbal Joint Reinforcement /L :: KSP 1.3
+# Kerbal Joint Reinforcement /L :: KSP 1.3 (ferram4's canonical fork)
 
 Physics stabilizer plugin for Kerbal Space Program. Fork by Lisias.
 
-This branch is KSP 1.3 exclusive.
+This branch is KSP 1.3 only compatible, descending directly from ferram4's (canonical) fork, but with configuration/settings files saved to `<KSP_ROOT>/PluginData` and, perahaps, one or two cool new features (with guaranteed compatibility).
+
 
 ## In a Hurry
 
-This is kind of "Take Over", where I will develop the plugin to meet my own needs. This probably will break the expected behaviour from previous versions. If you need a updated, consistent and stable version for the Ferram4's KJR, I suggest LGG's fork (see below).
+This is kind of "Take Over", where I will develop the plugin to meet my own needs. This probably will break the expected behaviour from previous versions.
+
+If you need an updated and consistent version directly from the Ferram4's KJR (including the bugs, if any), but want some minor but cool features, this is the branch for you. This branch will be kept paired with ferram4's.
 
 * [Latest Release](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/releases)
-* [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement)
+* [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/KSP/1.3)
 * [Binaries](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/Archive)
 * [Change Log](./CHANGE_LOG.md)
-* For KSP
-	+ [1.4](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement)
-	+ [1.3 and before](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/KSP/1.3)
+* Available branches:
+	+ [new breed](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/)
+	+ [lgg's 1.3 and 1.4](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/KSP/1.4)
+	+ **ferram4's 1.3**
+
 
 ## Description
 
-This is still about the original fork. Expect it to change.
+This is about the original fork. It will (probably) never change.
 
 ### EXCITING FEATURES!
 
