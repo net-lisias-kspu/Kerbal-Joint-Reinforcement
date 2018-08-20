@@ -12,31 +12,44 @@ check() {
 deploy_dev() {
 	local DLL=$1
 
-	if [ -f "./bin/Release/$DLL.dll" ] ; then
-		cp "./bin/Release/$DLL.dll" "$LIB"
+	if [ -f "./bin/Release/$KSPV/$DLL.dll" ] ; then
+		cp "./bin/Release/$KSPV/$DLL.dll" "$LIB"
 	fi
 }
 
 deploy() {
 	local DLL=$1
 
-	if [ -f "./bin/Release/$DLL.dll" ] ; then
-		cp "./bin/Release/$DLL.dll" "./GameData/$TARGETBINDIR/"
+	if [ -f "./bin/Release/$KSPV/$DLL.dll" ] ; then
+		cp "./bin/Release/$KSPV/$DLL.dll" "./GameData/$TARGETBINDIR/"
 		if [ -d "${KSP_DEV}/GameData/$TARGETBINDIR/" ] ; then
-			cp "./bin/Release/$DLL.dll" "${KSP_DEV/}GameData/$TARGETBINDIR/"
+			cp "./bin/Release/$KSPV/$DLL.dll" "${KSP_DEV/}GameData/$TARGETBINDIR/"
 		fi
 	fi
-	if [ -f "./bin/Debug/$DLL.dll" ] ; then
+	if [ -f "./bin/Debug/$KSPV/$DLL.dll" ] ; then
 		if [ -d "${KSP_DEV}/GameData/$TARGETBINDIR/" ] ; then
-			cp "./bin/Debug/$DLL.dll" "${KSP_DEV}GameData/$TARGETBINDIR/"
+			cp "./bin/Debug/$KSPV/$DLL.dll" "${KSP_DEV}GameData/$TARGETBINDIR/"
 		fi
 	fi
 }
 
+deploy_ver() {
+    local KSPA=(${KSPV//\./ })
+    local data=$(cat $VERSIONFILE)
+    data=${data//\$\{KSPV\}/$KSPV}
+    data=${data//\$\{KSPA\[0\]\}/${KSPA[0]}}
+    data=${data//\$\{KSPA\[1]\}/${KSPA[1]}}
+    data=${data//\$\{KSPA\[2]\}/${KSPA[2]}}
+    rm "./GameData/$TARGETDIR/*.version"
+    echo "${data}" > "./GameData/$TARGETDIR/$VERSIONFILE"
+    echo "${data}" > "./$PACKAGE-$KSPV.version"
+}
+
+
 VERSIONFILE=$PACKAGE.version
 
 check
-cp $VERSIONFILE "./GameData/$TARGETDIR"
+deploy_ver
 cp CHANGE_LOG.md "./GameData/$TARGETDIR"
 cp README.md  "./GameData/$TARGETDIR"
 cp LICENSE "./GameData/$TARGETDIR"
