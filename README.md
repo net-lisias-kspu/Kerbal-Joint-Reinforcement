@@ -115,6 +115,8 @@ These types are currently not used, but removing the a in front of them will cau
 
 GPL3. See [here](./LICENSE).
 
+Please note the copyrights and trademarks in [NOTICE](./NOTICE).
+
 
 ## Dependencies
 
