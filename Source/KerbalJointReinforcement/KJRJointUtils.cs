@@ -24,11 +24,20 @@ using System.Text;
 using System.Reflection;
 using UnityEngine;
 using KSP;
-using KSPe.IO;
 
 namespace KerbalJointReinforcement
 {
-    public static class KJRJointUtils
+	public class PluginConfiguration : KSP.IO.PluginConfiguration
+	{
+		protected PluginConfiguration(string pathToFile) : base(pathToFile){}
+		public static PluginConfiguration Create(string filename)
+		{
+			return new PluginConfiguration(KSPUtil.ApplicationRootPath + "/PluginData/KerbalJointReinforcement/" + filename);
+		}
+
+	}
+
+	public static class KJRJointUtils
     {
 
         public static bool reinforceAttachNodes = false;
@@ -245,7 +254,7 @@ namespace KerbalJointReinforcement
 
         public static void LoadConstants()
         {
-            PluginConfiguration config = PluginConfiguration.CreateForType<KJRManager>();
+            PluginConfiguration config = PluginConfiguration.Create("config.xml");
             config.load();
 
             reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", true);
