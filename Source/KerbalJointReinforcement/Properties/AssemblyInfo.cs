@@ -34,3 +34,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion(KerbalJointReinforcement.Version.Number)]
 [assembly: AssemblyFileVersion(KerbalJointReinforcement.Version.Number)]
+[assembly: KSPAssemblyDependency("KSPe", 2, 1)]

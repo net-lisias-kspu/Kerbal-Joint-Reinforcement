@@ -23,7 +23,7 @@ using System.Text;
 using System.Reflection;
 using UnityEngine;
 using KSP;
-using KSPe.IO;
+using KSPe.IO.Data;
 
 namespace KerbalJointReinforcement
 {
