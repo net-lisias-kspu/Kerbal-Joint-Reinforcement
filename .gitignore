@@ -2,7 +2,7 @@
 bin
 obj
 Archive
-GameData/*/Plugin/*.dll
+GameData/*/*.dll
 GameData/*/README.md
 GameData/*/LICENSE
 GameData/*/NOTICE
