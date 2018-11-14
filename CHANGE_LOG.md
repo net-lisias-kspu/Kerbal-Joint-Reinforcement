@@ -1,9 +1,10 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
-* 2017-0820: 3.3.3.2 (lisias) for KSP 1.3 & 1.4
+* 2018-1114: 3.3.3.2 (lisias) for KSP 1.4.1+; 1.5
 	+ Merging linuxgurugamer's merge from meirumeiru's code
 	+ Project reworked for Multi KSP Versions support
-* 2017-0819: 3.3.3.1 (lisias) for KSP 1.3.1
+	+ Adding [KSPe](https://github.com/net-lisias-ksp/KSPAPIExtensions) dependency.
+* 2018-0819: 3.3.3.1 (lisias) for KSP 1.3.1
 	+ Moving configuration/settings files to <KSP_ROOT>/PluginData 
 	+ Added hard dependency for [KSP API Extensions/L](https://github.com/net-lisias-ksp/KSPAPIExtensions).
 * 2017-0724: 3.3.3 (ferram4) for KSP 1.3.0
