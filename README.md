@@ -2,23 +2,19 @@
 
 Physics stabilizer plugin for Kerbal Space Program. Fork by Lisias.
 
-This branch is KSP 1.3 only compatible, descending directly from ferram4's (canonical) fork, but with configuration/settings files saved to `<KSP_ROOT>/PluginData` and, perahaps, one or two cool new features (with guaranteed compatibility).
+This branch is KSP 1.3 only compatible, descending directly from ferram4's (canonical) fork, but with configuration/settings files saved to `<KSP_ROOT>/PluginData` and, perhaps, one or two cool new features (with guaranteed compatibility) in the future.
 
 
 ## In a Hurry
 
-This is kind of "Take Over", where I will develop the plugin to meet my own needs. This probably will break the expected behaviour from previous versions.
+If you need an updated and consistent version directly from the Ferram4's KJR (including the bugs, if any). This branch will be kept paired with ferram4's.
 
-If you need an updated and consistent version directly from the Ferram4's KJR (including the bugs, if any), but want some minor but cool features, this is the branch for you. This branch will be kept paired with ferram4's.
+This is the branch for the die hard purists.
 
 * [Latest Release](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/releases)
+	+ [Binaries](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/Archive)
 * [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/KSP/1.3)
-* [Binaries](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/Archive)
 * [Change Log](./CHANGE_LOG.md)
-* Available branches:
-	+ [new breed](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/)
-	+ [lgg's 1.3 and 1.4](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/KSP/1.4)
-	+ **ferram4's 1.3**
 
 
 ## Description
@@ -109,10 +105,12 @@ These types are currently not used, but removing the a in front of them will cau
 
 GPL3. See [here](./LICENSE).
 
+Please note the copyrights and trademarks in [NOTICE](./NOTICE).
+
 
 ## Dependencies
 
-* [KSP API Extensions/L](https://github.com/net-lisias-ksp/KSPAPIExtensions)
+* None at the moment.
 
 
 ## UPSTREAM
@@ -121,7 +119,7 @@ GPL3. See [here](./LICENSE).
 	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/50911-13-kerbal-joint-reinforcement-v333-72417/)
 	+ [SpaceDock](http://spacedock.info/mod/153/Kerbal%20Joint%20Reinforcement)
 	+ [GitHub](https://github.com/ferram4/Kerbal-Joint-Reinforcement)
-* [linuxgurugamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/) (LGG) Unofficial stable fork.
+* [linuxgurugamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/) Parallel
 	+ [GitHub](https://github.com/linuxgurugamer/Kerbal-Joint-Reinforcement)
 * [oeteletroll](https://forum.kerbalspaceprogram.com/index.php?/profile/144573-peteletroll/) Parallel?
 	+ [GitHub](https://github.com/peteletroll/Kerbal-Joint-Reinforcement)
