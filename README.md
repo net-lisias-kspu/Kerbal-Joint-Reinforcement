@@ -1,8 +1,8 @@
-# Kerbal Joint Reinforcement /L :: KSP  1.4+; 1.5 Updated
+# Kerbal Joint Reinforcement /L
 
 Physics stabilizer plugin for Kerbal Space Program. Fork by Lisias.
 
-This branch is KSP 1.5, 1.4, 1.3 and (perhaps?) 1.2 compatible, with configuration/settings files saved to `<KSP_ROOT>/PluginData`.
+This branch is confirmed to be KSP 1.5, 1.4, 1.3 and 1.2 compatible, with configuration/settings files saved to `<KSP_ROOT>/PluginData`.
 
 This fork has assured backward compatibility with ferram4's KJR.
 
@@ -10,7 +10,7 @@ This fork has assured backward compatibility with ferram4's KJR.
 ## In a Hurry
 
 * [Latest Release](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/releases)
-* [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/KSP/1.4)
+* [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/)
 * [Binaries](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/Archive)
 * [Change Log](./CHANGE_LOG.md)
 
@@ -121,4 +121,3 @@ Please note the copyrights and trademarks in [NOTICE](./NOTICE).
 	+ [GitHub](https://github.com/linuxgurugamer/Kerbal-Joint-Reinforcement)
 * [oeteletroll](https://forum.kerbalspaceprogram.com/index.php?/profile/144573-peteletroll/) Parallel?
 	+ [GitHub](https://github.com/peteletroll/Kerbal-Joint-Reinforcement)
-
