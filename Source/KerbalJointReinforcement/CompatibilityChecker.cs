@@ -66,7 +66,8 @@ namespace KerbalJointReinforcement
             //
 
 #if _KSP_1_4_1
-            return (Versioning.version_major == 1 && Versioning.version_minor == 4)
+            return (Versioning.version_major == 1 && Versioning.version_minor == 5)
+                || (Versioning.version_major == 1 && Versioning.version_minor == 4)
                 || (Versioning.version_major == 0 && Versioning.version_minor == 1 && Versioning.Revision == 4);
 #elif _KSP_1_3_1
             return (Versioning.version_major == 1 && Versioning.version_minor == 3)
