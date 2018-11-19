@@ -39,7 +39,11 @@ deploy_ver() {
     data=${data//\$\{KSPV\}/$KSPV}
     data=${data//\$\{KSPA\[0\]\}/${KSPA[0]}}
     data=${data//\$\{KSPA\[1]\}/${KSPA[1]}}
-    data=${data//\$\{KSPA\[2]\}/${KSPA[2]}}
+    if [ '4' == ${KSPA[1]} ] ; then
+	data=${data//\$\{KSPA\[2]\}/5}
+    else
+	data=${data//\$\{KSPA\[2]\}/3}
+    fi
     rm "./GameData/$TARGETDIR/*.version"
     echo "${data}" > "./GameData/$TARGETDIR/$VERSIONFILE"
     echo "${data}" > "./$PACKAGE-$KSPV.version"
