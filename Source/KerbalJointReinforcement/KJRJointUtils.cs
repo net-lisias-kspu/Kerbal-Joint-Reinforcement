@@ -21,13 +21,12 @@ Copyright 2018, LisiasT
     along with Kerbal Joint Reinforcement.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Reflection;
 using UnityEngine;
-using KSP;
 using KSPe.IO.Data;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace KerbalJointReinforcement
 {
@@ -55,8 +54,6 @@ namespace KerbalJointReinforcement
         public static float decouplerAndClampJointStrength = float.PositiveInfinity;
 
         public static float stiffeningExtensionMassRatioThreshold = 5;
-
-        public static bool debug = false;
 
         public static List<string> exemptPartTypes = new List<string>();
         public static List<string> exemptModuleTypes = new List<string>();
@@ -120,56 +117,62 @@ namespace KerbalJointReinforcement
                 i++;
             } while (true);
 
-            debug = config.GetValue<bool>("debug", false);
-
-            if (debug)
-            {
-                StringBuilder debugString = new StringBuilder();
-                debugString.AppendLine("\n\rAngular Drive: \n\rSpring: " + angularDriveSpring + "\n\rDamp: " + angularDriveDamper + "\n\rMax Force Factor: " + angularMaxForceFactor);
-
-                debugString.AppendLine("\n\rJoint Strength Multipliers: \n\rForce Multiplier: " + breakForceMultiplier + "\n\rTorque Multiplier: " + breakTorqueMultiplier);
-                debugString.AppendLine("Joint Force Strength Per Unit Area: " + breakStrengthPerArea);
-                debugString.AppendLine("Joint Torque Strength Per Unit MOI: " + breakTorquePerMOI);
-
-                debugString.AppendLine("Strength For Additional Decoupler And Clamp Joints: " + decouplerAndClampJointStrength);
-
-                debugString.AppendLine("\n\rDebug Output: " + debug);
-                debugString.AppendLine("Reinforce Attach Nodes: " + reinforceAttachNodes);
-                debugString.AppendLine("Reinforce Decouplers Further: " + reinforceDecouplersFurther);
-                debugString.AppendLine("Reinforce Launch Clamps Further: " + reinforceLaunchClampsFurther);
-                debugString.AppendLine("Use Volume For Calculations, Not Area: " + useVolumeNotArea);
-
-                debugString.AppendLine("\n\rMass For Joint Adjustment: " + massForAdjustment);
-
-                debugString.AppendLine("\n\rExempt Part Types");
-                foreach (string s in exemptPartTypes)
-                    debugString.AppendLine(s);
-
-                debugString.AppendLine("\n\rExempt Module Types");
-                foreach (string s in exemptModuleTypes)
-                    debugString.AppendLine(s);
-
-                debugString.AppendLine("\n\rDecoupler Stiffening Extension Types");
-                foreach (string s in decouplerStiffeningExtensionType)
-                    debugString.AppendLine(s);
-
-                debugString.AppendLine("\n\rDecoupler Stiffening Extension Mass Ratio Threshold: " + stiffeningExtensionMassRatioThreshold);
-
-                Debug.Log(debugString.ToString());
-            }
+			{ 
+				bool debug = config.GetValue<bool>("debug", false);
+				Log.debuglevel = debug ? 5 : 3;
+			}
+			
+			if (Log.debuglevel > 3)
+				LoadConstants_Debug();
         }
+	
+		[Conditional("DEBUG")]
+		private static void LoadConstants_Debug()
+		{
+            StringBuilder debugString = new StringBuilder();
+            debugString.AppendLine("\n\rAngular Drive: \n\rSpring: " + angularDriveSpring + "\n\rDamp: " + angularDriveDamper + "\n\rMax Force Factor: " + angularMaxForceFactor);
 
-        ////////////////////////////////////////
-        // find part information
+            debugString.AppendLine("\n\rJoint Strength Multipliers: \n\rForce Multiplier: " + breakForceMultiplier + "\n\rTorque Multiplier: " + breakTorqueMultiplier);
+            debugString.AppendLine("Joint Force Strength Per Unit Area: " + breakStrengthPerArea);
+            debugString.AppendLine("Joint Torque Strength Per Unit MOI: " + breakTorquePerMOI);
 
-        public static float MaximumPossiblePartMass(Part p)
+            debugString.AppendLine("Strength For Additional Decoupler And Clamp Joints: " + decouplerAndClampJointStrength);
+
+            debugString.AppendLine("\n\rDebug Output: " + (Log.debuglevel > 3));
+            debugString.AppendLine("Reinforce Attach Nodes: " + reinforceAttachNodes);
+            debugString.AppendLine("Reinforce Decouplers Further: " + reinforceDecouplersFurther);
+            debugString.AppendLine("Reinforce Launch Clamps Further: " + reinforceLaunchClampsFurther);
+            debugString.AppendLine("Use Volume For Calculations, Not Area: " + useVolumeNotArea);
+
+            debugString.AppendLine("\n\rMass For Joint Adjustment: " + massForAdjustment);
+
+            debugString.AppendLine("\n\rExempt Part Types");
+            foreach (string s in exemptPartTypes)
+                debugString.AppendLine(s);
+
+            debugString.AppendLine("\n\rExempt Module Types");
+            foreach (string s in exemptModuleTypes)
+                debugString.AppendLine(s);
+
+            debugString.AppendLine("\n\rDecoupler Stiffening Extension Types");
+            foreach (string s in decouplerStiffeningExtensionType)
+                debugString.AppendLine(s);
+
+            debugString.AppendLine("\n\rDecoupler Stiffening Extension Mass Ratio Threshold: " + stiffeningExtensionMassRatioThreshold);
+
+            Log.dbg(debugString.ToString());
+		}
+
+		////////////////////////////////////////
+		// find part information
+
+		public static float MaximumPossiblePartMass(Part p)
         {
             float maxMass = p.mass;
             foreach (PartResource r in p.Resources)
                 maxMass += (float)(r.info.density * r.maxAmount);
 
-            if (debug)
-                Debug.Log("Maximum mass for part " + p.partInfo.title + " is " + maxMass);
+            Log.dbg("Maximum mass for part {0} is {1}", p.partInfo.title, maxMass);
             return maxMass;
         }
 
@@ -208,8 +211,7 @@ namespace KerbalJointReinforcement
                         return Vector3.up;
                 }
 
-                if (debug)
-                    MonoBehaviour.print(part.partInfo.title + ": Choosing axis " + dir + " for KJR surface attach" + (first ? "" : " from node") + ".");
+                Log.dbg("{0}: Choosing axis {1} for KJR surface attach {2}.", part.partInfo.title, dir, (first ? "" : " from node"));
 
                 return dir;
             }
@@ -271,11 +273,11 @@ namespace KerbalJointReinforcement
 
             if (maxBounds == new Vector3(-100, -100, -100) && minBounds == new Vector3(100, 100, 100))
             {
-                Debug.LogWarning("KerbalJointReinforcement: extents could not be properly built for part " + p.partInfo.title);
+                Log.warn("extents could not be properly built for part {0}", p.partInfo.title);
                 maxBounds = minBounds = Vector3.zero;
             }
-            else if (debug)
-                Debug.Log("Extents: " + minBounds + " .. " + maxBounds + " = " + (maxBounds - minBounds));
+            else
+                Log.dbg("Extents: {0} .. {1} = {2}", minBounds, maxBounds, (maxBounds - minBounds));
 
             //attachNodeLoc = p.transform.worldToLocalMatrix.MultiplyVector(p.parent.transform.position - p.transform.position);
             return maxBounds - minBounds;
@@ -365,8 +367,7 @@ namespace KerbalJointReinforcement
                     if (massRatio > stiffeningExtensionMassRatioThreshold)
                     {
                         newAdditions.Add(p.parent);
-                        if (debug)
-                            Debug.Log("Part " + p.parent.partInfo.title + " added to list due to mass ratio difference");
+                        Log.dbg("Part {0} added to list due to mass ratio difference", p.parent.partInfo.title);
                     }
                 }
             }
@@ -420,8 +421,7 @@ namespace KerbalJointReinforcement
                             if (massRatio > stiffeningExtensionMassRatioThreshold)
                             {
                                 newAdditions.Add(q);
-                                if (debug)
-                                    Debug.Log("Part " + q.partInfo.title + " added to list due to mass ratio difference");
+                                Log.dbg("Part {0} added to list due to mass ratio difference", q.partInfo.title);
                             }
                         }
                     }
@@ -472,16 +472,14 @@ namespace KerbalJointReinforcement
         {
             p.AddModule("KJRDecouplerReinforcementModule");
             (p.Modules["KJRDecouplerReinforcementModule"] as KJRDecouplerReinforcementModule).OnPartUnpack();
-            if (debug)
-                Debug.Log("Added KJRDecouplerReinforcementModule to part " + p.partInfo.title);
+            Log.dbg("Added KJRDecouplerReinforcementModule to part ", p.partInfo.title);
         }
 
         public static void AddLaunchClampReinforcementModule(Part p)
         {
             p.AddModule("KJRLaunchClampReinforcementModule");
             (p.Modules["KJRLaunchClampReinforcementModule"] as KJRLaunchClampReinforcementModule).OnPartUnpack();
-            if (debug)
-                Debug.Log("Added KJRLaunchClampReinforcementModule to part " + p.partInfo.title);
+            Log.dbg("Added KJRLaunchClampReinforcementModule to part ", p.partInfo.title);
         }
 
         public static void ConnectLaunchClampToGround(Part clamp)

@@ -64,6 +64,7 @@
     <Compile Include="Properties\Version.cs">
       <DependentUpon>Version.tt</DependentUpon>
     </Compile>
+    <Compile Include="Log.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\Version.tt">

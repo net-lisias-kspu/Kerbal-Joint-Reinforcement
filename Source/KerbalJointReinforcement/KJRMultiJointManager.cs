@@ -21,9 +21,7 @@ Copyright 2018, Michael Ferrara, aka Ferram4
     along with Kerbal Joint Reinforcement.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace KerbalJointReinforcement
