@@ -53,7 +53,7 @@ deploy_ver() {
 VERSIONFILE=$PACKAGE.version
 
 check
-deploy_ver
+#deploy_ver
 cp CHANGE_LOG.md "./GameData/$TARGETDIR"
 cp README.md  "./GameData/$TARGETDIR"
 cp LICENSE "./GameData/$TARGETDIR"

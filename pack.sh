@@ -10,7 +10,8 @@ clean() {
 	fi
 }
 
-FILE=$PACKAGE-$VERSION-KSP_$KSPV.zip
+#FILE=$PACKAGE-$VERSION-KSP_$KSPV.zip
+FILE=$PACKAGE-$VERSION.zip
 echo $FILE
 clean
 zip -r $FILE ./GameData/* -x ".*"
