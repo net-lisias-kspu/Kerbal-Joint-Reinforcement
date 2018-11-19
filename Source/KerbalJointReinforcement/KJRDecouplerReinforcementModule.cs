@@ -1,5 +1,9 @@
 ﻿/*
-    Developers: Michael Ferrara (aka Ferram4), Meiru
+Kerbal Joint Reinforcement /L
+Copyright 2015, Michael Ferrara, aka Ferram4
+Copyright 2018, LisiasT
+
+    Developers: Michael Ferrara (aka Ferram4), Meiru, LisiasT
 
     This file is part of Kerbal Joint Reinforcement.
 
@@ -24,7 +28,7 @@ using UnityEngine;
 
 namespace KerbalJointReinforcement
 {
-    // This class adds extra joints between the parts connected to a decoupler to stiffen up the connection
+    //This class adds extra joints between the parts connected to a decoupler to stiffen up the connection
     public class KJRDecouplerReinforcementModule : PartModule
     {
         protected List<ConfigurableJoint> joints = new List<ConfigurableJoint>();
@@ -36,50 +40,38 @@ namespace KerbalJointReinforcement
         {
             base.OnAwake();
 
-            foreach(PartModule m in part.Modules)
-                if(m is ModuleDecouple)
+            foreach (PartModule m in part.Modules)
+                if (m is ModuleDecouple)
                 {
                     decoupler = m;
                     break;
                 }
-                else if(m is ModuleAnchoredDecoupler)
+                else if (m is ModuleAnchoredDecoupler)
                 {
                     decoupler = m;
                     break;
                 }
         }
 
-        public void OnDestroy()
+        public override void OnStart(PartModule.StartState state)
         {
-            if(joints.Count > 0)
-            {
-                GameEvents.onVesselCreate.Remove(OnVesselWasModified);
-                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
-            }
+            base.OnStart(state);
+
+            if (part.parent == null)
+                return;
+
+            //if (part.attachMode == AttachModes.SRF_ATTACH)
+            //    radiallyAttached = true;
         }
 
-        public void OnPartPack()
-        {
-            if(joints.Count > 0)
-            {
-                GameEvents.onVesselCreate.Remove(OnVesselWasModified);
-                GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
-            }
-
-            foreach(ConfigurableJoint j in joints)
-                GameObject.Destroy(j);
-
-            joints.Clear();
-            neighbours.Clear();
-        }
 
         public void OnPartUnpack()
         {
-            if(part.parent == null || part.children.Count == 0)
+            if (part.parent == null || part.children.Count == 0)
                 return;
-            if(decoupler is ModuleDecouple && (decoupler as ModuleDecouple).isDecoupled)
+            if (decoupler is ModuleDecouple && (decoupler as ModuleDecouple).isDecoupled)
                 return;
-            if(decoupler is ModuleAnchoredDecoupler && (decoupler as ModuleAnchoredDecoupler).isDecoupled)
+            if (decoupler is ModuleAnchoredDecoupler && (decoupler as ModuleAnchoredDecoupler).isDecoupled)
                 return;
 
             AddExtraJoints();
@@ -87,14 +79,14 @@ namespace KerbalJointReinforcement
 
         private void OnVesselWasModified(Vessel v)
         {
-            if(part.vessel == v)
+            if (part.vessel == v)
             {
                 int i = 0;
-                while((i < neighbours.Count) && (neighbours[i].vessel == v)) ++i;
+                while ((i < neighbours.Count) && (neighbours[i].vessel == v)) ++i;
 
-                if(i < neighbours.Count)
+                if (i < neighbours.Count)
                 {
-                    if(KJRJointUtils.debug)
+                    if (KJRJointUtils.debug)
                         Debug.Log("Decoupling part, destroying all extra joints of " + part.partInfo.title);
 
                     BreakAllInvalidJointsAndRebuild();
@@ -109,12 +101,12 @@ namespace KerbalJointReinforcement
 
             parentParts = KJRJointUtils.DecouplerPartStiffeningListParents(part.parent);
 
-            foreach(Part p in part.children)
+            foreach (Part p in part.children)
             {
-                if(KJRJointUtils.IsJointAdjustmentAllowed(p))
+                if (KJRJointUtils.IsJointAdjustmentAllowed(p))
                 {
                     childParts.AddRange(KJRJointUtils.DecouplerPartStiffeningListChildren(p));
-                    if(!childParts.Contains(p))
+                    if (!childParts.Contains(p))
                         childParts.Add(p);
                 }
             }
@@ -128,40 +120,40 @@ namespace KerbalJointReinforcement
 
             StringBuilder debugString = null;
 
-            if(KJRJointUtils.debug)
+            if (KJRJointUtils.debug)
             {
                 debugString = new StringBuilder();
                 debugString.AppendLine(parentParts.Count + " parts above decoupler to be connected to " + childParts.Count + " below decoupler.");
                 debugString.AppendLine("The following joints added by " + part.partInfo.title + " to increase stiffness:");
             }
 
-            foreach(Part p in parentParts)
+            foreach (Part p in parentParts)
             {
-                if(p == null || p.rb == null || p.Modules.Contains("ProceduralFairingDecoupler"))
+                if (p == null || p.rb == null || p.Modules.Contains("ProceduralFairingDecoupler"))
                     continue;
 
-                foreach(Part q in childParts)
+                foreach (Part q in childParts)
                 {
-                    if(q == null || q.rb == null || p == q || q.Modules.Contains("ProceduralFairingDecoupler"))
+                    if (q == null || q.rb == null || p == q || q.Modules.Contains("ProceduralFairingDecoupler"))
                         continue;
 
-                    if(p.vessel != q.vessel)
+                    if (p.vessel != q.vessel)
                         continue;
 
                     joints.Add(KJRJointUtils.BuildJoint(p, q));
 
-                    if(KJRJointUtils.debug)
+                    if (KJRJointUtils.debug)
                         debugString.AppendLine(p.partInfo.title + " connected to part " + q.partInfo.title);
                 }
             }
 
-            if(joints.Count > 0)
+            if (joints.Count > 0)
             {
                 GameEvents.onVesselCreate.Add(OnVesselWasModified);
                 GameEvents.onVesselWasModified.Add(OnVesselWasModified);
             }
 
-            if(KJRJointUtils.debug)
+            if (KJRJointUtils.debug)
                 Debug.Log(debugString.ToString());
         }
 
@@ -170,18 +162,18 @@ namespace KerbalJointReinforcement
             GameEvents.onVesselCreate.Remove(OnVesselWasModified);
             GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
 
-            foreach(ConfigurableJoint j in joints)
+            foreach (ConfigurableJoint j in joints)
                 GameObject.Destroy(j);
 
             joints.Clear();
 
             neighbours.Clear();
 
-            if(part.parent == null || part.children.Count == 0)
+            if (part.parent == null || part.children.Count == 0)
                 return;
-            if(decoupler is ModuleDecouple && (decoupler as ModuleDecouple).isDecoupled)
+            if (decoupler is ModuleDecouple && (decoupler as ModuleDecouple).isDecoupled)
                 return;
-            if(decoupler is ModuleAnchoredDecoupler && (decoupler as ModuleAnchoredDecoupler).isDecoupled)
+            if (decoupler is ModuleAnchoredDecoupler && (decoupler as ModuleAnchoredDecoupler).isDecoupled)
                 return;
 
             AddExtraJoints();
