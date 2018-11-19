@@ -57,7 +57,7 @@ namespace KerbalJointReinforcement
             // If you want to disable some behavior when incompatible, other parts of the plugin
             // should query this method:
             //
-            //    if(!CompatibilityChecker.IsCompatible()) {
+            //    if (!CompatibilityChecker.IsCompatible()) {
             //        ...disable some features...
             //    }
             //
@@ -65,8 +65,9 @@ namespace KerbalJointReinforcement
             // can expect a future update to be available.
             //
 
-#if _KSP_1_4_2
-            return (Versioning.version_major == 1 && Versioning.version_minor == 4)
+#if _KSP_1_4_1
+            return (Versioning.version_major == 1 && Versioning.version_minor == 5)
+                || (Versioning.version_major == 1 && Versioning.version_minor == 4)
                 || (Versioning.version_major == 0 && Versioning.version_minor == 1 && Versioning.Revision == 4);
 #elif _KSP_1_3_1
             return (Versioning.version_major == 1 && Versioning.version_minor == 3)
@@ -111,7 +112,7 @@ namespace KerbalJointReinforcement
                 .ToArray();
 
             // Let the latest version of the checker execute.
-            if(_version != fields.Max(f => (int)f.GetValue(null))) { return; }
+            if (_version != fields.Max(f => (int)f.GetValue(null))) { return; }
 
             Debug.Log(String.Format("[CompatibilityChecker] Running checker version {0} from '{1}'", _version, Assembly.GetExecutingAssembly().GetName().Name));
 
@@ -169,23 +170,23 @@ namespace KerbalJointReinforcement
 
             String message = String.Empty;
 
-            /*if(IsWin64())
+            /*if (IsWin64())
             {
                 message += "WARNING: You are using 64-bit KSP on Windows. This version of KSP is known to cause crashes. It's highly recommended that you use either 32-bit KSP on Windows or switch to Linux.";
             }*/
 
-            if((incompatible.Length > 0) || (incompatibleUnity.Length > 0))
+            if ((incompatible.Length > 0) || (incompatibleUnity.Length > 0))
             {
                 message += ((message == String.Empty) ? "Some" : "\n\nAdditionally, some") + " installed mods may be incompatible with this version of Kerbal Space Program. Features may be broken or disabled. Please check for updates to the listed mods.";
 
-                if(incompatible.Length > 0)
+                if (incompatible.Length > 0)
                 {
                     Debug.LogWarning("[CompatibilityChecker] Incompatible mods detected: " + String.Join(", ", incompatible));
                     message += String.Format("\n\nThese mods are incompatible with KSP {0}.{1}.{2}:\n\n", Versioning.version_major, Versioning.version_minor, Versioning.Revision);
                     message += String.Join("\n", incompatible);
                 }
 
-                if(incompatibleUnity.Length > 0)
+                if (incompatibleUnity.Length > 0)
                 {
                     Debug.LogWarning("[CompatibilityChecker] Incompatible mods (Unity) detected: " + String.Join(", ", incompatibleUnity));
                     message += String.Format("\n\nThese mods are incompatible with Unity {0}:\n\n", Application.unityVersion);
@@ -193,9 +194,9 @@ namespace KerbalJointReinforcement
                 }
             }
 
-            if((incompatible.Length > 0) || (incompatibleUnity.Length > 0))// || IsWin64())
+            if ((incompatible.Length > 0) || (incompatibleUnity.Length > 0))// || IsWin64())
             {
-#if _KSP_1_4_2 || _KSP_1_3_1
+#if _KSP_1_4_1 || _KSP_1_3_1
                 PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), "CompatibilityChecker", "Incompatible Mods Detected", message, "OK", true, HighLogic.UISkin);
 #else
                 PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), "CompatibilityChecker", message, "OK", true, HighLogic.UISkin);
@@ -215,7 +216,7 @@ namespace KerbalJointReinforcement
 
         private static IEnumerable<Type> getAllTypes()
         {
-            foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 Type[] types;
                 try
@@ -227,7 +228,7 @@ namespace KerbalJointReinforcement
                     types = Type.EmptyTypes;
                 }
 
-                foreach(var type in types)
+                foreach (var type in types)
                 {
                     yield return type;
                 }
