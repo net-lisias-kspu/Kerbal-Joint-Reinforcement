@@ -104,7 +104,7 @@ namespace KerbalJointReinforcement
             // Let the latest version of the checker execute.
             if (_version != fields.Max(f => (int)f.GetValue(null))) { return; }
 
-            Debug.Log(String.Format("[CompatibilityChecker] Running checker version {0} from '{1}'", _version, Assembly.GetExecutingAssembly().GetName().Name));
+            Log.info("[CompatibilityChecker] Running checker version {0} from '{1}'", _version, Assembly.GetExecutingAssembly().GetName().Name);
 
             // Other checkers will see this version and not run.
             // This accomplishes the same as an explicit "ran" flag with fewer moving parts.
@@ -125,7 +125,7 @@ namespace KerbalJointReinforcement
                     catch (Exception e)
                     {
                         // If a mod throws an exception from IsCompatible, it's not compatible.
-                        Debug.LogWarning(String.Format("[CompatibilityChecker] Exception while invoking IsCompatible() from '{0}':\n\n{1}", m.DeclaringType.Assembly.GetName().Name, e));
+                        Log.warn("[CompatibilityChecker] Exception while invoking IsCompatible() from '{0}':\n\n{1}", m.DeclaringType.Assembly.GetName().Name, e);
                         return true;
                     }
                 })
@@ -148,7 +148,7 @@ namespace KerbalJointReinforcement
                     catch (Exception e)
                     {
                         // If a mod throws an exception from IsUnityCompatible, it's not compatible.
-                        Debug.LogWarning(String.Format("[CompatibilityChecker] Exception while invoking IsUnityCompatible() from '{0}':\n\n{1}", m.DeclaringType.Assembly.GetName().Name, e));
+                        Log.warn("[CompatibilityChecker] Exception while invoking IsUnityCompatible() from '{0}':\n\n{1}", m.DeclaringType.Assembly.GetName().Name, e);
                         return true;
                     }
                 })
@@ -171,14 +171,14 @@ namespace KerbalJointReinforcement
 
                 if (incompatible.Length > 0)
                 {
-                    Debug.LogWarning("[CompatibilityChecker] Incompatible mods detected: " + String.Join(", ", incompatible));
+                    Log.warn("[CompatibilityChecker] Incompatible mods detected: " + String.Join(", ", incompatible));
                     message += String.Format("\n\nThese mods are incompatible with KSP {0}.{1}.{2}:\n\n", Versioning.version_major, Versioning.version_minor, Versioning.Revision);
                     message += String.Join("\n", incompatible);
                 }
 
                 if (incompatibleUnity.Length > 0)
                 {
-                    Debug.LogWarning("[CompatibilityChecker] Incompatible mods (Unity) detected: " + String.Join(", ", incompatibleUnity));
+                    Log.warn("[CompatibilityChecker] Incompatible mods (Unity) detected: " + String.Join(", ", incompatibleUnity));
                     message += String.Format("\n\nThese mods are incompatible with Unity {0}:\n\n", Application.unityVersion);
                     message += String.Join("\n", incompatibleUnity);
                 }

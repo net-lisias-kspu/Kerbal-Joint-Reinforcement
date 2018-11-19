@@ -21,7 +21,6 @@ Developers: Michael Ferrara (aka Ferram4), Meiru, LisiasT
     along with Kerbal Joint Reinforcement.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -66,7 +65,7 @@ namespace KerbalJointReinforcement
             neighbours.Add(part.parent);
 
             StringBuilder debugString = null;
-            if (KJRJointUtils.debug)
+            if (Log.debuglevel > 3)
             {
                 debugString = new StringBuilder();
                 debugString.AppendLine("The following joints added by " + part.partInfo.title + " to increase stiffness:");
@@ -75,10 +74,10 @@ namespace KerbalJointReinforcement
             if (part.parent.Rigidbody != null)
                 joints.Add(KJRJointUtils.BuildJoint(part, part.parent));
 
-            if (KJRJointUtils.debug)
+            if (Log.debuglevel > 3)
             {
                 debugString.AppendLine(part.parent.partInfo.title + " connected to part " + part.partInfo.title);
-                Debug.Log(debugString.ToString());
+                Log.dbg("{0}", debugString);
             }
 
             if (joints.Count > 0)
@@ -94,8 +93,7 @@ namespace KerbalJointReinforcement
                     if (p.vessel == part.vessel)
                         continue;
 
-                    if (KJRJointUtils.debug)
-                        Debug.Log("Decoupling part " + part.partInfo.title + "; destroying all extra joints");
+                    Log.dbg("Decoupling part {0}; destroying all extra joints", part.partInfo.title);
 
                     BreakAllInvalidJoints();
                     return;

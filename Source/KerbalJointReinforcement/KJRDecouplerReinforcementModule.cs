@@ -21,7 +21,6 @@ Copyright 2018, LisiasT
     along with Kerbal Joint Reinforcement.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -86,9 +85,7 @@ namespace KerbalJointReinforcement
 
                 if (i < neighbours.Count)
                 {
-                    if (KJRJointUtils.debug)
-                        Debug.Log("Decoupling part, destroying all extra joints of " + part.partInfo.title);
-
+                    Log.dbg("Decoupling part, destroying all extra joints of {0}", part.partInfo.title);
                     BreakAllInvalidJointsAndRebuild();
                 }
             }
@@ -120,7 +117,7 @@ namespace KerbalJointReinforcement
 
             StringBuilder debugString = null;
 
-            if (KJRJointUtils.debug)
+            if (Log.debuglevel > 3)
             {
                 debugString = new StringBuilder();
                 debugString.AppendLine(parentParts.Count + " parts above decoupler to be connected to " + childParts.Count + " below decoupler.");
@@ -142,7 +139,7 @@ namespace KerbalJointReinforcement
 
                     joints.Add(KJRJointUtils.BuildJoint(p, q));
 
-                    if (KJRJointUtils.debug)
+                    if (Log.debuglevel > 3)
                         debugString.AppendLine(p.partInfo.title + " connected to part " + q.partInfo.title);
                 }
             }
@@ -153,8 +150,7 @@ namespace KerbalJointReinforcement
                 GameEvents.onVesselWasModified.Add(OnVesselWasModified);
             }
 
-            if (KJRJointUtils.debug)
-                Debug.Log(debugString.ToString());
+            Log.dbg("{0}", debugString);
         }
 
         private void BreakAllInvalidJointsAndRebuild()

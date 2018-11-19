@@ -100,7 +100,7 @@ namespace KerbalJointReinforcement
             
             multiJointManager.VerifyVesselJoints(v);
 
-            if (KJRJointUtils.debug)
+            if (Log.debuglevel > 3)
             {
                 StringBuilder debugString = new StringBuilder();
                 debugString.AppendLine("KJR: Modified vessel " + v.id + " (" + v.GetName() + ")");
@@ -108,7 +108,7 @@ namespace KerbalJointReinforcement
                 debugString.AppendLine("Now contains: ");
                 foreach (Part p in v.Parts)
                     debugString.AppendLine("  " + p.partInfo.name + " (" + p.flightID + ")");
-                Debug.Log(debugString);
+                Log.dbg("{0}", debugString);
             }
 
             updatedVessels.Remove(v);
@@ -131,7 +131,7 @@ namespace KerbalJointReinforcement
 
             if (!vesselOffRails.Contains(v) && v.precalc.isEasingGravity)
             {
-                Debug.Log("KJR easing " + v.vesselName);
+                Log.info("KJR easing {0}", v.vesselName);
 
                 vesselOffRails.Add(v);
 
@@ -188,11 +188,7 @@ namespace KerbalJointReinforcement
 
         private void RunVesselJointUpdateFunction(Vessel v)
         {
-            if (KJRJointUtils.debug)
-            {
-                Debug.Log("KJR: Processing vessel " + v.id + " (" + v.GetName() + "); root " +
-                            v.rootPart.partInfo.name + " (" + v.rootPart.flightID + ")");
-            }
+            Log.dbg("KJR: Processing vessel {0} ({1}); root {2} ({3})", v.id, v.GetName(), v.rootPart.partInfo.name, v.rootPart.flightID);
 
             bool bReinforced = false;
 
@@ -225,8 +221,7 @@ namespace KerbalJointReinforcement
                         p.breakingForce = Mathf.Infinity;
                         p.breakingTorque = Mathf.Infinity;
                         p.mass = Mathf.Max(p.mass, (p.parent.mass + p.parent.GetResourceMass()) * 0.01f);          //We do this to make sure that there is a mass ratio of 100:1 between the clamp and what it's connected to.  This helps counteract some of the wobbliness simply, but also allows some give and springiness to absorb the initial physics kick
-                        if (KJRJointUtils.debug)
-                            Debug.Log("KJR: Launch Clamp Break Force / Torque increased");
+                        Log.dbg("KJR: Launch Clamp Break Force / Torque increased");
 
                         KJRJointUtils.AddLaunchClampReinforcementModule(p);
                     }
@@ -272,11 +267,7 @@ namespace KerbalJointReinforcement
 
             if (p.attachMethod == AttachNodeMethod.LOCKED_JOINT)
             {
-                if (KJRJointUtils.debug)
-                {
-                    Debug.Log("KJR: Already processed part before: " + p.partInfo.name + " (" + p.flightID + ") -> " +
-                                p.parent.partInfo.name + " (" + p.parent.flightID + ")");
-                }
+                Log.dbg("KJR: Already processed part before: {0} ({1}) -> {2} ({3})", p.partInfo.name, p.flightID, p.parent.partInfo.name, p.parent.flightID);
             }
 
             List<ConfigurableJoint> jointList;
@@ -345,9 +336,7 @@ namespace KerbalJointReinforcement
 
                     if (partMass < KJRJointUtils.massForAdjustment || parentMass < KJRJointUtils.massForAdjustment)
                     {
-                        if (KJRJointUtils.debug)
-                            Debug.Log("KJR: Part mass too low, skipping: " + p.partInfo.name + " (" + p.flightID + ")");
-
+                        Log.dbg("KJR: Part mass too low, skipping: {0} ({1})", p.partInfo.name, p.flightID);
                         continue;
                     }                
                 
@@ -362,7 +351,7 @@ namespace KerbalJointReinforcement
                         var dock1 = p.Modules.GetModule<ModuleDockingNode>();
                         var dock2 = p.parent.Modules.GetModule<ModuleDockingNode>();
 
-                        //Debug.Log(dock1 + " " + (dock1 ? ""+dock1.dockedPartUId : "?") + " " + dock2 + " " + (dock2 ? ""+dock2.dockedPartUId : "?"));
+                        Log.dbg("{0} {1} {2} {3}", dock1, (dock1 ? ""+dock1.dockedPartUId : "?"), dock2, (dock2 ? ""+dock2.dockedPartUId : "?"));
 
                         if (dock1 && dock2 && (dock1.dockedPartUId == p.parent.flightID || dock2.dockedPartUId == p.flightID))
                         {
@@ -376,7 +365,7 @@ namespace KerbalJointReinforcement
                     if (node == null && p.attachMode == AttachModes.SRF_ATTACH)
                         node = attach = p.srfAttachNode;
 
-                    if (KJRJointUtils.debug)
+                    if (Log.debuglevel > 3)
                     {
                         debugString.AppendLine("Original joint from " + p.partInfo.title + " to " + p.parent.partInfo.title);
                         debugString.AppendLine("  " + p.partInfo.name + " (" + p.flightID + ") -> " + p.parent.partInfo.name + " (" + p.parent.flightID + ")");
@@ -432,7 +421,7 @@ namespace KerbalJointReinforcement
                         debugString.AppendLine("");
 
 
-                        //Debug.Log(debugString.ToString());
+                        Log.dbg("{0}", debugString);
                     }
 
 
@@ -587,7 +576,7 @@ namespace KerbalJointReinforcement
 
                     p.attachMethod = AttachNodeMethod.LOCKED_JOINT;
 
-                    if (KJRJointUtils.debug)
+                    if (Log.debuglevel > 3)
                     {
                         debugString.AppendLine("Updated joint from " + p.partInfo.title + " to " + p.parent.partInfo.title);
                         debugString.AppendLine("  " + p.partInfo.name + " (" + p.flightID + ") -> " + p.parent.partInfo.name + " (" + p.parent.flightID + ")");
@@ -622,6 +611,8 @@ namespace KerbalJointReinforcement
                         debugString.AppendLine("Radius: " + radius);
                         debugString.AppendLine("Area: " + area);
                         debugString.AppendLine("Moment of Inertia: " + momentOfInertia);
+
+                        Log.dbg("{0}", debugString);
                     }
                 }
             }
@@ -727,8 +718,7 @@ namespace KerbalJointReinforcement
                 }
             }
 
-            if (KJRJointUtils.debug)
-                Debug.Log(debugString.ToString());
+            Log.dbg("{0}", debugString);
         }
 
         private void MultiPartJointBuildJoint(Part p, Part linkPart)
