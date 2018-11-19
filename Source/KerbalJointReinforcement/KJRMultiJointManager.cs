@@ -1,6 +1,7 @@
 ﻿/*
-Kerbal Joint Reinforcement, v3.3.3
+Kerbal Joint Reinforcement /L
 Copyright 2015, Michael Ferrara, aka Ferram4
+Copyright 2018, Michael Ferrara, aka Ferram4
  
     Developers: Michael Ferrara (aka Ferram4), Meiru
 

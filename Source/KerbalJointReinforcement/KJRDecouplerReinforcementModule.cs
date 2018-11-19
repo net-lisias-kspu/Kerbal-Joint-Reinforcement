@@ -1,8 +1,9 @@
 ﻿/*
-Kerbal Joint Reinforcement, v3.3.3
+Kerbal Joint Reinforcement /L
 Copyright 2015, Michael Ferrara, aka Ferram4
+Copyright 2018, LisiasT
 
-    Developers: Michael Ferrara (aka Ferram4), Meiru
+    Developers: Michael Ferrara (aka Ferram4), Meiru, LisiasT
 
     This file is part of Kerbal Joint Reinforcement.
 
