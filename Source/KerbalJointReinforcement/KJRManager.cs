@@ -47,8 +47,8 @@ namespace KerbalJointReinforcement
 
         public void Start()
         {
-            if (!CompatibilityChecker.IsCompatible())
-                return;
+            //if (!CompatibilityChecker.IsCompatible())
+                //return;
 
             GameEvents.onVesselCreate.Add(OnVesselCreate);
             GameEvents.onVesselWasModified.Add(OnVesselWasModified);
@@ -64,8 +64,8 @@ namespace KerbalJointReinforcement
 
         public void OnDestroy()
         {
-            if (!CompatibilityChecker.IsCompatible())
-                return;
+            //if (!CompatibilityChecker.IsCompatible())
+                //return;
 
             GameEvents.onVesselCreate.Remove(OnVesselCreate);
             GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
