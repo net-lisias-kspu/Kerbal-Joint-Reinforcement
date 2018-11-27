@@ -26,7 +26,6 @@ using System.Text;
 using UnityEngine;
 using KSPe.IO.Data;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace KerbalJointReinforcement
 {

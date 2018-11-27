@@ -39,8 +39,16 @@ namespace KerbalJointReinforcement
 
         public void Awake()
         {
-            KJRJointUtils.LoadConstants();
-            updatedVessels = new List<Vessel>();
+            try
+			{
+				KJRJointUtils.LoadConstants();
+			}
+			catch (Exception e)
+			{
+				Log.ex(this, e);
+				Log.err("An error [{0}] was caught while reading the config.xml! The plugin can not work as expected!", e.Message);
+			}
+			updatedVessels = new List<Vessel>();
             vesselOffRails = new HashSet<Vessel>();
             vesselJointStrengthened = new Dictionary<Vessel, List<Joint>>();
             multiJointManager = new KJRMultiJointManager();
