@@ -1,5 +1,12 @@
 # Kerbal Joint Reinforcement /L :: Changes
 
+* 2018-1129: 3.3.4.0 (lisias) for KSP 1.2 & 1.3 & 1.4 & 1.5
+	+ REMERGE from ferrram4's and meiru's changes
+		- Previous merge was trashed.
+		- This is a new code-tree
+	+ Bumping up version to match meiru's codetree 
+	+ Preventing KJR to mess with [DockRotate](https://forum.kerbalspaceprogram.com/index.php?/topic/170484-15-14-dockrotate-lightweight-robotics-rotational-control-on-docking-ports-plus-noderotate-make-any-part-rotate/).
+		- Change from [peteletroll](https://forum.kerbalspaceprogram.com/index.php?/profile/144573-peteletroll/), also mentioned by [AccidentalDisassembly](https://forum.kerbalspaceprogram.com/index.php?/topic/171377-130l-145-grounded-modular-vehicles-r40l-new-light-texture-switch-alternatives-fixes-oct-9-2018/&do=findComment&comment=3316608)
 * 2018-1127: 3.3.3.4 (lisias) for KSP 1.2 & 1.3 & 1.4 & 1.5
 	+ Tested (almost properly) on KSP 1.2 :)
 		- 'Unifying' the releases in a single distribution file. 
@@ -12,9 +19,3 @@
 * 2018-1119: 3.3.3.3 (lisias) for KSP 1.3 & 1.4 & 1.5
 	+ Allowing KJR to run on 1.5 series.
 		- For future laughing: https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/issues/1
-* 2018-0820: 3.3.3.2 (lisias) for KSP 1.3 & 1.4
-	+ Merging linuxgurugamer's merge from meirumeiru's code
-	+ Project reworked for Multi KSP Versions support
-* 2018-0819: 3.3.3.1 (lisias) for KSP 1.3.1
-	+ Moving configuration/settings files to <KSP_ROOT>/PluginData 
-	+ Added hard dependency for [KSP API Extensions/L](https://github.com/net-lisias-ksp/KSPAPIExtensions).

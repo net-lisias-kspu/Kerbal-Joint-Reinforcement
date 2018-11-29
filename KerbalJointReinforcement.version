@@ -6,9 +6,9 @@
 	"CHANGE_LOG_URL":"https://raw.githubusercontent.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/master/CHANGES.md",
 	"VERSION":{
 		"MAJOR":3,
-		"MINOR":3,
-		"PATCH":3,
-		"BUILD":4
+		"MINOR":4,
+		"PATCH":0,
+		"BUILD":0
 		},
 	"KSP_VERSION_MIN":{
 		"MAJOR":1,
