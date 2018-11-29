@@ -33,6 +33,7 @@
     <string name="exemptModuleType6">ModuleGrappleNode</string>
     <string name="exemptModuleType7">ModuleDockRotate</string>
     <string name="exemptModuleType8">ModuleNodeRotate</string>
+    <string name="exemptModuleType9">ModuleDockRotate</string>
 
     <string name="decouplerStiffeningExtensionType0">ModuleEngines</string>
     <string name="decouplerStiffeningExtensionType1">ModuleEnginesFX</string>
