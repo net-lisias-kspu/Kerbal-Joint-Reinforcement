@@ -19,7 +19,8 @@ VERSIONFILE=$PACKAGE.version
 rm -f "./GameData/$TARGETDIR/$VERSIONFILE"
 rm -f "./GameData/$TARGETDIR/CHANGE_LOG.md"
 rm -f "./GameData/$TARGETDIR/README.md"
+rm -f "./GameData/$TARGETDIR/*.version"
 rm -f "./GameData/$TARGETDIR/*.LICENSE"
-for dll in Scale Scale_Redist Scale_TweakableEverything ; do
+for dll in $PACKAGE ; do
     clean $dll
 done
