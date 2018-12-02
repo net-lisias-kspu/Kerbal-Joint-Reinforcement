@@ -1,13 +1,17 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
-* 2018-1202: 3.3.4.1 (lisias) for KSP 1.2 & 1.3 & 1.4 & 1.5
+* 2018-1202: 3.3.4.2 (lisias) for KSP 1.2 & 1.3 & 1.4 & 1.5
 	+ Logging `config.xml` status when loading.
 	+ REMERGE from ferrram4's and meiru's changes
 		- Previous merge was trashed.
 		- This is a new code-tree
 	+ Bumping up version to match meiru's codetree 
+	+ (Really now) Preventing KJR to mess with [Global/Ground Construction](https://forum.kerbalspaceprogram.com/index.php?/topic/50911-13-kerbal-joint-reinforcement-v333-72417/&do=findComment&comment=3497716).
+		- Fixed as instructed on [Critter79606](https://forum.kerbalspaceprogram.com/index.php?/topic/50911-13-kerbal-joint-reinforcement-v333-72417/&do=findComment&comment=3494635) :)
 	+ Preventing KJR to mess with [DockRotate](https://forum.kerbalspaceprogram.com/index.php?/topic/170484-15-14-dockrotate-lightweight-robotics-rotational-control-on-docking-ports-plus-noderotate-make-any-part-rotate/).
 		- Change from [peteletroll](https://forum.kerbalspaceprogram.com/index.php?/profile/144573-peteletroll/), also mentioned by [AccidentalDisassembly](https://forum.kerbalspaceprogram.com/index.php?/topic/171377-130l-145-grounded-modular-vehicles-r40l-new-light-texture-switch-alternatives-fixes-oct-9-2018/&do=findComment&comment=3316608)
+* 2018-1202: 3.3.4.1 (lisias) for KSP 1.2 & 1.3 & 1.4 & 1.5
+	* DITCHED due a small fix on `config.xml`
 * 2018-1129: 3.3.4.0 (lisias) for KSP 1.2 & 1.3 & 1.4 & 1.5
 	+ DITCHED due a dumb mistake on .version
 * 2018-1127: 3.3.3.4 (lisias) for KSP 1.2 & 1.3 & 1.4 & 1.5
