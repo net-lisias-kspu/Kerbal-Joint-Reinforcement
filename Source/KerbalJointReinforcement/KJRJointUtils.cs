@@ -63,9 +63,18 @@ namespace KerbalJointReinforcement
         public static void LoadConstants()
         {
             PluginConfiguration config = PluginConfiguration.CreateForType<KJRManager>();
-            config.load();
+            if (config.exists()) try {
+				config.load();
+				Log.info("Configuration file loaded.");
+			}
+			catch (System.Exception e)
+			{
+				Log.err("Plugin will not work as expected! Configuration file was not loaded due {0}!", e.Message);
+			}
+			else
+				Log.err("Configuration file does not exit - KJR will not work as expected!");
 
-            reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", true);
+			reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", true);
             multiPartAttachNodeReinforcement = config.GetValue<bool>("multiPartAttachNodeReinforcement", true);
             reinforceDecouplersFurther = config.GetValue<bool>("reinforceDecouplersFurther", true);
             reinforceLaunchClampsFurther = config.GetValue<bool>("reinforceLaunchClampsFurther", true);
