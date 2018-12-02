@@ -32,7 +32,7 @@ namespace KerbalJointReinforcement
 
 		public static int debuglevel {
 			get => (int)LOG.level;
-			set => LOG.level = (KSPe.Util.Log.Level)(debuglevel % 6);
+			set => LOG.level = (KSPe.Util.Log.Level)(value % 6);
 		}
 
 		public static void log(string format, params object[] @parms)
