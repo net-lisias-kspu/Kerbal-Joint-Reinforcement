@@ -62,7 +62,7 @@ namespace KerbalJointReinforcement
 
         public static void LoadConstants()
         {
-            PluginConfiguration config = PluginConfiguration.CreateForType<KJRManager>();
+            PluginConfiguration config = PluginConfiguration.CreateForType<KJRManager>("config.xml");
             if (config.exists()) try {
 				config.load();
 				Log.info("Configuration file loaded.");
