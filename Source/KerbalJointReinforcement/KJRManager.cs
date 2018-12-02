@@ -39,14 +39,15 @@ namespace KerbalJointReinforcement
 
         public void Awake()
         {
-            try
+            Log.dbg("Awake");
+			try
 			{
 				KJRJointUtils.LoadConstants();
 			}
 			catch (Exception e)
 			{
 				Log.ex(this, e);
-				Log.err("An error [{0}] was caught while reading the config.xml! The plugin can not work as expected!", e.Message);
+				Log.err("An error [{0}] was caught on initialization! The plugin WILL NOT work as expected!", e.Message);
 			}
 			updatedVessels = new List<Vessel>();
             vesselOffRails = new HashSet<Vessel>();
@@ -56,6 +57,7 @@ namespace KerbalJointReinforcement
 
         public void Start()
         {
+            Log.dbg("Start");
             //if (!CompatibilityChecker.IsCompatible())
                 //return;
 

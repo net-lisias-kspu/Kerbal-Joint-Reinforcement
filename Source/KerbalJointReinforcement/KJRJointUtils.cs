@@ -69,10 +69,10 @@ namespace KerbalJointReinforcement
 			}
 			catch (System.Exception e)
 			{
-				Log.err("Plugin will not work as expected! Configuration file was not loaded due {0}!", e.Message);
+				Log.err("Configuration file has an error! Plugin will not work properly due {0}!", e.Message);
 			}
 			else
-				Log.err("Configuration file does not exit - KJR will not work as expected!");
+				Log.err("Configuration file does not exist - KJR will continue with default values!");
 
 			reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", true);
             multiPartAttachNodeReinforcement = config.GetValue<bool>("multiPartAttachNodeReinforcement", true);
