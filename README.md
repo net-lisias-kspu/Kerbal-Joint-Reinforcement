@@ -47,7 +47,11 @@ This is still about the original fork. It's going to change. Eventually.
 	- Larger parts will have stiffer connections to balance their larger masses / sizes
 	- Sequential parts in a stack will be connected with a stiff, but weak connection to add even more stiffness and counteract wobble
 + Option to make connection strengths weaker to counteract increases in stiffness
-+ Joint Stiffness parameters can be tweaked in included config.xml file
++ Joint Stiffness parameters can be tweaked:
+	- Default, standard values are in the config.xml in the add-on install folder
+		- `<RSP_ROOT>/GameData/KerbalJointReinforcement/PluginData/config.xml`
+	- User customizable user.xml, using the same syntax, can be found on the PluginData folder on your KSP root directory
+		- `<RSP_ROOT>/PluginData/KerbalJointReinforcement/user.xml`
 
 ###config value documentation:
 #### General Values

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <bool name="debug">0</bool>
+
+    <!-- string name="exemptModuleType0">SomeFancyModule</string -->
+
+    <!-- string name="decouplerStiffeningExtensionType0">OtherFancyModule</string -->
+
+</config>

@@ -24,7 +24,9 @@ Copyright 2018, LisiasT
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using KSPe.IO.Data;
+using IOData = KSPe.IO.Data;
+using IOAsset = KSPe.IO.Asset;
+using KIO = KSP.IO;
 using System.Diagnostics;
 
 namespace KerbalJointReinforcement
@@ -60,11 +62,16 @@ namespace KerbalJointReinforcement
 
         public static float massForAdjustment = 0.001f;
 
-        public static void LoadConstants()
-        {
-            PluginConfiguration config = PluginConfiguration.CreateForType<KJRManager>("config.xml");
-            if (config.exists()) try {
-				config.load();
+        private static readonly IOAsset.PluginConfiguration CONFIG = IOAsset.PluginConfiguration.CreateForType<KJRManager>("config.xml");
+        private static readonly IOData.PluginConfiguration USER = IOData.PluginConfiguration.CreateForType<KJRManager>("user.xml");
+        
+		public static void LoadConstants()
+		{
+            ClearConstants();
+
+			if (CONFIG.exists()) try {
+				CONFIG.load();
+				LoadConstants(CONFIG);
 				Log.info("Configuration file loaded.");
 			}
 			catch (System.Exception e)
@@ -74,35 +81,76 @@ namespace KerbalJointReinforcement
 			else
 				Log.err("Configuration file does not exist - KJR will continue with default values!");
 
-			reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", true);
-            multiPartAttachNodeReinforcement = config.GetValue<bool>("multiPartAttachNodeReinforcement", true);
-            reinforceDecouplersFurther = config.GetValue<bool>("reinforceDecouplersFurther", true);
-            reinforceLaunchClampsFurther = config.GetValue<bool>("reinforceLaunchClampsFurther", true);
-            useVolumeNotArea = config.GetValue<bool>("useVolumeNotArea", true);
+            if (USER.exists()) try {
+				USER.load();
+				LoadConstants(USER);
+				Log.info("User customizable file loaded.");
+			}
+			catch (System.Exception e)
+			{
+				Log.err("User customizable file has an error! Plugin will not work properly due {0}!", e.Message);
+			}
+			else
+				Log.err("User customizable file does not exist. Only Stock values are in use.");		
 
-            angularDriveSpring = config.GetValue<float>("angularDriveSpring");
-            angularDriveDamper = config.GetValue<float>("angularDriveDamper");
-            angularMaxForceFactor = config.GetValue<float>("angularMaxForceFactor");
+			if (Log.debuglevel > 3)
+				LoadConstants_Debug();
+		}
+
+		private static void ClearConstants()
+		{
+            reinforceAttachNodes = true;
+			multiPartAttachNodeReinforcement = true;
+			reinforceDecouplersFurther = true;
+			reinforceLaunchClampsFurther = true;
+			useVolumeNotArea = true;
+
+			angularDriveSpring = 0;
+			angularDriveDamper = 0;
+			angularMaxForceFactor = 0;
+			
+			breakForceMultiplier = 1;
+			breakTorqueMultiplier = 1;
+			
+			breakStrengthPerArea = 40;
+			breakTorquePerMOI = 40000;
+			
+			decouplerAndClampJointStrength = float.PositiveInfinity;
+			stiffeningExtensionMassRatioThreshold = 5;
+			massForAdjustment = 1;
+
+			exemptPartTypes.Clear();
+            exemptModuleTypes.Clear();
+            decouplerStiffeningExtensionType.Clear();
+		}
+	
+		private static void LoadConstants(KIO.PluginConfiguration config)
+        {
+			reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", reinforceAttachNodes);
+            multiPartAttachNodeReinforcement = config.GetValue<bool>("multiPartAttachNodeReinforcement", multiPartAttachNodeReinforcement);
+            reinforceDecouplersFurther = config.GetValue<bool>("reinforceDecouplersFurther", reinforceDecouplersFurther);
+            reinforceLaunchClampsFurther = config.GetValue<bool>("reinforceLaunchClampsFurther", reinforceLaunchClampsFurther);
+            useVolumeNotArea = config.GetValue<bool>("useVolumeNotArea", useVolumeNotArea);
+
+            angularDriveSpring = config.GetValue<float>("angularDriveSpring", angularDriveSpring);
+            angularDriveDamper = config.GetValue<float>("angularDriveDamper", angularDriveDamper);
+            angularMaxForceFactor = config.GetValue<float>("angularMaxForceFactor", angularMaxForceFactor);
             if (angularMaxForceFactor < 0)
                 angularMaxForceFactor = float.MaxValue;
 
-            breakForceMultiplier = config.GetValue<float>("breakForceMultiplier", 1);
-            breakTorqueMultiplier = config.GetValue<float>("breakTorqueMultiplier", 1);
+            breakForceMultiplier = config.GetValue<float>("breakForceMultiplier", breakForceMultiplier);
+            breakTorqueMultiplier = config.GetValue<float>("breakTorqueMultiplier", breakTorqueMultiplier);
 
-            breakStrengthPerArea = config.GetValue<float>("breakStrengthPerArea", 40);
-            breakTorquePerMOI = config.GetValue<float>("breakTorquePerMOI", 40000);
+            breakStrengthPerArea = config.GetValue<float>("breakStrengthPerArea", breakStrengthPerArea);
+            breakTorquePerMOI = config.GetValue<float>("breakTorquePerMOI", breakTorquePerMOI);
 
-            decouplerAndClampJointStrength = config.GetValue<float>("decouplerAndClampJointStrength", float.PositiveInfinity);
+            decouplerAndClampJointStrength = config.GetValue<float>("decouplerAndClampJointStrength", decouplerAndClampJointStrength);
             if (decouplerAndClampJointStrength < 0)
                 decouplerAndClampJointStrength = float.PositiveInfinity;
 
-            stiffeningExtensionMassRatioThreshold = config.GetValue<float>("stiffeningExtensionMassRatioThreshold", 5);
+            stiffeningExtensionMassRatioThreshold = config.GetValue<float>("stiffeningExtensionMassRatioThreshold", stiffeningExtensionMassRatioThreshold);
 
-            massForAdjustment = config.GetValue<float>("massForAdjustment", 1);
-
-            exemptPartTypes.Clear();
-            exemptModuleTypes.Clear();
-            decouplerStiffeningExtensionType.Clear();
+            massForAdjustment = config.GetValue<float>("massForAdjustment", massForAdjustment);
 
             int i = 0;
             do
@@ -130,11 +178,8 @@ namespace KerbalJointReinforcement
 				Log.debuglevel = debug ? 5 : 3;
 			}
 			
-			if (Log.debuglevel > 3)
-				LoadConstants_Debug();
         }
 	
-		[Conditional("DEBUG")]
 		private static void LoadConstants_Debug()
 		{
             StringBuilder debugString = new StringBuilder();
