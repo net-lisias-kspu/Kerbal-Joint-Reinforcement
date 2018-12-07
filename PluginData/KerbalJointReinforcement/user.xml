@@ -2,6 +2,8 @@
 <config>
     <bool name="debug">0</bool>
 
+    <!-- string name="exemptPartType0">SomeFancyPart</string -->
+    
     <!-- string name="exemptModuleType0">SomeFancyModule</string -->
 
     <!-- string name="decouplerStiffeningExtensionType0">OtherFancyModule</string -->
