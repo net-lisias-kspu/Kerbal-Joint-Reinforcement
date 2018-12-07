@@ -1,5 +1,10 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2018-1206: 3.4.0.3 (lisias) for {1.2 <= KSP <= 1.5.1}
+	+ Splitting configuration files between **stock** and **user customizable** files.
+	+ Some love to Logging
+		- You will be flooded by log messages on debug mode! 
+	+ Adding a INSTALL.md file with proper install instructions
 * 2018-1202: 3.4.0.2 (lisias) for KSP 1.2 & 1.3 & 1.4 & 1.5
 	+ Logging `config.xml` status when loading.
 	+ REMERGE from ferrram4's and meiru's changes
