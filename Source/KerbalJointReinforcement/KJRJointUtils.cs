@@ -61,6 +61,8 @@ namespace KerbalJointReinforcement
         public static List<string> decouplerStiffeningExtensionType = new List<string>();
 
         public static float massForAdjustment = 0.001f;
+        
+        private static bool debug = false;
 
         private static readonly IOAsset.PluginConfiguration CONFIG = IOAsset.PluginConfiguration.CreateForType<KJRManager>("config.xml");
         private static readonly IOData.PluginConfiguration USER = IOData.PluginConfiguration.CreateForType<KJRManager>("user.xml");
@@ -93,6 +95,7 @@ namespace KerbalJointReinforcement
 			else
 				Log.err("User customizable file does not exist. Only Stock values are in use.");		
 
+			Log.debuglevel = debug ? 5 : 3;
 			if (Log.debuglevel > 3)
 				LoadConstants_Debug();
 		}
@@ -122,6 +125,8 @@ namespace KerbalJointReinforcement
 			exemptPartTypes.Clear();
             exemptModuleTypes.Clear();
             decouplerStiffeningExtensionType.Clear();
+            
+            debug = false;
 		}
 	
 		private static void LoadConstants(KIO.PluginConfiguration config)
@@ -173,47 +178,57 @@ namespace KerbalJointReinforcement
                 i++;
             } while (true);
 
-			{ 
-				bool debug = config.GetValue<bool>("debug", false);
-				Log.debuglevel = debug ? 5 : 3;
-			}
-			
+			debug = config.GetValue<bool>("debug", debug);			
         }
 	
 		private static void LoadConstants_Debug()
 		{
             StringBuilder debugString = new StringBuilder();
-            debugString.AppendLine("\n\rAngular Drive: \n\rSpring: " + angularDriveSpring + "\n\rDamp: " + angularDriveDamper + "\n\rMax Force Factor: " + angularMaxForceFactor);
+            debugString.AppendLine("KJR Consntants in use:");
 
-            debugString.AppendLine("\n\rJoint Strength Multipliers: \n\rForce Multiplier: " + breakForceMultiplier + "\n\rTorque Multiplier: " + breakTorqueMultiplier);
-            debugString.AppendLine("Joint Force Strength Per Unit Area: " + breakStrengthPerArea);
-            debugString.AppendLine("Joint Torque Strength Per Unit MOI: " + breakTorquePerMOI);
+            debugString.AppendLine("\tAngular Drive:");
+            debugString.AppendLine("\t\tSpring: " + angularDriveSpring);
+            debugString.AppendLine("\t\tDamp: " + angularDriveDamper);
+            debugString.AppendLine("\t\tMax Force Factor: " + angularMaxForceFactor);
 
-            debugString.AppendLine("Strength For Additional Decoupler And Clamp Joints: " + decouplerAndClampJointStrength);
+            debugString.AppendLine("");
+            debugString.AppendLine("\tJoint Strength Multipliers:");
+            debugString.AppendLine("\t\tForce Multiplier: " + breakForceMultiplier);
+            debugString.AppendLine("\t\tTorque Multiplier: " + breakTorqueMultiplier);
+            debugString.AppendLine("\t\tJoint Force Strength");
+            debugString.AppendLine("\t\t\tPer Unit Area: " + breakStrengthPerArea);
+            debugString.AppendLine("\t\t\tPer Unit MOI: " + breakTorquePerMOI);
 
-            debugString.AppendLine("\n\rDebug Output: " + (Log.debuglevel > 3));
-            debugString.AppendLine("Reinforce Attach Nodes: " + reinforceAttachNodes);
-            debugString.AppendLine("Reinforce Decouplers Further: " + reinforceDecouplersFurther);
-            debugString.AppendLine("Reinforce Launch Clamps Further: " + reinforceLaunchClampsFurther);
-            debugString.AppendLine("Use Volume For Calculations, Not Area: " + useVolumeNotArea);
+            debugString.AppendLine("");
+            debugString.AppendLine("\tStrength For Additional Decoupler And Clamp Joints: " + decouplerAndClampJointStrength);
 
-            debugString.AppendLine("\n\rMass For Joint Adjustment: " + massForAdjustment);
+            debugString.AppendLine("");
+            debugString.AppendLine("\tDebug Output: " + (Log.debuglevel > 3));
+            debugString.AppendLine("\tReinforce Attach Nodes: " + reinforceAttachNodes);
+            debugString.AppendLine("\tReinforce Decouplers Further: " + reinforceDecouplersFurther);
+            debugString.AppendLine("\tReinforce Launch Clamps Further: " + reinforceLaunchClampsFurther);
+            debugString.AppendLine("\tUse Volume For Calculations, Not Area: " + useVolumeNotArea);
+            debugString.AppendLine("\tMass For Joint Adjustment: " + massForAdjustment);
 
-            debugString.AppendLine("\n\rExempt Part Types");
+            debugString.AppendLine("");
+            debugString.AppendLine("\tExempt Part Types");
             foreach (string s in exemptPartTypes)
-                debugString.AppendLine(s);
+                debugString.AppendLine("\t\t"+s);
 
-            debugString.AppendLine("\n\rExempt Module Types");
+            debugString.AppendLine("");
+            debugString.AppendLine("\tExempt Module Types");
             foreach (string s in exemptModuleTypes)
-                debugString.AppendLine(s);
+                debugString.AppendLine("\t\t"+s);
 
-            debugString.AppendLine("\n\rDecoupler Stiffening Extension Types");
+            debugString.AppendLine("");
+            debugString.AppendLine("\tDecoupler Stiffening Extension Types");
             foreach (string s in decouplerStiffeningExtensionType)
-                debugString.AppendLine(s);
+                debugString.AppendLine("\t\t"+s);
 
-            debugString.AppendLine("\n\rDecoupler Stiffening Extension Mass Ratio Threshold: " + stiffeningExtensionMassRatioThreshold);
+            debugString.AppendLine("");
+            debugString.AppendLine("\tDecoupler Stiffening Extension Mass Ratio Threshold: " + stiffeningExtensionMassRatioThreshold);
 
-            Log.dbg(debugString.ToString());
+            Log.detail(debugString.ToString());
 		}
 
 		////////////////////////////////////////

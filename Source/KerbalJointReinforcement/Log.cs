@@ -23,6 +23,7 @@ Copyright 2018, LisiasT
 using UnityEngine;
 
 using Logger = KSPe.Util.Log.Logger;
+using System.Diagnostics;
 
 namespace KerbalJointReinforcement
 {
@@ -40,6 +41,11 @@ namespace KerbalJointReinforcement
 			LOG.force(format, parms);
 		}
 
+		public static void detail(string format, params object[] @parms)
+		{
+			LOG.detail(format, parms);
+		}
+		
 		public static void info(string format, params object[] @parms)
 		{
 			LOG.info(format, parms);
@@ -60,14 +66,11 @@ namespace KerbalJointReinforcement
 			LOG.error(offended, e);
 		}
 
+		// TODO: Deixar ativado apenas em DEBUG *OU* Experimental
+		//[Conditional("DEBUG")]
 		public static void dbg(string format, params object[] @parms)
 		{
 			LOG.dbg(format, parms);
-		}
-
-		public static void dbgWarn(string format, params object[] @parms)
-		{
-			LOG.warn(format, parms);
 		}
 	}
 }
