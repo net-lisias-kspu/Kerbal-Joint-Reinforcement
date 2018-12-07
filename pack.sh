@@ -14,6 +14,7 @@ clean() {
 FILE=$PACKAGE-$VERSION.zip
 echo $FILE
 clean
+zip $FILE INSTALL.md
 zip -r $FILE ./GameData/* -x ".*"
 zip -r $FILE ./PluginData/* -x ".*"
 zip -d $FILE __MACOSX "**/.DS_Store"

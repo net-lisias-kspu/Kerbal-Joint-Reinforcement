@@ -18,8 +18,9 @@ If you need an updated, consistent and stable version from the Ferram4's KJR, bu
 * [Source](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/experimental)
 * [Issue Tracker](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/issues)
 * Documentation	
-	+ [Homepage](http://ksp.lisias.net/add-ons/KerbalJointReinforcement) on L Aerospace KSP Division
+	+ [Homepage](http://ksp.lisias.net/add-ons/Kerbal-Joint-Reinforcement) on L Aerospace KSP Division
 	+ [Project's README](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/blob/master/README.md)
+	+ [Install Instructions](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/blob/master/INSTALL.md)
 	+ [Change Log](./CHANGE_LOG.md)
 	+ [TODO](./TODO.md) list
 * Official Distribution Sites:
@@ -115,16 +116,15 @@ These types are currently not used, but removing the a in front of them will cau
 | string	| adecouplerStiffeningExtensionType7	| ProceduralFairingBase		| Decoupler stiffening will look for parts beyond this part type to add to stiffening |
 
 
-## License
+## Installation
+
+Detailed installation instructions are now on its own file (see the [In a Hurry](#in-a-hurry) section) and on the distribution file.
+
+### License
 
 GPL3. See [here](./LICENSE).
 
 Please note the copyrights and trademarks in [NOTICE](./NOTICE).
-
-
-## Dependencies
-
-* [KSP API Extensions/L](https://github.com/net-lisias-ksp/KSPAPIExtensions)
 
 
 ## UPSTREAM
