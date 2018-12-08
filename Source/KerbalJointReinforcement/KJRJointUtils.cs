@@ -72,8 +72,7 @@ namespace KerbalJointReinforcement
             ClearConstants();
 
 			if (CONFIG.exists()) try {
-				CONFIG.load();
-				LoadConstants(CONFIG);
+				LoadConstants(CONFIG.load());
 				Log.info("Configuration file loaded.");
 			}
 			catch (System.Exception e)
@@ -84,8 +83,7 @@ namespace KerbalJointReinforcement
 				Log.err("Configuration file does not exist - KJR will continue with default values!");
 
             if (USER.exists()) try {
-				USER.load();
-				LoadConstants(USER);
+				LoadConstants(USER.load());
 				Log.info("User customizable file loaded.");
 			}
 			catch (System.Exception e)
