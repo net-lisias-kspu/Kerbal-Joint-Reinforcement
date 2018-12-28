@@ -97,10 +97,11 @@ namespace KerbalJointReinforcement
                     if (configJointList[i] == null)
                         configJointList.RemoveAt(i);
 
-                configJointList = new List<ConfigurableJoint>();
-                configJointList.Add(multiJoint);
-                multiJointDict.Add(testPart, configJointList);
-                configJointList.Add(multiJoint);
+				configJointList = new List<ConfigurableJoint>
+				{
+					multiJoint
+				};
+				configJointList.Add(multiJoint);
             }
             else
             {
@@ -141,8 +142,8 @@ namespace KerbalJointReinforcement
 
         public void RemovePartJoints(Part part)
         {
-            if (part == null)
-                return;
+            if (part == null) return;
+            
             if (multiJointDict.TryGetValue(part, out List<ConfigurableJoint> configJointList))
             {
                 for (int i = 0; i < configJointList.Count; i++)

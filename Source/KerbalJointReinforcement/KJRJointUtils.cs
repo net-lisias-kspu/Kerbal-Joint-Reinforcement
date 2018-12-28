@@ -169,19 +169,16 @@ namespace KerbalJointReinforcement
             do
             {
                 string tmpPart, tmpModule, tmpDecoupler;
-                tmpPart = config.GetValue("exemptPartType" + i, "");
-                tmpModule = config.GetValue("exemptModuleType" + i, "");
-                tmpDecoupler = config.GetValue("decouplerStiffeningExtensionType" + i, "");
+                tmpPart = config.GetValue<string>("exemptPartType" + i, null);
+                tmpModule = config.GetValue<string>("exemptModuleType" + i, null);
+                tmpDecoupler = config.GetValue<string>("decouplerStiffeningExtensionType" + i, null); 
 
-                if (tmpPart == "" && tmpModule == "" && tmpDecoupler == "")
+                if (null == tmpPart && null == tmpModule && null == tmpDecoupler)
                     break;
 
-                if (tmpPart != "")
-                    exemptPartTypes.Add(tmpPart);
-                if (tmpModule != "")
-                    exemptModuleTypes.Add(tmpModule);
-                if (tmpDecoupler != "")
-                    decouplerStiffeningExtensionType.Add(tmpDecoupler);
+                if (null != tmpPart)        exemptPartTypes.Add(tmpPart);
+                if (null != tmpModule)      exemptModuleTypes.Add(tmpModule);
+                if (null != tmpDecoupler)   decouplerStiffeningExtensionType.Add(tmpDecoupler);
 
                 i++;
             } while (true);
