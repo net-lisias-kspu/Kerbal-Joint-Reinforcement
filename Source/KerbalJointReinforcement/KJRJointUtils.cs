@@ -24,16 +24,15 @@ Copyright 2018, LisiasT
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+
+using KIO = KSP.IO;
 using IOData = KSPe.IO.Data;
 using IOAsset = KSPe.IO.Asset;
-using KIO = KSP.IO;
-using System.Diagnostics;
 
 namespace KerbalJointReinforcement
 {
     public static class KJRJointUtils
     {
-
         public static bool reinforceAttachNodes = false;
         public static bool multiPartAttachNodeReinforcement = true;
         public static bool reinforceDecouplersFurther = false;
@@ -66,7 +65,7 @@ namespace KerbalJointReinforcement
 
         private static readonly IOAsset.PluginConfiguration CONFIG = IOAsset.PluginConfiguration.CreateForType<KJRManager>("config.xml");
         private static readonly IOData.PluginConfiguration USERXML = IOData.PluginConfiguration.CreateForType<KJRManager>("user.xml");
-        private static readonly IOData.PluginConfiguration USER = IOData.PluginConfiguration.CreateForType<KJRManager>("user.xml");
+        private static readonly IOData.ConfigNode USERCFG = IOData.ConfigNode.ForType<KJRManager>("KJR", "user.cfg");
 
         public static void LoadConstants()
         {
@@ -75,16 +74,16 @@ namespace KerbalJointReinforcement
             if (CONFIG.exists()) try {
                 LoadConstants(CONFIG.load());
                 Log.info("Configuration file loaded.");
-            }
-            catch (System.Exception e)
-            {
-                Log.err("Configuration file has an error! Plugin will not work properly due {0}!", e.Message);
-            }
+                }
+                catch (System.Exception e)
+                {
+                    Log.err("Configuration file has an error! Plugin will not work properly due {0}!", e.Message);
+                }
             else
                 Log.err("Configuration file does not exist - KJR will continue with default values!");
 
-            if (USER.exists()) try {
-                LoadConstants(USERXML.load());
+            if (USERCFG.IsLoadable) try {
+                LoadConstants(USERCFG.Load().NodeWithSteroids);
                 Log.info("User customizable file loaded.");
                 if (USERXML.exists()) Log.info("Legacy (xml) User customizable file was *IGNORED*.");
                 }
@@ -94,11 +93,11 @@ namespace KerbalJointReinforcement
                 }
             else if (USERXML.exists()) try {
                 LoadConstants(USERXML.load());
-                Log.info("User customizable file loaded.");
+                Log.info("Legacy (xml) User customizable file loaded.");
                 }
                 catch (System.Exception e)
                 {
-                    Log.err("User customizable file has an error! Plugin will not work properly due {0}!", e.Message);
+                    Log.err("Legacy (xml) User customizable file has an error! Plugin will not work properly due {0}!", e.Message);
                 }
             else
                 Log.err("User customizable file does not exist. Only Stock values are in use.");
@@ -137,6 +136,50 @@ namespace KerbalJointReinforcement
             debug = false;
         }
 
+        private static void LoadConstants(KSPe.ConfigNodeWithSteroids config)
+        {
+            reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", reinforceAttachNodes);
+            multiPartAttachNodeReinforcement = config.GetValue<bool>("multiPartAttachNodeReinforcement", multiPartAttachNodeReinforcement);
+            reinforceDecouplersFurther = config.GetValue<bool>("reinforceDecouplersFurther", reinforceDecouplersFurther);
+            reinforceLaunchClampsFurther = config.GetValue<bool>("reinforceLaunchClampsFurther", reinforceLaunchClampsFurther);
+            useVolumeNotArea = config.GetValue<bool>("useVolumeNotArea", useVolumeNotArea);
+
+            angularDriveSpring = config.GetValue<float>("angularDriveSpring", angularDriveSpring);
+            angularDriveDamper = config.GetValue<float>("angularDriveDamper", angularDriveDamper);
+            angularMaxForceFactor = config.GetValue<float>("angularMaxForceFactor", angularMaxForceFactor);
+            if (angularMaxForceFactor < 0)
+                angularMaxForceFactor = float.MaxValue;
+
+            breakForceMultiplier = config.GetValue<float>("breakForceMultiplier", breakForceMultiplier);
+            breakTorqueMultiplier = config.GetValue<float>("breakTorqueMultiplier", breakTorqueMultiplier);
+
+            breakStrengthPerArea = config.GetValue<float>("breakStrengthPerArea", breakStrengthPerArea);
+            breakTorquePerMOI = config.GetValue<float>("breakTorquePerMOI", breakTorquePerMOI);
+
+            decouplerAndClampJointStrength = config.GetValue<float>("decouplerAndClampJointStrength", decouplerAndClampJointStrength);
+            if (decouplerAndClampJointStrength < 0)
+                decouplerAndClampJointStrength = float.PositiveInfinity;
+
+            stiffeningExtensionMassRatioThreshold = config.GetValue<float>("stiffeningExtensionMassRatioThreshold", stiffeningExtensionMassRatioThreshold);
+
+            massForAdjustment = config.GetValue<float>("massForAdjustment", massForAdjustment);
+
+            foreach (ConfigNode c in config.GetNodes("Exempt")) {
+                KSPe.ConfigNodeWithSteroids node = KSPe.ConfigNodeWithSteroids.from(c);
+                
+                if (node.HasValue("PartType"))
+                    exemptPartTypes.Add(node.GetValue<string>("PartType"));
+                
+                if (node.HasValue("ModuleType"))
+                    exemptModuleTypes.Add(node.GetValue<string>("ModuleType"));
+                
+                if (node.HasValue("DecouplerStiffeningExtensionType"))
+                    decouplerStiffeningExtensionType.Add(node.GetValue<string>("DecouplerStiffeningExtensionType"));
+            };
+
+            debug = config.GetValue<bool>("debug", debug);
+        }
+        
         private static void LoadConstants(KIO.PluginConfiguration config)
         {
             reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", reinforceAttachNodes);

@@ -54,7 +54,46 @@ This is still about the original fork. It's going to change. Eventually.
 	- User customizable user.xml, using the same syntax, can be found on the PluginData folder on your KSP root directory
 		- `<RSP_ROOT>/PluginData/KerbalJointReinforcement/user.xml`
 
-###config value documentation:
+### config value documentation:
+
+There are three possible configuration files:
+
+* `<KSP_ROOT>/KerbalJointReinforcement/PluginData/config.xml`
+	+ **Not user serviceable**
+	+ Default values, defined by the Maintainer, will be available here.
+	+ This file can, and must, be replaced on every new KJR/L version.
+* `<KSP_ROOT>/PluginData/KerbalJointReinforcement/user.xml`
+	+ User serviceable equivalent to the previous one.
+	+ Any custom settings must be added here, using the very same syntax from the `config.xml`.
+	+ Settings on this file **overwrites** or are **appended** to the ones from `config.xml`
+		- **DO NOT** replicate the `exempt*` items from `config.xml`, or you will have duplicates on memory.
+		- Not a big deal, but it wastes memory.
+* `<KSP_ROOT>/PluginData/KerbalJointReinforcement/user.cfg`
+	+ The **very same data**, but on a familiar KSP Config format. :)
+		- This file has precedence over `user.xml`. If it is present, the xml version is ignored.
+	+ This format is slightly easier to maintain, as you don't need to keep track of the counter on the `exempt*` tags as in the `user.xml`.
+
+Example for a `user.cfg` file:
+
+```
+KJR
+{
+	debug = False
+	breakTorqueMultiplier = 0.5
+	Exempt
+	{
+		PartType = foo
+		ModuleType = bar
+		DecouplerStiffeningExtensionType = foobar
+	}
+	Exempt
+	{
+		DecouplerStiffeningExtensionType = barfoo
+	}
+	
+}
+```	  
+
 #### General Values
 
 | Type | Name | Default Value | Action | 
@@ -133,6 +172,8 @@ Please note the copyrights and trademarks in [NOTICE](./NOTICE).
 	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/50911-13-kerbal-joint-reinforcement-v333-72417/)
 	+ [SpaceDock](http://spacedock.info/mod/153/Kerbal%20Joint%20Reinforcement)
 	+ [GitHub](https://github.com/ferram4/Kerbal-Joint-Reinforcement)
+* [StarWaster](https://forum.kerbalspaceprogram.com/index.php?/profile/71262-starwaster/) Parallel Fork
+	+ [GitHub](https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued)
 * [linuxgurugamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/) Parallel fork
 	+ [GitHub](https://github.com/linuxgurugamer/Kerbal-Joint-Reinforcement)
 * [oeteletroll](https://forum.kerbalspaceprogram.com/index.php?/profile/144573-peteletroll/) Parallel?
