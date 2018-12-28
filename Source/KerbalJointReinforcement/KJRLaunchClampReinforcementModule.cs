@@ -32,9 +32,9 @@ namespace KerbalJointReinforcement
     {
         private List<ConfigurableJoint> joints = new List<ConfigurableJoint>();
         private List<Part> neighbours = new List<Part>();
-        //private bool decoupled = false;
+		//private bool decoupled = false;
 
-        public override void OnAwake()
+		public override void OnAwake()
         {
             base.OnAwake();
         }

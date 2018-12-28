@@ -61,75 +61,85 @@ namespace KerbalJointReinforcement
         public static List<string> decouplerStiffeningExtensionType = new List<string>();
 
         public static float massForAdjustment = 0.001f;
-        
+
         private static bool debug = false;
 
         private static readonly IOAsset.PluginConfiguration CONFIG = IOAsset.PluginConfiguration.CreateForType<KJRManager>("config.xml");
+        private static readonly IOData.PluginConfiguration USERXML = IOData.PluginConfiguration.CreateForType<KJRManager>("user.xml");
         private static readonly IOData.PluginConfiguration USER = IOData.PluginConfiguration.CreateForType<KJRManager>("user.xml");
-        
-		public static void LoadConstants()
-		{
+
+        public static void LoadConstants()
+        {
             ClearConstants();
 
-			if (CONFIG.exists()) try {
-				LoadConstants(CONFIG.load());
-				Log.info("Configuration file loaded.");
-			}
-			catch (System.Exception e)
-			{
-				Log.err("Configuration file has an error! Plugin will not work properly due {0}!", e.Message);
-			}
-			else
-				Log.err("Configuration file does not exist - KJR will continue with default values!");
+            if (CONFIG.exists()) try {
+                LoadConstants(CONFIG.load());
+                Log.info("Configuration file loaded.");
+            }
+            catch (System.Exception e)
+            {
+                Log.err("Configuration file has an error! Plugin will not work properly due {0}!", e.Message);
+            }
+            else
+                Log.err("Configuration file does not exist - KJR will continue with default values!");
 
             if (USER.exists()) try {
-				LoadConstants(USER.load());
-				Log.info("User customizable file loaded.");
-			}
-			catch (System.Exception e)
-			{
-				Log.err("User customizable file has an error! Plugin will not work properly due {0}!", e.Message);
-			}
-			else
-				Log.err("User customizable file does not exist. Only Stock values are in use.");		
+                LoadConstants(USERXML.load());
+                Log.info("User customizable file loaded.");
+                if (USERXML.exists()) Log.info("Legacy (xml) User customizable file was *IGNORED*.");
+                }
+                catch (System.Exception e)
+                {
+                    Log.err("User customizable file has an error! Plugin will not work properly due {0}!", e.Message);
+                }
+            else if (USERXML.exists()) try {
+                LoadConstants(USERXML.load());
+                Log.info("User customizable file loaded.");
+                }
+                catch (System.Exception e)
+                {
+                    Log.err("User customizable file has an error! Plugin will not work properly due {0}!", e.Message);
+                }
+            else
+                Log.err("User customizable file does not exist. Only Stock values are in use.");
 
-			Log.debuglevel = debug ? 5 : 3;
-			if (Log.debuglevel > 3)
-				LoadConstants_Debug();
-		}
+            Log.debuglevel = debug ? 5 : 3;
+            if (Log.debuglevel > 3)
+                LoadConstants_Debug();
+        }
 
-		private static void ClearConstants()
-		{
+        private static void ClearConstants()
+        {
             reinforceAttachNodes = true;
-			multiPartAttachNodeReinforcement = true;
-			reinforceDecouplersFurther = true;
-			reinforceLaunchClampsFurther = true;
-			useVolumeNotArea = true;
+            multiPartAttachNodeReinforcement = true;
+            reinforceDecouplersFurther = true;
+            reinforceLaunchClampsFurther = true;
+            useVolumeNotArea = true;
 
-			angularDriveSpring = 0;
-			angularDriveDamper = 0;
-			angularMaxForceFactor = 0;
-			
-			breakForceMultiplier = 1;
-			breakTorqueMultiplier = 1;
-			
-			breakStrengthPerArea = 40;
-			breakTorquePerMOI = 40000;
-			
-			decouplerAndClampJointStrength = float.PositiveInfinity;
-			stiffeningExtensionMassRatioThreshold = 5;
-			massForAdjustment = 1;
+            angularDriveSpring = 0;
+            angularDriveDamper = 0;
+            angularMaxForceFactor = 0;
 
-			exemptPartTypes.Clear();
+            breakForceMultiplier = 1;
+            breakTorqueMultiplier = 1;
+
+            breakStrengthPerArea = 40;
+            breakTorquePerMOI = 40000;
+
+            decouplerAndClampJointStrength = float.PositiveInfinity;
+            stiffeningExtensionMassRatioThreshold = 5;
+            massForAdjustment = 1;
+
+            exemptPartTypes.Clear();
             exemptModuleTypes.Clear();
             decouplerStiffeningExtensionType.Clear();
-            
+
             debug = false;
-		}
-	
-		private static void LoadConstants(KIO.PluginConfiguration config)
+        }
+
+        private static void LoadConstants(KIO.PluginConfiguration config)
         {
-			reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", reinforceAttachNodes);
+            reinforceAttachNodes = config.GetValue<bool>("reinforceAttachNodes", reinforceAttachNodes);
             multiPartAttachNodeReinforcement = config.GetValue<bool>("multiPartAttachNodeReinforcement", multiPartAttachNodeReinforcement);
             reinforceDecouplersFurther = config.GetValue<bool>("reinforceDecouplersFurther", reinforceDecouplersFurther);
             reinforceLaunchClampsFurther = config.GetValue<bool>("reinforceLaunchClampsFurther", reinforceLaunchClampsFurther);
@@ -176,11 +186,11 @@ namespace KerbalJointReinforcement
                 i++;
             } while (true);
 
-			debug = config.GetValue<bool>("debug", debug);			
+            debug = config.GetValue<bool>("debug", debug);
         }
-	
-		private static void LoadConstants_Debug()
-		{
+
+        private static void LoadConstants_Debug()
+        {
             StringBuilder debugString = new StringBuilder();
             debugString.AppendLine("KJR Consntants in use:");
 
@@ -227,12 +237,12 @@ namespace KerbalJointReinforcement
             debugString.AppendLine("\tDecoupler Stiffening Extension Mass Ratio Threshold: " + stiffeningExtensionMassRatioThreshold);
 
             Log.detail(debugString.ToString());
-		}
+        }
 
-		////////////////////////////////////////
-		// find part information
+        ////////////////////////////////////////
+        // find part information
 
-		public static float MaximumPossiblePartMass(Part p)
+        public static float MaximumPossiblePartMass(Part p)
         {
             float maxMass = p.mass;
             foreach (PartResource r in p.Resources)
@@ -373,7 +383,7 @@ namespace KerbalJointReinforcement
         {
             if (p.HasFreePivot())
                 return false;
-            
+
             if (p.GetComponent<KerbalEVA>() != null)
                 return false;
 
@@ -510,7 +520,7 @@ namespace KerbalJointReinforcement
         public static ConfigurableJoint BuildJoint(Part p, Part linkPart)
         {
             ConfigurableJoint newJoint;
-            
+
             if ((p.mass >= linkPart.mass) || (p.rb == null))
             {
                 newJoint = p.gameObject.AddComponent<ConfigurableJoint>();

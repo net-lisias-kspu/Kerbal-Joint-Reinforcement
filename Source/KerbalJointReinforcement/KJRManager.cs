@@ -91,10 +91,10 @@ namespace KerbalJointReinforcement
 
             if (InputLockManager.GetControlLock("KJRLoadLock") == ControlTypes.ALL_SHIP_CONTROLS)
                 InputLockManager.RemoveControlLock("KJRLoadLock");
+                
             updatedVessels = null;
             vesselOffRails = null;
             vesselJointStrengthened = null;
-
             multiJointManager = null;
         }
 
@@ -429,7 +429,6 @@ namespace KerbalJointReinforcement
                         debugString.AppendLine("Position Damper: " + p.attachJoint.Joint.angularYZDrive.positionDamper);
                         debugString.AppendLine("Max Force: " + p.attachJoint.Joint.angularYZDrive.maximumForce);
                         debugString.AppendLine("");
-
 
                         Log.dbg("{0}", debugString);
                     }
@@ -775,12 +774,12 @@ namespace KerbalJointReinforcement
 
                     List<Part> childPartsToConnect;
                     if (!childPartsToConnectByRoot.TryGetValue(root, out childPartsToConnect))
-                    {
-                        childPartsToConnect = new List<Part>();
-                        childPartsToConnectByRoot.Add(root, childPartsToConnect);
-                    }
+					{
+						childPartsToConnect = new List<Part>();
+						childPartsToConnectByRoot.Add(root, childPartsToConnect);
+					}
 
-                    childPartsToConnect.Add(p);
+					childPartsToConnect.Add(p);
                 }
             }
 

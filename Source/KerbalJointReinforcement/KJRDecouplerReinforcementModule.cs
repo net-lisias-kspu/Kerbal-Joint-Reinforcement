@@ -162,7 +162,6 @@ namespace KerbalJointReinforcement
                 GameObject.Destroy(j);
 
             joints.Clear();
-
             neighbours.Clear();
 
             if (part.parent == null || part.children.Count == 0)
