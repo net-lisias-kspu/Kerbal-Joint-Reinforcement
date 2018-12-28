@@ -2,7 +2,7 @@
 Kerbal Joint Reinforcement /L
 Copyright 2015, Michael Ferrara, aka Ferram4
 Copyright 2018, LisiasT
- 
+
     Developers: Michael Ferrara (aka Ferram4), Meiru, LisiasT
 
     This file is part of Kerbal Joint Reinforcement.
@@ -26,14 +26,14 @@ using UnityEngine;
 
 namespace KerbalJointReinforcement
 {
-    //All this class exists to do is to act as a box attached to 
+    //All this class exists to do is to act as a box attached to
     //For a sequence of three parts (A, B, C), connected in series, this will exist on B and hold the strengthening joint from A to C
     //If the joint from A to B or B to C is broken, this will destroy the joint A to C and then destroy itself
     class KJRMultiJointManager
     {
-        Dictionary<Part, List<ConfigurableJoint>> multiJointDict;
-        List<Part> linkedSet;
-        List<Part> tempPartList;
+        private readonly Dictionary<Part, List<ConfigurableJoint>> multiJointDict;
+        private readonly List<Part> linkedSet;
+        private readonly List<Part> tempPartList;
 
         public KJRMultiJointManager()
         {
@@ -78,7 +78,7 @@ namespace KerbalJointReinforcement
             while ((i >= 0) && (j >= 0) && (linkedSet[i] == tempPartList[j]))
                 { --i; --j; }
 
-            linkedSet.AddRange(tempPartList.GetRange(0, j + 1)); 
+            linkedSet.AddRange(tempPartList.GetRange(0, j + 1));
 
             return linkedSet.Count > 1;
         }
@@ -91,34 +91,37 @@ namespace KerbalJointReinforcement
 
         public void RegisterMultiJoint(Part testPart, ConfigurableJoint multiJoint)
         {
-            List<ConfigurableJoint> configJointList;
-            if (multiJointDict.TryGetValue(testPart, out configJointList))
-			{
-				for (int i = configJointList.Count - 1; i >= 0; --i)
-					if (configJointList[i] == null)
-						configJointList.RemoveAt(i);
+            if (multiJointDict.TryGetValue(testPart, out List<ConfigurableJoint> configJointList))
+            {
+                for (int i = configJointList.Count - 1; i >= 0; --i)
+                    if (configJointList[i] == null)
+                        configJointList.RemoveAt(i);
 
                 configJointList = new List<ConfigurableJoint>();
                 configJointList.Add(multiJoint);
                 multiJointDict.Add(testPart, configJointList);
-				configJointList.Add(multiJoint);
-			}
-			else
-			{
-			}
-		}
+                configJointList.Add(multiJoint);
+            }
+            else
+            {
+                configJointList = new List<ConfigurableJoint>
+                {
+                    multiJoint
+                };
+                multiJointDict.Add(testPart, configJointList);
+            }
+        }
 
-		public bool CheckMultiJointBetweenParts(Part testPart1, Part testPart2)
+        public bool CheckMultiJointBetweenParts(Part testPart1, Part testPart2)
         {
             if (testPart1 == null || testPart2 == null || testPart1 == testPart2)
                 return false;
 
-            List<ConfigurableJoint> testMultiJoints;
 
-            if (!multiJointDict.TryGetValue(testPart1, out testMultiJoints))
+            if (!multiJointDict.TryGetValue(testPart1, out List<ConfigurableJoint> testMultiJoints))
                 return false;
 
-			Rigidbody testRb = testPart2.rb;
+            Rigidbody testRb = testPart2.rb;
 
             for (int i = 0; i < testMultiJoints.Count; i++)
             {
@@ -140,20 +143,19 @@ namespace KerbalJointReinforcement
         {
             if (part == null)
                 return;
-            List<ConfigurableJoint> configJointList;
-            if (multiJointDict.TryGetValue(part, out configJointList))
-			{
-				for (int i = 0; i < configJointList.Count; i++)
-				{
-					ConfigurableJoint joint = configJointList[i];
-					if (joint != null)
-					{
-						GameObject.Destroy(joint);
-					}
-				}
+            if (multiJointDict.TryGetValue(part, out List<ConfigurableJoint> configJointList))
+            {
+                for (int i = 0; i < configJointList.Count; i++)
+                {
+                    ConfigurableJoint joint = configJointList[i];
+                    if (joint != null)
+                    {
+                        GameObject.Destroy(joint);
+                    }
+                }
 
-				multiJointDict.Remove(part);
-			}
-		}
-	}
+                multiJointDict.Remove(part);
+            }
+        }
+    }
 }

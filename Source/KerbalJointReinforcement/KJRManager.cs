@@ -32,24 +32,24 @@ namespace KerbalJointReinforcement
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class KJRManager : MonoBehaviour
     {
-        List<Vessel> updatedVessels;
-        HashSet<Vessel> vesselOffRails;
-        Dictionary<Vessel, List<Joint>> vesselJointStrengthened;
-        KJRMultiJointManager multiJointManager;
+        private List<Vessel> updatedVessels;
+        private HashSet<Vessel> vesselOffRails;
+        private Dictionary<Vessel, List<Joint>> vesselJointStrengthened;
+        private KJRMultiJointManager multiJointManager;
 
         public void Awake()
         {
             Log.dbg("Awake");
-			try
-			{
-				KJRJointUtils.LoadConstants();
-			}
-			catch (Exception e)
-			{
-				Log.ex(this, e);
-				Log.err("An error [{0}] was caught on initialization! The plugin WILL NOT work as expected!", e.Message);
-			}
-			updatedVessels = new List<Vessel>();
+            try
+            {
+                KJRJointUtils.LoadConstants();
+            }
+            catch (Exception e)
+            {
+                Log.ex(this, e);
+                Log.err("An error [{0}] was caught on initialization! The plugin WILL NOT work as expected!", e.Message);
+            }
+            updatedVessels = new List<Vessel>();
             vesselOffRails = new HashSet<Vessel>();
             vesselJointStrengthened = new Dictionary<Vessel, List<Joint>>();
             multiJointManager = new KJRMultiJointManager();
@@ -65,7 +65,7 @@ namespace KerbalJointReinforcement
             GameEvents.onVesselWasModified.Add(OnVesselWasModified);
 
             GameEvents.onVesselGoOffRails.Add(OnVesselOffRails);
-    
+
             GameEvents.onVesselGoOnRails.Add(OnVesselOnRails);
             GameEvents.onVesselDestroy.Add(OnVesselOnRails);
 
@@ -82,7 +82,7 @@ namespace KerbalJointReinforcement
             GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
 
             GameEvents.onVesselGoOffRails.Remove(OnVesselOffRails);
-    
+
             GameEvents.onVesselGoOnRails.Remove(OnVesselOnRails);
             GameEvents.onVesselDestroy.Remove(OnVesselOnRails);
 
@@ -91,7 +91,7 @@ namespace KerbalJointReinforcement
 
             if (InputLockManager.GetControlLock("KJRLoadLock") == ControlTypes.ALL_SHIP_CONTROLS)
                 InputLockManager.RemoveControlLock("KJRLoadLock");
-                
+
             updatedVessels = null;
             vesselOffRails = null;
             vesselJointStrengthened = null;
@@ -105,9 +105,9 @@ namespace KerbalJointReinforcement
 
         private void OnVesselWasModified(Vessel v)
         {
-            if ((object)v == null || v.isEVA)
-                return; 
-            
+            if (v is null || v.isEVA)
+                return;
+
             multiJointManager.VerifyVesselJoints(v);
 
             if (Log.debuglevel > 3)
@@ -134,9 +134,9 @@ namespace KerbalJointReinforcement
 
         private void OnVesselOffRails(Vessel v)
         {
-            if ((object)v == null || v.isEVA)
-                return; 
-            
+            if (v is null || v.isEVA)
+                return;
+
             RunVesselJointUpdateFunction(v);
 
             if (!vesselOffRails.Contains(v) && v.precalc.isEasingGravity)
@@ -170,7 +170,7 @@ namespace KerbalJointReinforcement
 
         private void OnVesselOnRails(Vessel v)
         {
-            if ((object)v == null)
+            if (v is null)
                 return;
 
             if (updatedVessels.Contains(v))
@@ -317,7 +317,7 @@ namespace KerbalJointReinforcement
                     }
                 }
             }
-            
+
             jointList = p.attachJoint.joints;
 
             if (jointList == null)
@@ -348,8 +348,8 @@ namespace KerbalJointReinforcement
                     {
                         Log.dbg("KJR: Part mass too low, skipping: {0} ({1})", p.partInfo.name, p.flightID);
                         continue;
-                    }                
-                
+                    }
+
                     // Check attachment nodes for better orientation data
                     AttachNode attach = p.FindAttachNodeByPart(p.parent);
                     AttachNode p_attach = p.parent.FindAttachNodeByPart(p);
@@ -358,8 +358,8 @@ namespace KerbalJointReinforcement
                     if (node == null)
                     {
                         // Check if it's a pair of coupled docking ports
-                        var dock1 = p.Modules.GetModule<ModuleDockingNode>();
-                        var dock2 = p.parent.Modules.GetModule<ModuleDockingNode>();
+                        ModuleDockingNode dock1 = p.Modules.GetModule<ModuleDockingNode>();
+                        ModuleDockingNode dock2 = p.parent.Modules.GetModule<ModuleDockingNode>();
 
                         Log.dbg("{0} {1} {2} {3}", dock1, (dock1 ? ""+dock1.dockedPartUId : "?"), dock2, (dock2 ? ""+dock2.dockedPartUId : "?"));
 
@@ -475,9 +475,9 @@ namespace KerbalJointReinforcement
                             else
                             {
                                 // x along surface, y along ndir normal to surface, z along surface & main axis (up)
-                                var size1 = KJRJointUtils.CalculateExtents(main, ndir, up);
+                                Vector3 size1 = KJRJointUtils.CalculateExtents(main, ndir, up);
 
-                                var size2 = KJRJointUtils.CalculateExtents(connectedPart, ndir, up);
+                                Vector3 size2 = KJRJointUtils.CalculateExtents(connectedPart, ndir, up);
 
                                 // use average of the sides, since we don't know which one is used for attaching
                                 float width1 = (size1.x + size1.z) / 2;
@@ -515,13 +515,13 @@ namespace KerbalJointReinforcement
                         momentOfInertia = area * radius * radius / 4;           //Moment of Inertia of cylinder
                     }
                     else if (p.attachMode == AttachModes.SRF_ATTACH)
-                    {                    
+                    {
                         // x,z sides, y along main axis
                         Vector3 up1 = KJRJointUtils.GuessUpVector(p);
-                        var size1 = KJRJointUtils.CalculateExtents(p, up1);
+                        Vector3 size1 = KJRJointUtils.CalculateExtents(p, up1);
 
                         Vector3 up2 = KJRJointUtils.GuessUpVector(connectedPart);
-                        var size2 = KJRJointUtils.CalculateExtents(connectedPart, up2);
+                        Vector3 size2 = KJRJointUtils.CalculateExtents(connectedPart, up2);
 
                         // use average of the sides, since we don't know which one is used for attaching
                         float width1 = (size1.x + size1.z) / 2;
@@ -661,7 +661,7 @@ namespace KerbalJointReinforcement
                     {
                         float maxMass = KJRJointUtils.MaximumPossiblePartMass(newConnectedPart);
                         float massRat2 = (p.mass < maxMass) ? (maxMass / p.mass) : (p.mass / maxMass);
-                        
+
                         if (massRat2 <= KJRJointUtils.stiffeningExtensionMassRatioThreshold)
                             massRatioBelowThreshold = true;
                         else
@@ -772,14 +772,13 @@ namespace KerbalJointReinforcement
                     while(root.parent && (root.parent.vessel == v) && KJRJointUtils.IsJointAdjustmentAllowed(root))
                         root = root.parent;
 
-                    List<Part> childPartsToConnect;
-                    if (!childPartsToConnectByRoot.TryGetValue(root, out childPartsToConnect))
-					{
-						childPartsToConnect = new List<Part>();
-						childPartsToConnectByRoot.Add(root, childPartsToConnect);
-					}
+                    if (!childPartsToConnectByRoot.TryGetValue(root, out List<Part> childPartsToConnect))
+                    {
+                        childPartsToConnect = new List<Part>();
+                        childPartsToConnectByRoot.Add(root, childPartsToConnect);
+                    }
 
-					childPartsToConnect.Add(p);
+                    childPartsToConnect.Add(p);
                 }
             }
 

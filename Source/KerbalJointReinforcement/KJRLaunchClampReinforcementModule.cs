@@ -30,11 +30,11 @@ namespace KerbalJointReinforcement
     //This class adds an extra joint between a launch clamp and the part it is connected to for stiffness
     public class KJRLaunchClampReinforcementModule : PartModule
     {
-        private List<ConfigurableJoint> joints = new List<ConfigurableJoint>();
-        private List<Part> neighbours = new List<Part>();
-		//private bool decoupled = false;
+        private readonly List<ConfigurableJoint> joints = new List<ConfigurableJoint>();
+        private readonly List<Part> neighbours = new List<Part>();
+        //private bool decoupled = false;
 
-		public override void OnAwake()
+        public override void OnAwake()
         {
             base.OnAwake();
         }
@@ -110,7 +110,7 @@ namespace KerbalJointReinforcement
 
             joints.Clear();
 
-            var vessels = new List<Vessel>();
+            List<Vessel> vessels = new List<Vessel>();
 
             foreach (Part n in neighbours)
             {
