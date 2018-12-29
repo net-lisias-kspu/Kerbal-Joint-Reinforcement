@@ -97,10 +97,6 @@ namespace KerbalJointReinforcement
                     if (configJointList[i] == null)
                         configJointList.RemoveAt(i);
 
-				configJointList = new List<ConfigurableJoint>
-				{
-					multiJoint
-				};
 				configJointList.Add(multiJoint);
             }
             else
