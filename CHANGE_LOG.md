@@ -1,5 +1,9 @@
 # Kerbal Joint Reinforcement /L :: Change Log
 
+* 2018-1229: 3.4.0.4 (lisias) for KSP >= 1.2
+	+ Adding support for ConfigNode (CFG) file format for the *user serviceable settings file* (`user.cfg`) on `<KSP_ROOT>/PluginData/KerbalJointReinforcement`
+	+ Lifting the Max KSP restriction on `.version` file.
+	+ This release **demands** the [newest KSPe](https://github.com/net-lisias-ksp/KSPAPIExtensions/releases), or things will not work. 
 * 2018-1206: 3.4.0.3 (lisias) for {1.2 <= KSP <= 1.5.1}
 	+ Splitting configuration files between **stock** and **user customizable** files.
 	+ Some love to Logging
