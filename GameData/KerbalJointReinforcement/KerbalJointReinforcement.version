@@ -1,9 +1,9 @@
 {
   "NAME"     : "Kerbal Joint Reinforcement",
-  "DOWNLOAD" : "https://github.com/ferram4/Kerbal-Joint-Reinforcement/releases",
-  "URL"      : "https://raw.githubusercontent.com/ferram4/Kerbal-Joint-Reinforcement/master/GameData/KerbalJointReinforcement/KerbalJointReinforcement.version",
+  "DOWNLOAD" : "https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued/releases",
+  "URL"      : "https://raw.githubusercontent.com/KSP-RO/Kerbal-Joint-Reinforcement/master/GameData/KerbalJointReinforcement/KerbalJointReinforcement.version",
   "GITHUB" : {
-      "USERNAME"   : "ferram4",
+      "USERNAME"   : "KSP-RO",
       "REPOSITORY" : "Kerbal-Joint-Reinforcement"
   },
   "VERSION" : {
