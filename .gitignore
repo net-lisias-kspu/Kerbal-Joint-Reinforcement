@@ -1,2 +1,14 @@
-/KerbalJointReinforcement/KerbalJointReinforcement/bin/*
-/KerbalJointReinforcement/KerbalJointReinforcement/obj/Debug/*
+*.vspscc
+*.vssscc
+*.scc
+*.suo
+*.user
+
+/*.bat
+
+/KerbalJointReinforcement/*.sln
+
+/_release/
+
+/KerbalJointReinforcement/KerbalJointReinforcement/bin/
+/KerbalJointReinforcement/KerbalJointReinforcement/obj/
