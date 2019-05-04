@@ -1,0 +1,21 @@
+{
+    "spec_version"   : "v1.26",
+    "$kref"          : "#/ckan/github/meirumeiru/Kerbal-Joint-Reinforcement",
+    "$vref"          : "#/ckan/ksp-avc",
+    "identifier"     : "KJRn",
+	"name"           : "Kerbal Joint Reinforcement - Next",
+	"abstract"       : "Fixes the problem of unstable joints",
+    "author"         : [ "Rudolf Meier", "ferram4" ],
+    "license"        : "GPL-3.0",
+	"release_status" : "stable",
+    "resources"      :
+    {
+        "homepage"   : "https://forum.kerbalspaceprogram.com/index.php?/topic/184206-*",
+		"repository" : "https://github.com/meirumeiru/Kerbal-Joint-Reinforcement"
+    },
+    "install"        :
+    {
+        "file"       : "GameData/KerbalJointReinforcement",
+        "install_to" : "GameData"
+    }
+}
