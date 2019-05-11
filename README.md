@@ -1,17 +1,19 @@
 # Kerbal Joint Reinforcement /L Experimental
+*Lasciate ogne speranza, voi ch'intrate*
+- - -
 
 Physics stabilizer plugin for Kerbal Space Program. Fork by Lisias.
 
-This branch is confirmed to be KSP 1.2 to 1.5.1 compatible, with configuration/settings files saved to `<KSP_ROOT>/PluginData`.
+This branch is confirmed to be KSP 1.2 to 1.7 compatible (and probably above!), with configuration/settings files saved to `<KSP_ROOT>/PluginData` and some new and fancy features.
 
-This is the last fork **have no** assured backward compatibility with ferram4's KJR.
+This **have no** assured backward compatibility with ferram4's KJR neither wth any supported fork. It's intended to test new features that may or may not reach the mainstream later.
 
 
 ## In a Hurry
 
-This is kind of "Take Over", where I will develop the plugin to meet my own needs. This probably will break the expected behaviour from previous versions.
+This a "Take Over", where I will develop the plugin to meet my own needs. This will eventually break the expected behaviour from previous versions.
 
-If you need an updated, consistent and stable version from the Ferram4's KJR, but want some minor but cool features, this is the branch for you. On the other hand, if you prefer a classical and well known approach, perhaps you should try [the cannonical branch](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/master).
+If you need an updated, consistent and stable version from the Ferram4's KJR, this **is not** the branch for you. See [below](#UPSTREAM) for **Supported** forks that will be probably a best fit for your needs.
 
 * [Latest Release](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/releases)
     + [Binaries](https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/tree/Archive)
@@ -168,11 +170,15 @@ Please note the copyrights and trademarks in [NOTICE](./NOTICE).
 
 ## UPSTREAM
 
-* [ferram4](https://forum.kerbalspaceprogram.com/index.php?/profile/21328-ferram4/) ROOT
+* [ferram4](https://forum.kerbalspaceprogram.com/index.php?/profile/21328-ferram4/) ROOT, currently unamaintained
 	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/50911-13-kerbal-joint-reinforcement-v333-72417/)
 	+ [SpaceDock](http://spacedock.info/mod/153/Kerbal%20Joint%20Reinforcement)
 	+ [GitHub](https://github.com/ferram4/Kerbal-Joint-Reinforcement)
-* [StarWaster](https://forum.kerbalspaceprogram.com/index.php?/profile/71262-starwaster/) Parallel Fork
+* [Rudolf Meyer (Meiru Meiru)](https://forum.kerbalspaceprogram.com/index.php?/profile/176740-rudolf-meier/) **RECOMMENDED** Supported Parallel Fork
+	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/184025-*)
+	+ [GitHub](https://github.com/meirumeiru/Kerbal-Joint-Reinforcement)
+* [RSP-RO](https://github.com/KSP-RO) Supported Parallel Fork
+	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/184019-*)
 	+ [GitHub](https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued)
 * [linuxgurugamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/) Parallel fork
 	+ [GitHub](https://github.com/linuxgurugamer/Kerbal-Joint-Reinforcement)
