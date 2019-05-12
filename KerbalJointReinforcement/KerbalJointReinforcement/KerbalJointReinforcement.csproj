@@ -60,11 +60,13 @@
     <Compile Include="Gui\WindowManager.cs" />
     <Compile Include="KJRAnalyzer.cs" />
     <Compile Include="KJRDecouplerReinforcementModule.cs" />
+    <Compile Include="KJRExcluded.cs" />
     <Compile Include="KJRManager.cs" />
     <Compile Include="KJRJointUtils.cs" />
     <Compile Include="KJRLaunchClampReinforcementModule.cs" />
     <Compile Include="KJRMultiJointManager.cs" />
     <Compile Include="Gui\Logger.cs" />
+    <Compile Include="KJRAutoStrutModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Gui\TextureLoader.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -14,14 +15,12 @@ namespace KerbalJointReinforcement
 		Dictionary<Vessel, List<Joint>> vesselJointStrengthened;
 		KJRMultiJointManager multiJointManager;
 
-#if IncludeAnalyzer
 		private static KJRManager _instance;
 
 		internal static KJRManager Instance
 		{
 			get { return _instance; }
 		}
-#endif
 
 		internal KJRMultiJointManager GetMultiJointManager()
 		{
@@ -36,9 +35,7 @@ namespace KerbalJointReinforcement
 			vesselJointStrengthened = new Dictionary<Vessel, List<Joint>>();
 			multiJointManager = new KJRMultiJointManager();
 
-#if IncludeAnalyzer
 			_instance = this;
-#endif
 		}
 
 		public void Start()
@@ -46,6 +43,7 @@ namespace KerbalJointReinforcement
 			GameEvents.onVesselCreate.Add(OnVesselCreate);
 			GameEvents.onVesselWasModified.Add(OnVesselWasModified);
 			GameEvents.onVesselDestroy.Add(OnVesselDestroy);
+			GameEvents.onProtoVesselSave.Add(OnProtoVesselSave);
 
 			GameEvents.onVesselGoOffRails.Add(OnVesselOffRails);
 	
@@ -64,6 +62,7 @@ namespace KerbalJointReinforcement
 			GameEvents.onVesselCreate.Remove(OnVesselCreate);
 			GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
 			GameEvents.onVesselDestroy.Remove(OnVesselDestroy);
+			GameEvents.onProtoVesselSave.Remove(OnProtoVesselSave);
 
 			GameEvents.onVesselGoOffRails.Remove(OnVesselOffRails);
 	
@@ -99,7 +98,7 @@ namespace KerbalJointReinforcement
 		{
 			if((object)v == null || v.isEVA)
 				return; 
-			
+
 			multiJointManager.RemoveAllVesselJoints(v);
 			updatedVessels.Remove(v);
 
@@ -113,6 +112,8 @@ namespace KerbalJointReinforcement
 					debugString.AppendLine("  " + p.partInfo.name + " (" + p.flightID + ")");
 				Debug.Log(debugString);
 			}
+
+			KJRAutoStrutModule.InitializeVessel(v);
 
 			RunVesselJointUpdateFunction(v);
 
@@ -133,8 +134,40 @@ namespace KerbalJointReinforcement
 #endif
 		}
 
-		// this function should be called by all compatible modules when
-		// they call Vessel.CycleAllAutoStrut for AutoStruts
+		public void OnProtoVesselSave(GameEvents.FromToAction<ProtoVessel, ConfigNode> data)
+		{
+			if((data.to == null) || (data.to.name != "VESSEL"))
+				return;
+
+			ConfigNode v = data.to;
+			ConfigNode[] ap = v.GetNodes("PART");
+
+			int i = 0;
+			while(i < ap.Length)
+			{
+				if(ap[i].GetValue("name") == "KJRAutoStrutHelper")
+				{
+					v.RemoveNode(ap[i]);
+
+					ap = v.GetNodes("PART");
+
+					for(int j = 0; j < ap.Length; j++)
+					{
+						int parent = int.Parse(ap[j].GetValue("parent"));
+
+						if(parent >= i)
+							ap[j].SetValue("parent", parent - 1);
+					}
+
+					i = 0;
+				}
+				else
+					++i;
+			}
+		}
+
+		// this function can be called by compatible modules instead of calling
+		// Vessel.CycleAllAutoStrut, if you want only KJR to cycle the extra joints
 		public void CycleAllAutoStrut(Vessel v)
 		{
 			OnVesselWasModified(v);
@@ -157,6 +190,8 @@ namespace KerbalJointReinforcement
 			if((object)v == null || v.isEVA)
 				return; 
 			
+			KJRAutoStrutModule.InitializeVessel(v);
+
 			RunVesselJointUpdateFunction(v);
 
 #if IncludeAnalyzer
@@ -223,6 +258,8 @@ namespace KerbalJointReinforcement
 
 		private void RunVesselJointUpdateFunction(Vessel v)
 		{
+			KJRAutoStrutModule.bIgnore = true;
+
 			if(KJRJointUtils.debug)
 			{
 				Debug.Log("KJR: Processing vessel " + v.id + " (" + v.GetName() + "); root " +
@@ -273,6 +310,8 @@ namespace KerbalJointReinforcement
 
 			if(KJRJointUtils.reinforceAttachNodes && KJRJointUtils.multiPartAttachNodeReinforcement)
 				MultiPartJointTreeChildren(v);
+
+			KJRAutoStrutModule.bIgnore = false;
 		}
 
 		public void FixedUpdate()
@@ -532,7 +571,7 @@ namespace KerbalJointReinforcement
 					{
 						radius = Mathf.Min(KJRJointUtils.CalculateRadius(p, Vector3.up), KJRJointUtils.CalculateRadius(connectedPart, Vector3.up));
 						if(radius <= 0.001)
-							radius = node.size * 1.25f;
+							radius = 1.25f; // FEHLER, komisch, wieso setzen wir dann nicht alles < 1.25f auf 1.25f? -> zudem hatten wir hier sowieso einen Bug, das ist also sowieso zu hinterfragen
 						area = Mathf.PI * radius * radius;					  //Area of cylinder
 						momentOfInertia = area * radius * radius / 4;		   //Moment of Inertia of cylinder
 					}

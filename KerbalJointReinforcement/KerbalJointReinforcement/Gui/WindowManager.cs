@@ -173,79 +173,75 @@ namespace KerbalJointReinforcement
 
 			var Opt1Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt1").GetChild("Opt1Toggle").GetComponent<Toggle>();
 			Opt1Toggle.isOn = ShowKSPJoints;
-			Opt1Toggle.onValueChanged.AddListener(v => ShowKSPJoints = v);
 
 	//		var Opt1ToggleTooltip = Opt1Toggle.gameObject.AddComponent<BasicTooltip>();
 	//		Opt1ToggleTooltip.tooltipText = "Option1";
 
 			var Opt2Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt2").GetChild("Opt2Toggle").GetComponent<Toggle>();
 			Opt2Toggle.isOn = BuildAdditionalJointToParent;
-			Opt2Toggle.onValueChanged.AddListener(v => BuildAdditionalJointToParent = v);
 
 			var Opt3Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt3").GetChild("Opt3Toggle").GetComponent<Toggle>();
 			Opt3Toggle.isOn = ShowAdditionalJointToParent;
-			Opt3Toggle.onValueChanged.AddListener(v => ShowAdditionalJointToParent = v);
 
 			var Opt4Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt4").GetChild("Opt4Toggle").GetComponent<Toggle>();
 			Opt4Toggle.isOn = BuildMultiPartJointTreeChildren;
-			Opt4Toggle.onValueChanged.AddListener(v => BuildMultiPartJointTreeChildren = v);
 
 			var Opt5Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt5").GetChild("Opt5Toggle").GetComponent<Toggle>();
 			Opt5Toggle.isOn = ShowMultiPartJointTreeChildren;
-			Opt5Toggle.onValueChanged.AddListener(v => ShowMultiPartJointTreeChildren = v);
 
 			var Opt6Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt6").GetChild("Opt6Toggle").GetComponent<Toggle>();
 			Opt6Toggle.isOn = BuildMultiPartJointTreeChildrenRoot;
-			Opt6Toggle.onValueChanged.AddListener(v => BuildMultiPartJointTreeChildrenRoot = v);
 
 			var Opt7Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt7").GetChild("Opt7Toggle").GetComponent<Toggle>();
 			Opt7Toggle.isOn = ShowMultiPartJointTreeChildrenRoot;
-			Opt7Toggle.onValueChanged.AddListener(v => ShowMultiPartJointTreeChildrenRoot = v);
 
 			var Opt8Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt8").GetChild("Opt8Toggle").GetComponent<Toggle>();
 			Opt8Toggle.isOn = PhysicsGlobals.AutoStrutDisplay;
-			Opt8Toggle.onValueChanged.AddListener(v => PhysicsGlobals.AutoStrutDisplay = v);
 
 			var footerButtons = _settingsWindow.GetChild("WindowFooter").GetChild("WindowFooterButtonsHLG");
 	
 			var cancelButton = footerButtons.GetChild("CancelButton").GetComponent<Button>();
-	/*		cancelButton.onClick.AddListener(() =>
+			cancelButton.onClick.AddListener(() =>
 				{
-					transparencySlider.GetComponent<Slider>().value = _UIAlphaValue;
-					alphaText.text = string.Format("{0:#0.00}", _UIAlphaValue);
-
-					scaleSlider.GetComponent<Slider>().value = _UIScaleValue;
-					scaleText.text = string.Format("{0:#0.00}", _UIScaleValue);
+					Opt1Toggle.isOn = ShowKSPJoints;
+					Opt2Toggle.isOn = BuildAdditionalJointToParent;
+					Opt3Toggle.isOn = ShowAdditionalJointToParent;
+					Opt4Toggle.isOn = BuildMultiPartJointTreeChildren;
+					Opt5Toggle.isOn = ShowMultiPartJointTreeChildren;
+					Opt6Toggle.isOn = BuildMultiPartJointTreeChildrenRoot;
+					Opt7Toggle.isOn = ShowMultiPartJointTreeChildrenRoot;
+					Opt8Toggle.isOn = PhysicsGlobals.AutoStrutDisplay;
 				});
-	*/
+	
 			var defaultButton = footerButtons.GetChild("DefaultButton").GetComponent<Button>();
-	/*		defaultButton.onClick.AddListener(() =>
+			defaultButton.onClick.AddListener(() =>
 				{
-					_UIAlphaValue = 0.8f;
-					_UIScaleValue = 1.0f;
+					Opt1Toggle.isOn = ShowKSPJoints = true;
+					Opt2Toggle.isOn = BuildAdditionalJointToParent = true;
+					Opt3Toggle.isOn = ShowAdditionalJointToParent = true;
+					Opt4Toggle.isOn = BuildMultiPartJointTreeChildren = true;
+					Opt5Toggle.isOn = ShowMultiPartJointTreeChildren = true;
+					Opt6Toggle.isOn = BuildMultiPartJointTreeChildrenRoot = true;
+					Opt7Toggle.isOn = ShowMultiPartJointTreeChildrenRoot = true;
+					Opt8Toggle.isOn = PhysicsGlobals.AutoStrutDisplay = false;
 
-					transparencySlider.GetComponent<Slider>().value = _UIAlphaValue;
-					alphaText.text = string.Format("{0:#0.00}", _UIAlphaValue);
-
-					scaleSlider.GetComponent<Slider>().value = _UIScaleValue;
-					scaleText.text = string.Format("{0:#0.00}", _UIScaleValue);
-
-					SetGlobalAlpha(_UIAlphaValue);
-					SetGlobalScale(_UIScaleValue);
+					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
 				});
-	*/
+	
 			var applyButton = footerButtons.GetChild("ApplyButton").GetComponent<Button>();
 			applyButton.onClick.AddListener(() => 
 				{
-//					float newAlphaValue = (float) Math.Round(transparencySlider.GetComponent<Slider>().value, 2);
-//					float newScaleValue = (float) Math.Round(scaleSlider.GetComponent<Slider>().value, 2);
-
-//					SetGlobalAlpha(newAlphaValue);
-//					SetGlobalScale(newScaleValue);
-
-					KJRAnalyzer.Show = !KJRAnalyzer.Show; // blöder Workaround
+					ShowKSPJoints = Opt1Toggle.isOn;
+					BuildAdditionalJointToParent = Opt2Toggle.isOn;
+					ShowAdditionalJointToParent = Opt3Toggle.isOn;
+					BuildMultiPartJointTreeChildren = Opt4Toggle.isOn;
+					ShowMultiPartJointTreeChildren = Opt5Toggle.isOn;
+					BuildMultiPartJointTreeChildrenRoot = Opt6Toggle.isOn;
+					ShowMultiPartJointTreeChildrenRoot = Opt7Toggle.isOn;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
+
+					PhysicsGlobals.AutoStrutDisplay = Opt8Toggle.isOn;
 				});
 		}
 

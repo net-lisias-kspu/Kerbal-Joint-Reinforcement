@@ -95,20 +95,17 @@ namespace KerbalJointReinforcement
 			get { return bShow; }
 			set
 			{
-				if(bShow != value)
-				{
-					bShow = value;
+				bShow = value;
 
-					if(bShow)
-					{
-						for(int i = 0; i < FlightGlobals.VesselsLoaded.Count; i++)
-							WasModified(FlightGlobals.VesselsLoaded[i]);
-					}
-					else
-					{
-						while(lists.Count > 0)
-							Destroy(lists[0].vessel);
-					}
+				if(bShow)
+				{
+					for(int i = 0; i < FlightGlobals.VesselsLoaded.Count; i++)
+						WasModified(FlightGlobals.VesselsLoaded[i]);
+				}
+				else
+				{
+					while(lists.Count > 0)
+						Destroy(lists[0].vessel);
 				}
 			}
 		}
