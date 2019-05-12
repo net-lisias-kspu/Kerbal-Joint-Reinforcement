@@ -12,7 +12,6 @@ namespace KerbalJointReinforcement
 	{
 		List<Vessel> updatedVessels;
 		HashSet<Vessel> easingVessels;
-		Dictionary<Vessel, List<Joint>> vesselJointStrengthened;
 		KJRMultiJointManager multiJointManager;
 
 		private static KJRManager _instance;
@@ -32,7 +31,6 @@ namespace KerbalJointReinforcement
 			KJRJointUtils.LoadConstants();
 			updatedVessels = new List<Vessel>();
 			easingVessels = new HashSet<Vessel>();
-			vesselJointStrengthened = new Dictionary<Vessel, List<Joint>>();
 			multiJointManager = new KJRMultiJointManager();
 
 			_instance = this;
@@ -46,9 +44,7 @@ namespace KerbalJointReinforcement
 			GameEvents.onProtoVesselSave.Add(OnProtoVesselSave);
 
 			GameEvents.onVesselGoOffRails.Add(OnVesselOffRails);
-	
 			GameEvents.onVesselGoOnRails.Add(OnVesselOnRails);
-			GameEvents.onVesselDestroy.Add(OnVesselOnRails);
 
 			GameEvents.onPartDestroyed.Add(OnPartDestroyed);
 			GameEvents.onPartDie.Add(OnPartDestroyed);
@@ -65,9 +61,7 @@ namespace KerbalJointReinforcement
 			GameEvents.onProtoVesselSave.Remove(OnProtoVesselSave);
 
 			GameEvents.onVesselGoOffRails.Remove(OnVesselOffRails);
-	
 			GameEvents.onVesselGoOnRails.Remove(OnVesselOnRails);
-			GameEvents.onVesselDestroy.Remove(OnVesselOnRails);
 
 			GameEvents.onPartDestroyed.Remove(OnPartDestroyed);
 			GameEvents.onPartDie.Remove(OnPartDestroyed);
@@ -79,7 +73,6 @@ namespace KerbalJointReinforcement
 				InputLockManager.RemoveControlLock("KJRLoadLock");
 			updatedVessels = null;
 			easingVessels = null;
-			vesselJointStrengthened = null;
 
 			multiJointManager = null;
 		}
@@ -180,7 +173,6 @@ namespace KerbalJointReinforcement
 
 			if(updatedVessels.Contains(v))
 			{
-				vesselJointStrengthened.Remove(v);
 				updatedVessels.Remove(v);
 
 				KJRAutoStrutModule.UninitializeVessel(v);
