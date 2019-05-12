@@ -64,13 +64,13 @@ namespace KerbalJointReinforcement
 
 		private ApplicationLauncherButton appLauncherButton;
 
-		public bool ShowKSPJoints = true;
+		public bool ShowKSPJoints = false;
 		public bool BuildAdditionalJointToParent = true;
-		public bool ShowAdditionalJointToParent = true;
+		public bool ShowAdditionalJointToParent = false;
 		public bool BuildMultiPartJointTreeChildren = true;
-		public bool ShowMultiPartJointTreeChildren = true;
+		public bool ShowMultiPartJointTreeChildren = false;
 		public bool BuildMultiPartJointTreeChildrenRoot = true;
-		public bool ShowMultiPartJointTreeChildrenRoot = true;
+		public bool ShowMultiPartJointTreeChildrenRoot = false;
 
 		internal bool GUIEnabled = false;
 
@@ -84,6 +84,8 @@ namespace KerbalJointReinforcement
 		private void Awake()
 		{
 			LoadConfigXml();
+
+			KJRAnalyzer.OnLoad(ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot);
 
 			Logger.Log("[NewGUI] awake, Mode: " + AddonName);
 
@@ -216,13 +218,13 @@ namespace KerbalJointReinforcement
 			var defaultButton = footerButtons.GetChild("DefaultButton").GetComponent<Button>();
 			defaultButton.onClick.AddListener(() =>
 				{
-					Opt1Toggle.isOn = ShowKSPJoints = true;
+					Opt1Toggle.isOn = ShowKSPJoints = false;
 					Opt2Toggle.isOn = BuildAdditionalJointToParent = true;
-					Opt3Toggle.isOn = ShowAdditionalJointToParent = true;
+					Opt3Toggle.isOn = ShowAdditionalJointToParent = false;
 					Opt4Toggle.isOn = BuildMultiPartJointTreeChildren = true;
-					Opt5Toggle.isOn = ShowMultiPartJointTreeChildren = true;
+					Opt5Toggle.isOn = ShowMultiPartJointTreeChildren = false;
 					Opt6Toggle.isOn = BuildMultiPartJointTreeChildrenRoot = true;
-					Opt7Toggle.isOn = ShowMultiPartJointTreeChildrenRoot = true;
+					Opt7Toggle.isOn = ShowMultiPartJointTreeChildrenRoot = false;
 					Opt8Toggle.isOn = PhysicsGlobals.AutoStrutDisplay = false;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;

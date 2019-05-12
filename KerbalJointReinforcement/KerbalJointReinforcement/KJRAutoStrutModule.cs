@@ -92,6 +92,8 @@ namespace KerbalJointReinforcement
 
 		public static void UninitializeVessel(Vessel v)
 		{
+			List<Part> toDelete = new List<Part>();
+
 			foreach(Part p in v.parts)
 			{
 				if(p.partInfo.name == "KJRAutoStrutHelper")
@@ -100,10 +102,15 @@ namespace KerbalJointReinforcement
 					if(m)
 						Destroy(m);
 
-					p.attachJoint.DestroyJoint();
-					v.parts.Remove(p);
-					Destroy(p);
+					toDelete.Add(p);
 				}
+			}
+
+			foreach(Part p in toDelete)
+			{
+				p.attachJoint.DestroyJoint();
+				v.parts.Remove(p);
+				Destroy(p);
 			}
 		}
 
@@ -121,7 +128,7 @@ namespace KerbalJointReinforcement
 				StartCoroutine(DoUpdate());
 			}
 
-			return false;
+			return true;
 		}
 
 		public IEnumerator DoUpdate()

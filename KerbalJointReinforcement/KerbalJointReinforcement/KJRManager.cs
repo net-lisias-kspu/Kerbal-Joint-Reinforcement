@@ -182,6 +182,8 @@ namespace KerbalJointReinforcement
 			{
 				vesselJointStrengthened.Remove(v);
 				updatedVessels.Remove(v);
+
+				KJRAutoStrutModule.UninitializeVessel(v);
 			}
 		}
 

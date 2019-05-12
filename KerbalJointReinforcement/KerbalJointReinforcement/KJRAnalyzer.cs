@@ -90,6 +90,11 @@ namespace KerbalJointReinforcement
 
 		private static bool bShow = true;
 
+		public static void OnLoad(bool p_bShow)
+		{
+			bShow = p_bShow;
+		}
+
 		public static bool Show
 		{
 			get { return bShow; }
