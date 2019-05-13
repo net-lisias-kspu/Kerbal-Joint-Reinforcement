@@ -89,7 +89,7 @@ namespace KerbalJointReinforcement
 
 		private void OnVesselWasModified(Vessel v)
 		{
-			if((object)v == null || v.isEVA)
+			if((object)v == null || v.isEVA || v.GetComponent<KerbalEVA>())
 				return; 
 
 			multiJointManager.RemoveAllVesselJoints(v);
@@ -181,7 +181,7 @@ namespace KerbalJointReinforcement
 
 		private void OnVesselOffRails(Vessel v)
 		{
-			if((object)v == null || v.isEVA)
+			if((object)v == null || v.isEVA || v.GetComponent<KerbalEVA>())
 				return; 
 			
 			KJRAutoStrutModule.InitializeVessel(v);

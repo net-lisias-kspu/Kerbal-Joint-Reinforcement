@@ -164,6 +164,9 @@ namespace KerbalJointReinforcement
 
 			foreach(Part p in v.Parts)
 			{
+				if(p.partInfo.name == "KJRAutoStrutHelper")
+					continue;
+
 				ConfigurableJoint[] joints = p.GetComponents<ConfigurableJoint>();
 
 				for(int i = 0; i < joints.Length; i++)

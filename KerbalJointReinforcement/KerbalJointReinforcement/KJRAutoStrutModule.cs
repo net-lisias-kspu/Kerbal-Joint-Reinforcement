@@ -31,6 +31,7 @@ namespace KerbalJointReinforcement
 			partPrefab.attachNodes.Add(attachNode);
 
 			partPrefab.mass = 1e-6f;
+			partPrefab.physicsMass = 0f;
 
 			partPrefab.angularDrag = 0f;
 			partPrefab.angularDragByFI = false;
@@ -39,6 +40,12 @@ namespace KerbalJointReinforcement
 			partPrefab.maximum_drag = 0f;
 
 			partPrefab.dragModel = Part.DragModel.NONE;
+
+			partPrefab.breakingForce = 1e20f;
+			partPrefab.breakingTorque = 1e20f;
+			partPrefab.crashTolerance = 1e20f;
+
+			partPrefab.buoyancy = 0f;
 		}
 
 		private static Part BuildSensor(Vessel v, String name, Part parent)
@@ -65,6 +72,10 @@ namespace KerbalJointReinforcement
 
 			rb.useGravity = false;
 			rb.mass = 1e-6f;
+
+			rb.angularDrag = 0f;
+			rb.detectCollisions = false;
+			rb.drag = 0f;
 
 			return part;
 		}
@@ -100,7 +111,7 @@ namespace KerbalJointReinforcement
 				{
 					KJRAutoStrutModule m = p.GetComponent<KJRAutoStrutModule>();
 					if(m)
-						Destroy(m);
+						UnityEngine.Object.Destroy(m);
 
 					toDelete.Add(p);
 				}
@@ -110,7 +121,10 @@ namespace KerbalJointReinforcement
 			{
 				p.attachJoint.DestroyJoint();
 				v.parts.Remove(p);
-				Destroy(p);
+	
+				UnityEngine.Object.Destroy(p.gameObject);
+				for(int i = 0; i < p.Modules.Count; i++)
+					UnityEngine.Object.Destroy(p.Modules[i]);
 			}
 		}
 
