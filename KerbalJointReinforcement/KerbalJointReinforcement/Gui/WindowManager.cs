@@ -218,32 +218,60 @@ namespace KerbalJointReinforcement
 			var defaultButton = footerButtons.GetChild("DefaultButton").GetComponent<Button>();
 			defaultButton.onClick.AddListener(() =>
 				{
+					bool bCycle = false;
+
 					Opt1Toggle.isOn = ShowKSPJoints = false;
+					if(!BuildAdditionalJointToParent)
+						bCycle = true;
 					Opt2Toggle.isOn = BuildAdditionalJointToParent = true;
 					Opt3Toggle.isOn = ShowAdditionalJointToParent = false;
+					if(!BuildMultiPartJointTreeChildren)
+						bCycle = true;
 					Opt4Toggle.isOn = BuildMultiPartJointTreeChildren = true;
 					Opt5Toggle.isOn = ShowMultiPartJointTreeChildren = false;
+					if(!BuildMultiPartJointTreeChildrenRoot)
+						bCycle = true;
 					Opt6Toggle.isOn = BuildMultiPartJointTreeChildrenRoot = true;
 					Opt7Toggle.isOn = ShowMultiPartJointTreeChildrenRoot = false;
 					Opt8Toggle.isOn = PhysicsGlobals.AutoStrutDisplay = false;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
+
+					if(bCycle && HighLogic.LoadedSceneIsFlight)
+						FlightGlobals.ActiveVessel.CycleAllAutoStrut();
 				});
 	
 			var applyButton = footerButtons.GetChild("ApplyButton").GetComponent<Button>();
 			applyButton.onClick.AddListener(() => 
 				{
+					bool bCycle = false;
+
 					ShowKSPJoints = Opt1Toggle.isOn;
-					BuildAdditionalJointToParent = Opt2Toggle.isOn;
+					if(BuildAdditionalJointToParent != Opt2Toggle.isOn)
+					{
+						bCycle = true;
+						BuildAdditionalJointToParent = Opt2Toggle.isOn;
+					}
 					ShowAdditionalJointToParent = Opt3Toggle.isOn;
-					BuildMultiPartJointTreeChildren = Opt4Toggle.isOn;
+					if(BuildMultiPartJointTreeChildren != Opt4Toggle.isOn)
+					{
+						bCycle = true;
+						BuildMultiPartJointTreeChildren = Opt4Toggle.isOn;
+					}
 					ShowMultiPartJointTreeChildren = Opt5Toggle.isOn;
-					BuildMultiPartJointTreeChildrenRoot = Opt6Toggle.isOn;
+					if(BuildMultiPartJointTreeChildrenRoot != Opt6Toggle.isOn)
+					{
+						bCycle = true;
+						BuildMultiPartJointTreeChildrenRoot = Opt6Toggle.isOn;
+					}
 					ShowMultiPartJointTreeChildrenRoot = Opt7Toggle.isOn;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
 
 					PhysicsGlobals.AutoStrutDisplay = Opt8Toggle.isOn;
+
+					if(bCycle && HighLogic.LoadedSceneIsFlight)
+						FlightGlobals.ActiveVessel.CycleAllAutoStrut();
 				});
 		}
 
