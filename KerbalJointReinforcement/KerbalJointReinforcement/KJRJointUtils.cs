@@ -34,8 +34,6 @@ namespace KerbalJointReinforcement
 
 		public static bool debug = false;
 
-		public static List<string> exemptPartTypes = new List<string>();
-		public static List<string> exemptModuleTypes = new List<string>();
 		public static List<string> decouplerStiffeningExtensionType = new List<string>();
 
 		public static float massForAdjustment = 0.001f;
@@ -71,27 +69,17 @@ namespace KerbalJointReinforcement
 
 			massForAdjustment = config.GetValue<float>("massForAdjustment", 1);
 
-			exemptPartTypes.Clear();
-			exemptModuleTypes.Clear();
 			decouplerStiffeningExtensionType.Clear();
 
 			int i = 0;
 			while(true)
 			{
-				string tmpPart, tmpModule, tmpDecoupler;
-				tmpPart = config.GetValue("exemptPartType" + i, "");
-				tmpModule = config.GetValue("exemptModuleType" + i, "");
-				tmpDecoupler = config.GetValue("decouplerStiffeningExtensionType" + i, "");
+				string tmpDecoupler = config.GetValue("decouplerStiffeningExtensionType" + i, "");
 
-				if(tmpPart == "" && tmpModule == "" && tmpDecoupler == "")
+				if(tmpDecoupler == "")
 					break;
 
-				if(tmpPart != "")
-					exemptPartTypes.Add(tmpPart);
-				if(tmpModule != "")
-					exemptModuleTypes.Add(tmpModule);
-				if(tmpDecoupler != "")
-					decouplerStiffeningExtensionType.Add(tmpDecoupler);
+				decouplerStiffeningExtensionType.Add(tmpDecoupler);
 
 				i++;
 			}
@@ -116,14 +104,6 @@ namespace KerbalJointReinforcement
 				debugString.AppendLine("Use Volume For Calculations, Not Area: " + useVolumeNotArea);
 
 				debugString.AppendLine("\n\rMass For Joint Adjustment: " + massForAdjustment);
-
-				debugString.AppendLine("\n\rExempt Part Types");
-				foreach(string s in exemptPartTypes)
-					debugString.AppendLine(s);
-
-				debugString.AppendLine("\n\rExempt Module Types");
-				foreach(string s in exemptModuleTypes)
-					debugString.AppendLine(s);
 
 				debugString.AppendLine("\n\rDecoupler Stiffening Extension Types");
 				foreach(string s in decouplerStiffeningExtensionType)
@@ -283,13 +263,8 @@ namespace KerbalJointReinforcement
 			if(p.GetComponent<KerbalEVA>() != null)
 				return false;
 
-			foreach(string s in exemptPartTypes)
-				if(p.GetType().ToString() == s)
-					return false;
-
-			foreach(string s in exemptModuleTypes)
-				if(p.Modules.Contains(s))
-					return false;
+			if(p.GetComponent<ModuleWheelBase>() != null)
+				return false;
 
 			return true;
 		}
@@ -423,21 +398,37 @@ namespace KerbalJointReinforcement
 			{
 				newJoint = p.gameObject.AddComponent<ConfigurableJoint>();
 				newJoint.connectedBody = linkPart.Rigidbody;
+
+				newJoint.anchor = Vector3.zero;
+				newJoint.autoConfigureConnectedAnchor = false;
+				newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(linkPart.transform.position + linkPart.transform.rotation * linkPart.orgRot * (p.orgPos - linkPart.orgPos));
+
+				Quaternion must = linkPart.transform.rotation * (Quaternion.Inverse(linkPart.orgRot) * p.orgRot);
+				newJoint.SetTargetRotationLocal(Quaternion.Inverse(p.transform.rotation) * must, Quaternion.identity);
+					// FEHLER, direkter machen
 			}
 			else
 			{
 				newJoint = linkPart.gameObject.AddComponent<ConfigurableJoint>();
 				newJoint.connectedBody = p.Rigidbody;
+
+				newJoint.anchor = Vector3.zero;
+				newJoint.autoConfigureConnectedAnchor = false;
+				newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * p.orgRot * (linkPart.orgPos - p.orgPos));
+
+				Quaternion must = p.transform.rotation * (Quaternion.Inverse(p.orgRot) * linkPart.orgRot);
+				newJoint.SetTargetRotationLocal(Quaternion.Inverse(linkPart.transform.rotation) * must, Quaternion.identity);
+					// FEHLER, direkter machen
 			}
 
-			newJoint.anchor = Vector3.zero;
-			newJoint.axis = Vector3.right;
-			newJoint.secondaryAxis = Vector3.forward;
+			newJoint.xMotion = newJoint.yMotion = newJoint.zMotion = ConfigurableJointMotion.Free;
+			newJoint.angularYMotion = newJoint.angularZMotion = newJoint.angularXMotion = ConfigurableJointMotion.Free;
+
+			newJoint.xDrive = newJoint.yDrive = newJoint.zDrive = new JointDrive { maximumForce = PhysicsGlobals.JointForce, positionSpring = PhysicsGlobals.JointForce }; 
+			newJoint.angularXDrive = newJoint.angularYZDrive = new JointDrive { maximumForce = PhysicsGlobals.JointForce, positionSpring = 60000f }; 
+
 			newJoint.breakForce = KJRJointUtils.decouplerAndClampJointStrength;
 			newJoint.breakTorque = KJRJointUtils.decouplerAndClampJointStrength;
-
-			newJoint.xMotion = newJoint.yMotion = newJoint.zMotion = ConfigurableJointMotion.Locked;
-			newJoint.angularXMotion = newJoint.angularYMotion = newJoint.angularZMotion = ConfigurableJointMotion.Locked;
 
 			return newJoint;
 		}

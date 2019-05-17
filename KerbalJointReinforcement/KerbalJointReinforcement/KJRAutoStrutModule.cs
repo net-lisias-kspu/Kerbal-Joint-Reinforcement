@@ -11,61 +11,24 @@ namespace KerbalJointReinforcement
 	public class KJRAutoStrutModule : PartModule, IJointLockState
 	{
 		public static bool bIgnore = false;
-
 		bool bUpdateRunning = false;
-
-		private static Part partPrefab = null;
-
-		private static void BuildPrototype()
-		{
-			GameObject gameObject = new GameObject("KJRAutoStrutHelper");
-
-			partPrefab = gameObject.AddComponent<Part>();
-
-			if((bool)FlightGlobals.fetch)
-				FlightGlobals.PersistentLoadedPartIds.Remove(partPrefab.persistentId);
-
-			partPrefab.gameObject.SetActive(false);
-
-			AttachNode attachNode = new AttachNode("srfAttach", partPrefab.transform, 1, AttachNodeMethod.FIXED_JOINT, false, false);
-			partPrefab.attachNodes.Add(attachNode);
-
-			partPrefab.mass = 1e-6f;
-			partPrefab.physicsMass = 0f;
-
-			partPrefab.angularDrag = 0f;
-			partPrefab.angularDragByFI = false;
-
-			partPrefab.minimum_drag = 0f;
-			partPrefab.maximum_drag = 0f;
-
-			partPrefab.dragModel = Part.DragModel.NONE;
-
-			partPrefab.breakingForce = 1e20f;
-			partPrefab.breakingTorque = 1e20f;
-			partPrefab.crashTolerance = 1e20f;
-
-			partPrefab.buoyancy = 0f;
-		}
 
 		private static Part BuildSensor(Vessel v, String name, Part parent)
 		{
-			if(partPrefab == null)
-				BuildPrototype();
-			
-			Part part = UnityEngine.Object.Instantiate(partPrefab, parent.transform);
+			AvailablePart partInfo = PartLoader.getPartInfoByName("KJRAutoStrutHelper");
 
+			Part part = UnityEngine.Object.Instantiate(partInfo.partPrefab, parent.transform);
 			part.gameObject.SetActive(true);
+
+			DestroyImmediate(part.GetComponent<Collider>());
+			Renderer r = part.GetComponentInChildren<Renderer>();
+			if(r) r.enabled = false;
+
 			part.name = name;
 			part.persistentId = FlightGlobals.CheckPartpersistentId(part.persistentId, part, false, true);
 
 			part.transform.position = parent.transform.position;
 
-			v.parts.Add(part);
-			part.vessel = v;
-
-			part.parent = parent;
-			part.CreateAttachJoint(AttachModes.SRF_ATTACH);
 
 			Rigidbody rb = part.GetComponent<Rigidbody>();
 			if(!rb) rb = part.gameObject.AddComponent<Rigidbody>();
@@ -77,22 +40,28 @@ namespace KerbalJointReinforcement
 			rb.detectCollisions = false;
 			rb.drag = 0f;
 
+
+			v.parts.Add(part);
+			part.vessel = v;
+
+			part.parent = parent;
+			part.CreateAttachJoint(AttachModes.SRF_ATTACH);
+
 			return part;
 		}
 
 		public static void InitializeVessel(Vessel v)
 		{
-			if(v.FindPartModuleImplementing<KJRAutoStrutModule>())
+			int c = v.FindPartModulesImplementing<KJRAutoStrutModule>().Count;
+
+			if(c > 1)
+				UninitializeVessel(v);
+
+			if(c == 1)
 				return;
 
 			Part sensor1 = BuildSensor(v, "KJRsensor1", v.rootPart);
 			Part sensor2 = BuildSensor(v, "KJRsensor2", sensor1);
-
-			AvailablePart availablePart = new AvailablePart();
-			availablePart.name = partPrefab.name;
-
-			sensor1.partInfo = availablePart;
-			sensor2.partInfo = availablePart;
 
 			sensor1.AddModule("KJRAutoStrutModule");
 
@@ -103,6 +72,9 @@ namespace KerbalJointReinforcement
 
 		public static void UninitializeVessel(Vessel v)
 		{
+			if(!v || (v.parts == null))
+				return;
+
 			List<Part> toDelete = new List<Part>();
 
 			foreach(Part p in v.parts)
@@ -131,15 +103,19 @@ namespace KerbalJointReinforcement
 		////////////////////////////////////////
 		// IJointLockState (AutoStrut support)
 
+		private IEnumerator coroutine = null;
+
 		bool IJointLockState.IsJointUnlocked()
 		{
-			if(!bIgnore)
+			if(!bIgnore && !bUpdateRunning)
 			{
-				if(bUpdateRunning)
-					StopCoroutine(DoUpdate());
+				if(coroutine != null)
+					StopCoroutine(coroutine);
 
 				bUpdateRunning = true;
-				StartCoroutine(DoUpdate());
+
+				coroutine = DoUpdate();
+				StartCoroutine(coroutine);
 			}
 
 			return true;
@@ -148,8 +124,8 @@ namespace KerbalJointReinforcement
 		public IEnumerator DoUpdate()
 		{
 			yield return new WaitForFixedUpdate();
-			KJRManager.Instance.CycleAllAutoStrut(vessel);
 			bUpdateRunning = false;
+			KJRManager.Instance.CycleAllAutoStrut(vessel);
 		}
 	}
 }

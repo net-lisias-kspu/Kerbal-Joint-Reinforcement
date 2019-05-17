@@ -15,44 +15,41 @@ namespace KerbalJointReinforcement
 			None, AdditionalJointToParent, MultiPartJointTreeChildren, MultiPartJointTreeChildrenRoot
 		};
 
-		Dictionary<Part, List<ConfigurableJoint>> multiJointDict;
-		List<Part> linkedSet;
+		internal struct ConfigurableJointWithInfo
+		{
+			internal ConfigurableJoint joint;
+			internal bool direct;
+		}
+
+		Dictionary<Part, List<ConfigurableJointWithInfo>> multiJointDict;
+		internal List<Part> linkedSet;
 		List<Part> tempPartList;
 
 		Dictionary<ConfigurableJoint, Reason> jointReasonDict;
 
 		public KJRMultiJointManager()
 		{
-			multiJointDict = new Dictionary<Part, List<ConfigurableJoint>>();
+			multiJointDict = new Dictionary<Part, List<ConfigurableJointWithInfo>>();
 			linkedSet = new List<Part>();
 			tempPartList = new List<Part>();
 			jointReasonDict = new Dictionary<ConfigurableJoint,Reason>();
 		}
 
-		public void RemoveAllVesselJoints(Vessel v)
-		{
-			if(v.loaded)
-			{
-				foreach(Part p in v.Parts)
-					RemovePartJoints(p);
-			}
-		}
-
-		public bool TrySetValidLinkedSet(Part linkPart1, Part linkPart2)
+		public bool TrySetValidLinkedSet(Part part1, Part part2)
 		{
 			linkedSet.Clear();
 			tempPartList.Clear();
 
-			while(linkPart1 != null)
+			while(part1 != null)
 			{
-				linkedSet.Add(linkPart1);
-				linkPart1 = KJRJointUtils.IsJointAdjustmentAllowed(linkPart1) ? linkPart1.parent : null;
+				linkedSet.Add(part1);
+				part1 = KJRJointUtils.IsJointAdjustmentAllowed(part1) ? part1.parent : null;
 			}
 
-			while(linkPart2 != null)
+			while(part2 != null)
 			{
-				tempPartList.Add(linkPart2);
-				linkPart2 = KJRJointUtils.IsJointAdjustmentAllowed(linkPart2) ? linkPart2.parent : null;
+				tempPartList.Add(part2);
+				part2 = KJRJointUtils.IsJointAdjustmentAllowed(part2) ? part2.parent : null;
 			}
 
 			int i = linkedSet.Count - 1;
@@ -64,65 +61,107 @@ namespace KerbalJointReinforcement
 			while((i >= 0) && (j >= 0) && (linkedSet[i] == tempPartList[j]))
 			{ --i; --j; }
 
-			linkedSet.AddRange(tempPartList.GetRange(0, j + 1)); 
+			if(linkedSet.Count > i + 2)
+				linkedSet.RemoveRange(i + 2, linkedSet.Count - i - 2);
+			linkedSet.RemoveAt(0);
+
+			if(tempPartList.Count > 1)
+				linkedSet.AddRange(tempPartList.GetRange(1, j)); 
 
 			return linkedSet.Count > 1;
 		}
 
-		public void RegisterMultiJointBetweenParts(Part linkPart1, Part linkPart2, ConfigurableJoint multiJoint, Reason jointReason)
+		public void RegisterMultiJoint(Part part, ConfigurableJoint joint, bool direct, Reason jointReason)
 		{
-			foreach(Part p in linkedSet)
-				RegisterMultiJoint(p, multiJoint, jointReason);
-		}
+			List<ConfigurableJointWithInfo> configJointList;
 
-		public void RegisterMultiJoint(Part testPart, ConfigurableJoint multiJoint, Reason jointReason)
-		{
-			List<ConfigurableJoint> configJointList;
-			if(multiJointDict.TryGetValue(testPart, out configJointList))
+			if(multiJointDict.TryGetValue(part, out configJointList))
 			{
 				for(int i = configJointList.Count - 1; i >= 0; --i)
-					if(configJointList[i] == null)
+					if(configJointList[i].joint == null)
 						configJointList.RemoveAt(i);
-
-				configJointList.Add(multiJoint);
 			}
 			else
-			{
-				configJointList = new List<ConfigurableJoint>();
-				configJointList.Add(multiJoint);
-				multiJointDict.Add(testPart, configJointList);
-			}
+				multiJointDict.Add(part, configJointList = new List<ConfigurableJointWithInfo>());
 
-			if(!jointReasonDict.ContainsKey(multiJoint))
-				jointReasonDict.Add(multiJoint, jointReason);
+			configJointList.Add(new ConfigurableJointWithInfo(){ joint = joint, direct = direct });
+
+			if(!jointReasonDict.ContainsKey(joint))
+				jointReasonDict.Add(joint, jointReason);
 		}
 
-		public bool CheckMultiJointBetweenParts(Part testPart1, Part testPart2)
+		public bool CheckDirectJointBetweenParts(Part part1, Part part2)
 		{
-			if(testPart1 == null || testPart2 == null || testPart1 == testPart2)
+			if(part1 == null || part2 == null || part1 == part2)
 				return false;
 
-			List<ConfigurableJoint> testMultiJoints;
+			List<ConfigurableJointWithInfo> configJointList;
 
-			if(!multiJointDict.TryGetValue(testPart1, out testMultiJoints))
+			if(!multiJointDict.TryGetValue(part1, out configJointList))
 				return false;
 
-			Rigidbody testRb = testPart2.rb;
+			Rigidbody part2Rigidbody = part2.Rigidbody;
 
-			for(int i = 0; i < testMultiJoints.Count; i++)
+			for(int i = 0; i < configJointList.Count; i++)
 			{
-				ConfigurableJoint joint = testMultiJoints[i];
-				if(joint == null)
+				if(configJointList[i].direct)
 				{
-					testMultiJoints.RemoveAt(i);
-					--i;
-					continue;
+					if((configJointList[i].joint.GetComponent<Rigidbody>() == part2Rigidbody)
+					|| (configJointList[i].joint.connectedBody == part2Rigidbody))
+						return true;
 				}
-				if(joint.connectedBody == testRb)
+			}
+
+			return false;
+		}
+/*
+		public bool CheckIndirectJointBetweenParts(Part part1, Part part2)
+		{
+			if(part1 == null || part2 == null || part1 == part2)
+				return false;
+
+			List<ConfigurableJointWithInfo> configJointList;
+
+			if(!multiJointDict.TryGetValue(part1, out configJointList))
+				return false;
+
+			Rigidbody part2Rigidbody = part2.Rigidbody;
+
+			for(int i = 0; i < configJointList.Count; i++)
+			{
+				if((configJointList[i].joint.GetComponent<Rigidbody>() == part2Rigidbody)
+				|| (configJointList[i].joint.connectedBody == part2Rigidbody))
 					return true;
 			}
 
 			return false;
+		}
+*/
+		public void RemoveAllVesselJoints(Vessel v)
+		{
+			if(v.loaded)
+			{
+				List<Part> toRemove = new List<Part>();
+
+				foreach(var e in multiJointDict)
+				{
+					if(e.Key.vessel == v)
+					{
+						foreach(ConfigurableJointWithInfo jointWI in e.Value)
+						{
+							jointReasonDict.Remove(jointWI.joint);
+
+							if(jointWI.joint != null)
+								GameObject.Destroy(jointWI.joint);
+						}
+
+						toRemove.Add(e.Key);
+					}
+				}
+
+				foreach(Part part in toRemove)
+					multiJointDict.Remove(part);
+			}
 		}
 
 		public void RemovePartJoints(Part part)
@@ -130,17 +169,15 @@ namespace KerbalJointReinforcement
 			if(part == null)
 				return;
 
-			List<ConfigurableJoint> configJointList;
-			if(multiJointDict.TryGetValue(part, out configJointList))
+			List<ConfigurableJointWithInfo> jointList;
+			if(multiJointDict.TryGetValue(part, out jointList))
 			{
-				for(int i = 0; i < configJointList.Count; i++)
+				foreach(ConfigurableJointWithInfo jointWI in jointList)
 				{
-					ConfigurableJoint joint = configJointList[i];
-	
-					jointReasonDict.Remove(joint);
+					jointReasonDict.Remove(jointWI.joint);
 
-					if(joint != null)
-						GameObject.Destroy(joint);
+					if(jointWI.joint != null)
+						GameObject.Destroy(jointWI.joint);
 				}
 
 				multiJointDict.Remove(part);
@@ -152,14 +189,17 @@ namespace KerbalJointReinforcement
 		{
 			HashSet<ConfigurableJoint> l = new HashSet<ConfigurableJoint>();
 
-			Dictionary<Part, List<ConfigurableJoint>>.Enumerator e = multiJointDict.GetEnumerator();
+			Dictionary<Part, List<ConfigurableJointWithInfo>>.Enumerator e = multiJointDict.GetEnumerator();
 
 			while(e.MoveNext())
 			{
-				List<ConfigurableJoint> j = e.Current.Value;
+				List<ConfigurableJointWithInfo> j = e.Current.Value;
 
 				for(int a = 0; a < j.Count; a++)
-					l.Add(j[a]);
+				{
+					if(j[a].direct)
+						l.Add(j[a].joint);
+				}
 			}
 
 			return l.ToArray();

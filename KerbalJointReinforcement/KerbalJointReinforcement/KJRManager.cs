@@ -80,6 +80,8 @@ namespace KerbalJointReinforcement
 		private void OnVesselCreate(Vessel v)
 		{
 			multiJointManager.RemoveAllVesselJoints(v);
+			KJRAutoStrutModule.UninitializeVessel(v);
+
 			updatedVessels.Remove(v);
 
 #if IncludeAnalyzer
@@ -120,6 +122,8 @@ namespace KerbalJointReinforcement
 			easingVessels.Remove(v);
 
 			multiJointManager.RemoveAllVesselJoints(v);
+			KJRAutoStrutModule.UninitializeVessel(v);
+
 			updatedVessels.Remove(v);
 
 #if IncludeAnalyzer
@@ -129,35 +133,66 @@ namespace KerbalJointReinforcement
 
 		public void OnProtoVesselSave(GameEvents.FromToAction<ProtoVessel, ConfigNode> data)
 		{
+			if(data.to == null)
+			{
+				List<ProtoPartSnapshot> toRemove = new List<ProtoPartSnapshot>();
+
+				foreach(ProtoPartSnapshot pps in data.from.protoPartSnapshots)
+				{
+					if(pps.partName == "KJRAutoStrutHelper")
+						toRemove.Add(pps);
+				}
+
+				if(toRemove.Count > 0)
+				{
+					foreach(ProtoPartSnapshot pps in toRemove)
+						data.from.protoPartSnapshots.Remove(pps);
+
+					foreach(ProtoPartSnapshot pps in data.from.protoPartSnapshots)
+						pps.storePartRefs();
+				}
+			}
+/*
 			if((data.to == null) || (data.to.name != "VESSEL"))
 				return;
 
 			ConfigNode v = data.to;
 			ConfigNode[] ap = v.GetNodes("PART");
 
-			int i = 0;
-			while(i < ap.Length)
+			int i = ap.Length;
+			while(i-- > 0)
 			{
 				if(ap[i].GetValue("name") == "KJRAutoStrutHelper")
 				{
-					v.RemoveNode(ap[i]);
-
-					ap = v.GetNodes("PART");
-
-					for(int j = 0; j < ap.Length; j++)
+					for(int j = i + 1; j < ap.Length; j++)
 					{
 						int parent = int.Parse(ap[j].GetValue("parent"));
 
-						if(parent >= i)
+						if(parent > i)
 							ap[j].SetValue("parent", parent - 1);
+
+
+						List<string> av = ap[j].GetValuesList("sym");
+						ap[j].RemoveValues("sym");
+
+						for(int k = 0; k < av.Count; k++)
+						{
+							int sym = int.Parse(av[k]);
+
+							if(sym > i)
+								--sym;
+
+							ap[j].AddValue("sym", sym);
+						}
 					}
 
-					i = 0;
+					v.RemoveNode(ap[i]);
+
+					ap = v.GetNodes("PART");
+					i = ap.Length;
 				}
-				else
-					++i;
 			}
-		}
+*/		}
 
 		// this function can be called by compatible modules instead of calling
 		// Vessel.CycleAllAutoStrut, if you want only KJR to cycle the extra joints
@@ -380,6 +415,8 @@ namespace KerbalJointReinforcement
 			bool addAdditionalJointToParent = KJRJointUtils.multiPartAttachNodeReinforcement;
 			//addAdditionalJointToParent &= !(p.Modules.Contains("LaunchClamp") || (p.parent.Modules.Contains("ModuleDecouple") || p.parent.Modules.Contains("ModuleAnchoredDecoupler")));
 			addAdditionalJointToParent &= !p.Modules.Contains<CModuleStrut>();
+
+// FEHLER, hier auch eine Option hinzufügen, damit man steuern kann, ob überhaupt so eine Verstärkung/Veränderung gemacht werden soll oder nicht -> aktuell gibt's das nur für zusätzliche Joints
 
 			if(p.GetComponent<IJointLockState>() == null) // exclude those actions from joints that can be dynamically unlocked
 			{
@@ -701,11 +738,11 @@ namespace KerbalJointReinforcement
 				List<Part> partsCrossed = new List<Part>();
 				List<Part> possiblePartsCrossed = new List<Part>();
 
-				partsCrossed.Add(p);
+			//	partsCrossed.Add(p);
 				partsCrossed.Add(p.parent);
-				partsCrossed.Add(newConnectedPart);
+			//	partsCrossed.Add(newConnectedPart);
 
-				Rigidbody connectedRb = newConnectedPart.rb;
+				Part connectedRbPart = newConnectedPart;
 
 				// search the first part with an acceptable mass/mass ration to this part (joints work better then)
 				do
@@ -733,7 +770,7 @@ namespace KerbalJointReinforcement
 								possiblePartsCrossed.Add(newConnectedPart);
 							else
 							{
-								connectedRb = newConnectedPart.rb;
+								connectedRbPart = newConnectedPart;
 								partsCrossed.AddRange(possiblePartsCrossed);
 								partsCrossed.Add(newConnectedPart);
 								possiblePartsCrossed.Clear();
@@ -745,42 +782,55 @@ namespace KerbalJointReinforcement
 
 				} while(!massRatioBelowThreshold);// && numPartsFurther < 5);
 
-				if(connectedRb != null && !multiJointManager.CheckMultiJointBetweenParts(p, newConnectedPart))
+				if(newConnectedPart.rb != null && !multiJointManager.CheckDirectJointBetweenParts(p, newConnectedPart))
 				{
 					ConfigurableJoint newJoint;
 
 					if((p.mass >= newConnectedPart.mass) || (p.rb == null))
 					{
 						newJoint = p.gameObject.AddComponent<ConfigurableJoint>();
-						newJoint.connectedBody = connectedRb;
+						newJoint.connectedBody = newConnectedPart.rb;
+
+						newJoint.anchor = Vector3.zero;
+						newJoint.autoConfigureConnectedAnchor = false;
+						newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(newConnectedPart.transform.position + newConnectedPart.transform.rotation * newConnectedPart.orgRot * (p.orgPos - newConnectedPart.orgPos));
+
+						Quaternion must = newConnectedPart.transform.rotation * (Quaternion.Inverse(newConnectedPart.orgRot) * p.orgRot);
+						newJoint.SetTargetRotationLocal(Quaternion.Inverse(p.transform.rotation) * must, Quaternion.identity);
+							// FEHLER, direkter machen
 					}
 					else
 					{
-						newJoint = connectedRb.gameObject.AddComponent<ConfigurableJoint>();
+						newJoint = newConnectedPart.gameObject.AddComponent<ConfigurableJoint>();
 						newJoint.connectedBody = p.rb;
+
+						newJoint.anchor = Vector3.zero;
+						newJoint.autoConfigureConnectedAnchor = false;
+						newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * p.orgRot * (newConnectedPart.orgPos - p.orgPos));
+
+						Quaternion must = p.transform.rotation * (Quaternion.Inverse(p.orgRot) * newConnectedPart.orgRot);
+						newJoint.SetTargetRotationLocal(Quaternion.Inverse(newConnectedPart.transform.rotation) * must, Quaternion.identity);
+							// FEHLER, direkter machen
 					}
 
-					newJoint.axis = Vector3.right;
-					newJoint.secondaryAxis = Vector3.forward;
+		//			newJoint.linearLimit = newJoint.angularYLimit = newJoint.angularZLimit = newJoint.lowAngularXLimit = newJoint.highAngularXLimit
+		//				= new SoftJointLimit { limit = 0, bounciness = 0 }; // FEHLER, hab das mal rausgenommen -> evtl. später doch wieder Limited arbeiten??
 
-					newJoint.anchor = Vector3.zero;
-				//  newJoint.autoConfigureConnectedAnchor = false;
-				//  newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(newJoint.transform.position);
+					newJoint.xMotion = newJoint.yMotion = newJoint.zMotion = ConfigurableJointMotion.Free;
+					newJoint.angularYMotion = newJoint.angularZMotion = newJoint.angularXMotion = ConfigurableJointMotion.Free;
 
+					newJoint.xDrive = j.xDrive; newJoint.yDrive = j.yDrive; newJoint.zDrive = j.zDrive;
 					newJoint.angularXDrive = newJoint.angularYZDrive = newJoint.slerpDrive = j.angularXDrive;
-
-					newJoint.xDrive = j.xDrive;
-					newJoint.yDrive = j.yDrive;
-					newJoint.zDrive = j.zDrive;
-
-					newJoint.linearLimit = newJoint.angularYLimit = newJoint.angularZLimit = newJoint.lowAngularXLimit = newJoint.highAngularXLimit
-						= new SoftJointLimit { limit = 0, bounciness = 0 };
 
 					newJoint.breakForce = j.breakForce;
 					newJoint.breakTorque = j.breakTorque;
 
-					for(int k = 0; k < partsCrossed.Count; k++)
-						multiJointManager.RegisterMultiJoint(partsCrossed[k], newJoint, KJRMultiJointManager.Reason.AdditionalJointToParent);
+					// register joint
+					multiJointManager.RegisterMultiJoint(p, newJoint, true, KJRMultiJointManager.Reason.AdditionalJointToParent);
+					multiJointManager.RegisterMultiJoint(newConnectedPart, newJoint, true, KJRMultiJointManager.Reason.AdditionalJointToParent);
+
+					foreach(Part part in partsCrossed)
+						multiJointManager.RegisterMultiJoint(part, newJoint, false, KJRMultiJointManager.Reason.AdditionalJointToParent);
 				}
 			}
 
@@ -788,12 +838,19 @@ namespace KerbalJointReinforcement
 				Debug.Log(debugString.ToString());
 		}
 
-		private void MultiPartJointBuildJoint(Part p, Part linkPart, KJRMultiJointManager.Reason jointReason)
+		private void MultiPartJointBuildJoint(Part part, Part linkPart, KJRMultiJointManager.Reason jointReason)
 		{
-			if(multiJointManager.CheckMultiJointBetweenParts(p, linkPart) || !multiJointManager.TrySetValidLinkedSet(p, linkPart))
+			if(multiJointManager.CheckDirectJointBetweenParts(part, linkPart)
+			|| !multiJointManager.TrySetValidLinkedSet(part, linkPart))
 				return;
 
-			multiJointManager.RegisterMultiJointBetweenParts(p, linkPart, KJRJointUtils.BuildJoint(p, linkPart), jointReason);
+			ConfigurableJoint joint = KJRJointUtils.BuildJoint(part, linkPart);
+
+			multiJointManager.RegisterMultiJoint(part, joint, true, jointReason);
+			multiJointManager.RegisterMultiJoint(linkPart, joint, true, jointReason);
+
+			foreach(Part p in multiJointManager.linkedSet)
+				multiJointManager.RegisterMultiJoint(p, joint, false, jointReason);
 		}
 
 		public void MultiPartJointTreeChildren(Vessel v)
