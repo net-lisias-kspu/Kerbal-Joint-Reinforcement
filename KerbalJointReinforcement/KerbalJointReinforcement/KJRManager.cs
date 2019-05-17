@@ -122,7 +122,7 @@ namespace KerbalJointReinforcement
 			easingVessels.Remove(v);
 
 			multiJointManager.RemoveAllVesselJoints(v);
-			KJRAutoStrutModule.UninitializeVessel(v);
+		//	KJRAutoStrutModule.UninitializeVessel(v); -> the vessel is destroying right now... everything we do can cause NullReferenceExceptions
 
 			updatedVessels.Remove(v);
 
@@ -793,7 +793,7 @@ namespace KerbalJointReinforcement
 
 						newJoint.anchor = Vector3.zero;
 						newJoint.autoConfigureConnectedAnchor = false;
-						newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(newConnectedPart.transform.position + newConnectedPart.transform.rotation * newConnectedPart.orgRot * (p.orgPos - newConnectedPart.orgPos));
+						newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(newConnectedPart.transform.position + newConnectedPart.transform.rotation * Quaternion.Inverse(newConnectedPart.orgRot) * (p.orgPos - newConnectedPart.orgPos));
 
 						Quaternion must = newConnectedPart.transform.rotation * (Quaternion.Inverse(newConnectedPart.orgRot) * p.orgRot);
 						newJoint.SetTargetRotationLocal(Quaternion.Inverse(p.transform.rotation) * must, Quaternion.identity);
@@ -806,7 +806,7 @@ namespace KerbalJointReinforcement
 
 						newJoint.anchor = Vector3.zero;
 						newJoint.autoConfigureConnectedAnchor = false;
-						newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * p.orgRot * (newConnectedPart.orgPos - p.orgPos));
+						newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * Quaternion.Inverse(p.orgRot) * (newConnectedPart.orgPos - p.orgPos));
 
 						Quaternion must = p.transform.rotation * (Quaternion.Inverse(p.orgRot) * newConnectedPart.orgRot);
 						newJoint.SetTargetRotationLocal(Quaternion.Inverse(newConnectedPart.transform.rotation) * must, Quaternion.identity);

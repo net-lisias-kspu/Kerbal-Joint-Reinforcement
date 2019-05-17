@@ -401,7 +401,7 @@ namespace KerbalJointReinforcement
 
 				newJoint.anchor = Vector3.zero;
 				newJoint.autoConfigureConnectedAnchor = false;
-				newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(linkPart.transform.position + linkPart.transform.rotation * linkPart.orgRot * (p.orgPos - linkPart.orgPos));
+				newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(linkPart.transform.position + linkPart.transform.rotation * Quaternion.Inverse(linkPart.orgRot) * (p.orgPos - linkPart.orgPos));
 
 				Quaternion must = linkPart.transform.rotation * (Quaternion.Inverse(linkPart.orgRot) * p.orgRot);
 				newJoint.SetTargetRotationLocal(Quaternion.Inverse(p.transform.rotation) * must, Quaternion.identity);
@@ -414,7 +414,7 @@ namespace KerbalJointReinforcement
 
 				newJoint.anchor = Vector3.zero;
 				newJoint.autoConfigureConnectedAnchor = false;
-				newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * p.orgRot * (linkPart.orgPos - p.orgPos));
+				newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * Quaternion.Inverse(p.orgRot) * (linkPart.orgPos - p.orgPos));
 
 				Quaternion must = p.transform.rotation * (Quaternion.Inverse(p.orgRot) * linkPart.orgRot);
 				newJoint.SetTargetRotationLocal(Quaternion.Inverse(linkPart.transform.rotation) * must, Quaternion.identity);
