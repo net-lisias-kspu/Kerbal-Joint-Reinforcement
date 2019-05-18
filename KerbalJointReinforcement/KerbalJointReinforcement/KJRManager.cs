@@ -40,7 +40,7 @@ namespace KerbalJointReinforcement
 		{
 			GameEvents.onVesselCreate.Add(OnVesselCreate);
 			GameEvents.onVesselWasModified.Add(OnVesselWasModified);
-			GameEvents.onVesselDestroy.Add(OnVesselDestroy);
+			GameEvents.onVesselDestroy.Add(OnVesselDestroy); // FEHLER, evtl. onAboutToDestroy nutzen??
 			GameEvents.onProtoVesselSave.Add(OnProtoVesselSave);
 
 			GameEvents.onVesselGoOffRails.Add(OnVesselOffRails);
@@ -89,7 +89,7 @@ namespace KerbalJointReinforcement
 #endif
 		}
 
-		private void OnVesselWasModified(Vessel v)
+		internal void OnVesselWasModified(Vessel v)
 		{
 			if((object)v == null || v.isEVA || v.GetComponent<KerbalEVA>())
 				return; 
@@ -297,6 +297,11 @@ namespace KerbalJointReinforcement
 
 			bool bReinforced = false;
 
+#if IncludeAnalyzer
+			if(WindowManager.Instance.ReinforceExistingJoints)
+			{
+#endif
+
 			foreach(Part p in v.Parts)
 			{
 				if(KJRJointUtils.reinforceAttachNodes)
@@ -333,6 +338,10 @@ namespace KerbalJointReinforcement
 					}
 				}
 			}
+
+#if IncludeAnalyzer
+			}
+#endif
 
 			if(bReinforced)
 				updatedVessels.Add(v);
@@ -415,8 +424,6 @@ namespace KerbalJointReinforcement
 			bool addAdditionalJointToParent = KJRJointUtils.multiPartAttachNodeReinforcement;
 			//addAdditionalJointToParent &= !(p.Modules.Contains("LaunchClamp") || (p.parent.Modules.Contains("ModuleDecouple") || p.parent.Modules.Contains("ModuleAnchoredDecoupler")));
 			addAdditionalJointToParent &= !p.Modules.Contains<CModuleStrut>();
-
-// FEHLER, hier auch eine Option hinzufügen, damit man steuern kann, ob überhaupt so eine Verstärkung/Veränderung gemacht werden soll oder nicht -> aktuell gibt's das nur für zusätzliche Joints
 
 			if(p.GetComponent<IJointLockState>() == null) // exclude those actions from joints that can be dynamically unlocked
 			{
@@ -917,7 +924,7 @@ namespace KerbalJointReinforcement
 #if IncludeAnalyzer
 					if(WindowManager.Instance.BuildMultiPartJointTreeChildren)
 #endif
-					   MultiPartJointBuildJoint(p, linkPart, KJRMultiJointManager.Reason.MultiPartJointTreeChildren);
+						MultiPartJointBuildJoint(p, linkPart, KJRMultiJointManager.Reason.MultiPartJointTreeChildren);
 
 
 					int part2Index = i + childPartsToConnect.Count / 2;
@@ -941,7 +948,7 @@ namespace KerbalJointReinforcement
 #if IncludeAnalyzer
 					if(WindowManager.Instance.BuildMultiPartJointTreeChildrenRoot)
 #endif
-					 MultiPartJointBuildJoint(p, root, KJRMultiJointManager.Reason.MultiPartJointTreeChildrenRoot);
+						MultiPartJointBuildJoint(p, root, KJRMultiJointManager.Reason.MultiPartJointTreeChildrenRoot);
 				}
 			}
 		}

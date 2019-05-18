@@ -27,31 +27,23 @@ namespace KerbalJointReinforcement
 			part.name = name;
 			part.persistentId = FlightGlobals.CheckPartpersistentId(part.persistentId, part, false, true);
 
-			part.transform.position = parent.transform.position;
-
-
-			Rigidbody rb = part.GetComponent<Rigidbody>();
-			if(!rb) rb = part.gameObject.AddComponent<Rigidbody>();
-
-			rb.useGravity = false;
-			rb.mass = 1e-6f;
-
-			rb.angularDrag = 0f;
-			rb.detectCollisions = false;
-			rb.drag = 0f;
-
+			part.transform.position = v.rootPart.transform.position + ((v.rootPart == parent) ? (Vector3.right * 0.1f) : (Vector3.right * -0.1f));
 
 			v.parts.Add(part);
 			part.vessel = v;
 
 			part.parent = parent;
-			part.CreateAttachJoint(AttachModes.SRF_ATTACH);
 
 			return part;
 		}
 
 		public static void InitializeVessel(Vessel v)
 		{
+#if IncludeAnalyzer
+			if(!WindowManager.Instance.UseAutoStrutSensor)
+				return;
+#endif
+
 			int c = v.FindPartModulesImplementing<KJRAutoStrutModule>().Count;
 
 			if(c > 1)
@@ -67,7 +59,6 @@ namespace KerbalJointReinforcement
 
 			sensor2.autoStrutMode = Part.AutoStrutMode.Root;
 			sensor2.autoStrutExcludeParent = false;
-		//	sensor2.CycleAutoStrut();
 		}
 
 		public static void UninitializeVessel(Vessel v)
@@ -91,7 +82,6 @@ namespace KerbalJointReinforcement
 
 			foreach(Part p in toDelete)
 			{
-				p.attachJoint.DestroyJoint();
 				v.parts.Remove(p);
 	
 				UnityEngine.Object.Destroy(p.gameObject);

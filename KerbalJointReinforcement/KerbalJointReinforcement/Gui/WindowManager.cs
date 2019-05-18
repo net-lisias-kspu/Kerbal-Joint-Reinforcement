@@ -65,12 +65,15 @@ namespace KerbalJointReinforcement
 		private ApplicationLauncherButton appLauncherButton;
 
 		public bool ShowKSPJoints = false;
+		public bool ReinforceExistingJoints = true;
 		public bool BuildAdditionalJointToParent = true;
 		public bool ShowAdditionalJointToParent = false;
 		public bool BuildMultiPartJointTreeChildren = true;
 		public bool ShowMultiPartJointTreeChildren = false;
 		public bool BuildMultiPartJointTreeChildrenRoot = true;
 		public bool ShowMultiPartJointTreeChildrenRoot = false;
+
+		public bool UseAutoStrutSensor = true;
 
 		internal bool GUIEnabled = false;
 
@@ -139,6 +142,15 @@ namespace KerbalJointReinforcement
 		////////////////////////////////////////
 		// Settings
 
+		private Toggle AddNewOption(GameObject content, string text)
+		{
+			var Opt = GameObject.Instantiate(UIAssetsLoader.optionLinePrefab);
+			Opt.transform.SetParent(content.transform, false);
+			Opt.GetChild("Label").GetComponent<Text>().text = text;
+
+			return Opt.GetChild("Toggle").GetComponent<Toggle>();
+		}
+
 		private void InitSettingsWindow(bool startSolid = true)
 		{
 			_settingsWindow = GameObject.Instantiate(UIAssetsLoader.settingsWindowPrefab);
@@ -173,105 +185,164 @@ namespace KerbalJointReinforcement
 				t.tooltipText = "Close window";
 			}
 
-			var Opt1Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt1").GetChild("Opt1Toggle").GetComponent<Toggle>();
-			Opt1Toggle.isOn = ShowKSPJoints;
+
+			var content = _settingsWindow.GetChild("WindowContent");
+
+			var OptShowKSPJoints = AddNewOption(content, "ShowKSPJoints");
+			OptShowKSPJoints.isOn = ShowKSPJoints;
 
 	//		var Opt1ToggleTooltip = Opt1Toggle.gameObject.AddComponent<BasicTooltip>();
 	//		Opt1ToggleTooltip.tooltipText = "Option1";
 
-			var Opt2Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt2").GetChild("Opt2Toggle").GetComponent<Toggle>();
-			Opt2Toggle.isOn = BuildAdditionalJointToParent;
+			var OptReinforceExistingJoints = AddNewOption(content, "Reinforce Existing Joints");
+			OptReinforceExistingJoints.isOn = ReinforceExistingJoints;
 
-			var Opt3Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt3").GetChild("Opt3Toggle").GetComponent<Toggle>();
-			Opt3Toggle.isOn = ShowAdditionalJointToParent;
+			var OptBuildAdditionalJointToParent = AddNewOption(content, "Build Additional Joints To Parent");
+			OptBuildAdditionalJointToParent.isOn = BuildAdditionalJointToParent;
 
-			var Opt4Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt4").GetChild("Opt4Toggle").GetComponent<Toggle>();
-			Opt4Toggle.isOn = BuildMultiPartJointTreeChildren;
+			var OptShowAdditionalJointToParent = AddNewOption(content, "Show Additional Joints To Parent");
+			OptShowAdditionalJointToParent.isOn = ShowAdditionalJointToParent;
 
-			var Opt5Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt5").GetChild("Opt5Toggle").GetComponent<Toggle>();
-			Opt5Toggle.isOn = ShowMultiPartJointTreeChildren;
+			var OptBuildMultiPartJointTreeChildren = AddNewOption(content, "BuildMultiPartJointTreeChildren");
+			OptBuildMultiPartJointTreeChildren.isOn = BuildMultiPartJointTreeChildren;
 
-			var Opt6Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt6").GetChild("Opt6Toggle").GetComponent<Toggle>();
-			Opt6Toggle.isOn = BuildMultiPartJointTreeChildrenRoot;
+			var OptShowMultiPartJointTreeChildren = AddNewOption(content, "ShowMultiPartJointTreeChildren");
+			OptShowMultiPartJointTreeChildren.isOn = ShowMultiPartJointTreeChildren;
 
-			var Opt7Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt7").GetChild("Opt7Toggle").GetComponent<Toggle>();
-			Opt7Toggle.isOn = ShowMultiPartJointTreeChildrenRoot;
+			var OptBuildMultiPartJointTreeChildrenRoot = AddNewOption(content, "BuildMultiPartJointTreeChildrenRoot");
+			OptBuildMultiPartJointTreeChildrenRoot.isOn = BuildMultiPartJointTreeChildrenRoot;
 
-			var Opt8Toggle = _settingsWindow.GetChild("WindowContent").GetChild("Opt8").GetChild("Opt8Toggle").GetComponent<Toggle>();
-			Opt8Toggle.isOn = PhysicsGlobals.AutoStrutDisplay;
+			var OptShowMultiPartJointTreeChildrenRoot = AddNewOption(content, "ShowMultiPartJointTreeChildrenRoot");
+			OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot;
+
+			var OptUseAutoStrutSensor = AddNewOption(content, "Use AutoStrut Sensors");
+			OptUseAutoStrutSensor.isOn = UseAutoStrutSensor;
+
+			var OptAutoStrutDisplay = AddNewOption(content, "Show AutoStruts");
+			OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay;
+
 
 			var footerButtons = _settingsWindow.GetChild("WindowFooter").GetChild("WindowFooterButtonsHLG");
 	
 			var cancelButton = footerButtons.GetChild("CancelButton").GetComponent<Button>();
 			cancelButton.onClick.AddListener(() =>
 				{
-					Opt1Toggle.isOn = ShowKSPJoints;
-					Opt2Toggle.isOn = BuildAdditionalJointToParent;
-					Opt3Toggle.isOn = ShowAdditionalJointToParent;
-					Opt4Toggle.isOn = BuildMultiPartJointTreeChildren;
-					Opt5Toggle.isOn = ShowMultiPartJointTreeChildren;
-					Opt6Toggle.isOn = BuildMultiPartJointTreeChildrenRoot;
-					Opt7Toggle.isOn = ShowMultiPartJointTreeChildrenRoot;
-					Opt8Toggle.isOn = PhysicsGlobals.AutoStrutDisplay;
+					OptShowKSPJoints.isOn = ShowKSPJoints;
+					OptReinforceExistingJoints.isOn = ReinforceExistingJoints;
+					OptBuildAdditionalJointToParent.isOn = BuildAdditionalJointToParent;
+					OptShowAdditionalJointToParent.isOn = ShowAdditionalJointToParent;
+					OptBuildMultiPartJointTreeChildren.isOn = BuildMultiPartJointTreeChildren;
+					OptShowMultiPartJointTreeChildren.isOn = ShowMultiPartJointTreeChildren;
+					OptBuildMultiPartJointTreeChildrenRoot.isOn = BuildMultiPartJointTreeChildrenRoot;
+					OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot;
+					OptUseAutoStrutSensor.isOn = UseAutoStrutSensor;
+					OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay;
 				});
 	
 			var defaultButton = footerButtons.GetChild("DefaultButton").GetComponent<Button>();
 			defaultButton.onClick.AddListener(() =>
 				{
-					bool bCycle = false;
+					bool bCycle = false, bReinitialize = false;
 
-					Opt1Toggle.isOn = ShowKSPJoints = false;
+					OptShowKSPJoints.isOn = ShowKSPJoints = false;
+
+					if(!ReinforceExistingJoints)
+						bCycle = true;
+					OptReinforceExistingJoints.isOn = ReinforceExistingJoints = true;
+
 					if(!BuildAdditionalJointToParent)
 						bCycle = true;
-					Opt2Toggle.isOn = BuildAdditionalJointToParent = true;
-					Opt3Toggle.isOn = ShowAdditionalJointToParent = false;
+					OptBuildAdditionalJointToParent.isOn = BuildAdditionalJointToParent = true;
+
+					OptShowAdditionalJointToParent.isOn = ShowAdditionalJointToParent = false;
+	
 					if(!BuildMultiPartJointTreeChildren)
 						bCycle = true;
-					Opt4Toggle.isOn = BuildMultiPartJointTreeChildren = true;
-					Opt5Toggle.isOn = ShowMultiPartJointTreeChildren = false;
+					OptBuildMultiPartJointTreeChildren.isOn = BuildMultiPartJointTreeChildren = true;
+
+					OptShowMultiPartJointTreeChildren.isOn = ShowMultiPartJointTreeChildren = false;
+
 					if(!BuildMultiPartJointTreeChildrenRoot)
 						bCycle = true;
-					Opt6Toggle.isOn = BuildMultiPartJointTreeChildrenRoot = true;
-					Opt7Toggle.isOn = ShowMultiPartJointTreeChildrenRoot = false;
-					Opt8Toggle.isOn = PhysicsGlobals.AutoStrutDisplay = false;
+					OptBuildMultiPartJointTreeChildrenRoot.isOn = BuildMultiPartJointTreeChildrenRoot = true;
+
+					OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot = false;
+
+					if(!UseAutoStrutSensor)
+						bReinitialize = true;
+					OptUseAutoStrutSensor.isOn = UseAutoStrutSensor = true;
+
+					OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay = false;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
 
+					if(bReinitialize && HighLogic.LoadedSceneIsFlight)
+					{
+						KJRAutoStrutModule.UninitializeVessel(FlightGlobals.ActiveVessel);
+						if(!bCycle)
+							KJRAutoStrutModule.InitializeVessel(FlightGlobals.ActiveVessel);
+					}
+
 					if(bCycle && HighLogic.LoadedSceneIsFlight)
-						FlightGlobals.ActiveVessel.CycleAllAutoStrut();
+						KJRManager.Instance.OnVesselWasModified(FlightGlobals.ActiveVessel);
 				});
 	
 			var applyButton = footerButtons.GetChild("ApplyButton").GetComponent<Button>();
 			applyButton.onClick.AddListener(() => 
 				{
-					bool bCycle = false;
+					bool bCycle = false, bReinitialize = false;
 
-					ShowKSPJoints = Opt1Toggle.isOn;
-					if(BuildAdditionalJointToParent != Opt2Toggle.isOn)
+					ShowKSPJoints = OptShowKSPJoints.isOn;
+
+					if(ReinforceExistingJoints != OptReinforceExistingJoints.isOn)
 					{
 						bCycle = true;
-						BuildAdditionalJointToParent = Opt2Toggle.isOn;
+						ReinforceExistingJoints = OptReinforceExistingJoints.isOn;
 					}
-					ShowAdditionalJointToParent = Opt3Toggle.isOn;
-					if(BuildMultiPartJointTreeChildren != Opt4Toggle.isOn)
+
+					if(BuildAdditionalJointToParent != OptBuildAdditionalJointToParent.isOn)
 					{
 						bCycle = true;
-						BuildMultiPartJointTreeChildren = Opt4Toggle.isOn;
+						BuildAdditionalJointToParent = OptBuildAdditionalJointToParent.isOn;
 					}
-					ShowMultiPartJointTreeChildren = Opt5Toggle.isOn;
-					if(BuildMultiPartJointTreeChildrenRoot != Opt6Toggle.isOn)
+
+					ShowAdditionalJointToParent = OptShowAdditionalJointToParent.isOn;
+
+					if(BuildMultiPartJointTreeChildren != OptBuildMultiPartJointTreeChildren.isOn)
 					{
 						bCycle = true;
-						BuildMultiPartJointTreeChildrenRoot = Opt6Toggle.isOn;
+						BuildMultiPartJointTreeChildren = OptBuildMultiPartJointTreeChildren.isOn;
 					}
-					ShowMultiPartJointTreeChildrenRoot = Opt7Toggle.isOn;
+	
+					ShowMultiPartJointTreeChildren = OptShowMultiPartJointTreeChildren.isOn;
+
+					if(BuildMultiPartJointTreeChildrenRoot != OptBuildMultiPartJointTreeChildrenRoot.isOn)
+					{
+						bCycle = true;
+						BuildMultiPartJointTreeChildrenRoot = OptBuildMultiPartJointTreeChildrenRoot.isOn;
+					}
+
+					ShowMultiPartJointTreeChildrenRoot = OptShowMultiPartJointTreeChildrenRoot.isOn;
+
+					if(UseAutoStrutSensor != OptUseAutoStrutSensor.isOn)
+					{
+						bReinitialize = true;
+						UseAutoStrutSensor = OptUseAutoStrutSensor.isOn;
+					}
+
+					PhysicsGlobals.AutoStrutDisplay = OptAutoStrutDisplay.isOn;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
 
-					PhysicsGlobals.AutoStrutDisplay = Opt8Toggle.isOn;
+					if(bReinitialize && HighLogic.LoadedSceneIsFlight)
+					{
+						KJRAutoStrutModule.UninitializeVessel(FlightGlobals.ActiveVessel);
+						if(!bCycle)
+							KJRAutoStrutModule.InitializeVessel(FlightGlobals.ActiveVessel);
+					}
 
 					if(bCycle && HighLogic.LoadedSceneIsFlight)
-						FlightGlobals.ActiveVessel.CycleAllAutoStrut();
+						KJRManager.Instance.OnVesselWasModified(FlightGlobals.ActiveVessel);
 				});
 		}
 
@@ -515,12 +586,14 @@ namespace KerbalJointReinforcement
 			config.SetValue("UIAlphaValue", (double) _UIAlphaValue);
 			config.SetValue("UIScaleValue", (double) _UIScaleValue);
 			config.SetValue("ShowKSPJoints", ShowKSPJoints);
+			config.SetValue("ReinforceExistingJoints", ReinforceExistingJoints);
 			config.SetValue("BuildAdditionalJointToParent", BuildAdditionalJointToParent);
 			config.SetValue("ShowAdditionalJointToParent", ShowAdditionalJointToParent);
 			config.SetValue("BuildMultiPartJointTreeChildren", BuildMultiPartJointTreeChildren);
 			config.SetValue("ShowMultiPartJointTreeChildren", ShowMultiPartJointTreeChildren);
 			config.SetValue("BuildMultiPartJointTreeChildrenRoot", BuildMultiPartJointTreeChildrenRoot);
 			config.SetValue("ShowMultiPartJointTreeChildrenRoot", ShowMultiPartJointTreeChildrenRoot);
+			config.SetValue("UseAutoStrutSensor", UseAutoStrutSensor);
 
 			config.save();
 		}
@@ -535,12 +608,14 @@ namespace KerbalJointReinforcement
 			_UIAlphaValue = (float) config.GetValue<double>("UIAlphaValue", 0.8);
 			_UIScaleValue = (float) config.GetValue<double>("UIScaleValue", 1.0);
 			ShowKSPJoints = config.GetValue<bool>("ShowKSPJoints", true);
+			ReinforceExistingJoints = config.GetValue<bool>("ReinforceExistingJoints", true);
 			BuildAdditionalJointToParent = config.GetValue<bool>("BuildAdditionalJointToParent", true);
 			ShowAdditionalJointToParent = config.GetValue<bool>("ShowAdditionalJointToParent", true);
 			BuildMultiPartJointTreeChildren = config.GetValue<bool>("BuildMultiPartJointTreeChildren", true);
 			ShowMultiPartJointTreeChildren = config.GetValue<bool>("ShowMultiPartJointTreeChildren", true);
 			BuildMultiPartJointTreeChildrenRoot = config.GetValue<bool>("BuildMultiPartJointTreeChildrenRoot", true);
 			ShowMultiPartJointTreeChildrenRoot = config.GetValue<bool>("ShowMultiPartJointTreeChildrenRoot", true);
+			UseAutoStrutSensor = config.GetValue<bool>("UseAutoStrutSensor", true);
 		}
 	}
 

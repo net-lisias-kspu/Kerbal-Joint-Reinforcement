@@ -17,6 +17,7 @@ namespace KerbalJointReinforcement
 
 		// windows
 		internal static GameObject settingsWindowPrefab;
+		internal static GameObject optionLinePrefab;
 
 		internal static GameObject basicTooltipPrefab;
 
@@ -51,8 +52,16 @@ namespace KerbalJointReinforcement
 				{
 					settingsWindowPrefab = prefabs[i] as GameObject;
 					prefabCounter++;
-					Logger.Log("Successfully loaded settings window prefab", Logger.Level.Debug);
+					Logger.Log("Successfully loaded KJRSettingsWindowPrefab", Logger.Level.Debug);
 				}
+
+				if(prefabs[i].name == "OptionLinePrefab")
+				{
+					optionLinePrefab = prefabs[i] as GameObject;
+					prefabCounter++;
+					Logger.Log("Successfully loaded OptionLinePrefab", Logger.Level.Debug);
+				}
+
 			/*
 				if(prefabs[i].name == "UISettingsWindowPrefab")
 				{
@@ -69,7 +78,7 @@ namespace KerbalJointReinforcement
 				}
 			}
 
-			allPrefabsReady = (prefabCounter >= 2);
+			allPrefabsReady = (prefabCounter >= 3);
 
 			spriteAssets = new List<UnityEngine.Sprite>();
 			var sprites = KJRAssetBundle.LoadAllAssets<UnityEngine.Sprite>();
