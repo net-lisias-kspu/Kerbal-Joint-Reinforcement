@@ -47,6 +47,8 @@ namespace KerbalJointReinforcement
 			if(!WindowManager.Instance.UseAutoStrutSensor)
 				return;
 #endif
+			if(v.parts.Count < 2)
+				return;
 
 			int c = v.FindPartModulesImplementing<KJRAutoStrutModule>().Count;
 

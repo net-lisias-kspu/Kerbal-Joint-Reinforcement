@@ -34,7 +34,7 @@ namespace KerbalJointReinforcement
 
 		public static bool debug = false;
 
-		public static List<string> decouplerStiffeningExtensionType = new List<string>();
+		public static List<string> decouplerStiffeningExtensionType = new List<string>(); // FEHLER, evtl. später rausschmeissen
 
 		public static float massForAdjustment = 0.001f;
 
@@ -431,22 +431,6 @@ namespace KerbalJointReinforcement
 			newJoint.breakTorque = KJRJointUtils.decouplerAndClampJointStrength;
 
 			return newJoint;
-		}
-
-		public static void AddDecouplerJointReinforcementModule(Part p)
-		{
-			p.AddModule("KJRDecouplerReinforcementModule");
-			(p.Modules["KJRDecouplerReinforcementModule"] as KJRDecouplerReinforcementModule).OnPartUnpack();
-			if(debug)
-				Debug.Log("Added KJRDecouplerReinforcementModule to part " + p.partInfo.title);
-		}
-
-		public static void AddLaunchClampReinforcementModule(Part p)
-		{
-			p.AddModule("KJRLaunchClampReinforcementModule");
-			(p.Modules["KJRLaunchClampReinforcementModule"] as KJRLaunchClampReinforcementModule).OnPartUnpack();
-			if(debug)
-				Debug.Log("Added KJRLaunchClampReinforcementModule to part " + p.partInfo.title);
 		}
 
 		public static void ConnectLaunchClampToGround(Part clamp)

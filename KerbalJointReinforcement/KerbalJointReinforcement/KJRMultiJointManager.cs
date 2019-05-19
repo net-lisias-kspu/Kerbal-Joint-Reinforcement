@@ -12,7 +12,7 @@ namespace KerbalJointReinforcement
 	{
 		internal enum Reason
 		{
-			None, AdditionalJointToParent, MultiPartJointTreeChildren, MultiPartJointTreeChildrenRoot
+			None, ReinforceDecoupler, ReinforceLaunchClamp, AdditionalJointToParent, MultiPartJointTreeChildren, MultiPartJointTreeChildrenRoot
 		};
 
 		internal struct ConfigurableJointWithInfo
@@ -65,7 +65,7 @@ namespace KerbalJointReinforcement
 				linkedSet.RemoveRange(i + 2, linkedSet.Count - i - 2);
 			linkedSet.RemoveAt(0);
 
-			if(tempPartList.Count > 1)
+			if((tempPartList.Count > 1) && (j > 0))
 				linkedSet.AddRange(tempPartList.GetRange(1, j)); 
 
 			return linkedSet.Count > 1;

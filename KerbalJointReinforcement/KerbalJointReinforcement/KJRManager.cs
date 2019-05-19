@@ -52,6 +52,8 @@ namespace KerbalJointReinforcement
 
 			GameEvents.onPhysicsEaseStart.Add(OnEaseStart);
 			GameEvents.onPhysicsEaseStop.Add(OnEaseStop);
+
+// FHELER, der decoupler hat noch das Pack behandelt... müsste man das auch noch? ist das nicht immer dann, wenn man onrails geht??? -> doch, wird genau nur dann gesendet
 		}
 
 		public void OnDestroy()
@@ -210,6 +212,8 @@ namespace KerbalJointReinforcement
 
 			if(updatedVessels.Contains(v))
 			{
+// FEHLER, die Frage ist, ob man hier die Joints abräumen will... aber... ganz ehrlich... wozu??
+
 				updatedVessels.Remove(v);
 
 				KJRAutoStrutModule.UninitializeVessel(v);
@@ -311,32 +315,27 @@ namespace KerbalJointReinforcement
 					if((p.parent != null) && (p.physicalSignificance == Part.PhysicalSignificance.FULL))
 					{
 						bReinforced = true;
-						UpdatePartJoint(p);
+						ReinforceAttachJoints(p);
 					}
 				}
 
 				if(KJRJointUtils.reinforceDecouplersFurther)
 				{
-					if((p.Modules.Contains<ModuleDecouple>() || p.Modules.Contains<ModuleAnchoredDecoupler>())
-						&& !p.Modules.Contains<KJRDecouplerReinforcementModule>())
+					ModuleDecouplerBase d = p.GetComponent<ModuleDecouplerBase>(); // FEHLER, wieso nicht auch ModuleDockingNode ??
+
+					if(p.parent && (p.children.Count > 0) && d && !d.isDecoupled)
 					{
-						KJRJointUtils.AddDecouplerJointReinforcementModule(p);
+						bReinforced = true;
+						ReinforceDecouplers(p);
 						continue;
 					}
 				}
 
 				if(KJRJointUtils.reinforceLaunchClampsFurther)
 				{
-					if((p.parent != null) && p.Modules.Contains<LaunchClamp>()
-						&& !p.Modules.Contains<KJRLaunchClampReinforcementModule>())
+					if(p.parent && p.GetComponent<LaunchClamp>())
 					{
-						p.breakingForce = Mathf.Infinity;
-						p.breakingTorque = Mathf.Infinity;
-						p.mass = Mathf.Max(p.mass, (p.parent.mass + p.parent.GetResourceMass()) * 0.01f);		  //We do this to make sure that there is a mass ratio of 100:1 between the clamp and what it's connected to.  This helps counteract some of the wobbliness simply, but also allows some give and springiness to absorb the initial physics kick
-						if(KJRJointUtils.debug)
-							Debug.Log("KJR: Launch Clamp Break Force / Torque increased");
-
-						KJRJointUtils.AddLaunchClampReinforcementModule(p);
+						ReinforceLaunchClamps(p);
 					}
 				}
 			}
@@ -364,7 +363,7 @@ namespace KerbalJointReinforcement
 #endif
 	   }
 
-		private void UpdatePartJoint(Part p)
+		private void ReinforceAttachJoints(Part p)
 		{
 			if(p.rb == null || p.attachJoint == null || !KJRJointUtils.IsJointAdjustmentAllowed(p))
 				return;
@@ -860,6 +859,86 @@ namespace KerbalJointReinforcement
 
 			foreach(Part p in multiJointManager.linkedSet)
 				multiJointManager.RegisterMultiJoint(p, joint, false, jointReason);
+		}
+
+			// FEHLER, überarbeiten... ist das nicht etwas sehr viel was wir hier aufbauen???
+		private void ReinforceDecouplers(Part part)
+		{
+			List<Part> childParts = new List<Part>();
+			List<Part> parentParts = new List<Part>();
+
+			parentParts = KJRJointUtils.DecouplerPartStiffeningListParents(part.parent);
+
+			foreach(Part p in part.children)
+			{
+				if(KJRJointUtils.IsJointAdjustmentAllowed(p))
+				{
+					childParts.AddRange(KJRJointUtils.DecouplerPartStiffeningListChildren(p));
+					if(!childParts.Contains(p))
+						childParts.Add(p);
+				}
+			}
+
+			parentParts.Add(part);
+
+			StringBuilder debugString = null;
+
+			if(KJRJointUtils.debug)
+			{
+				debugString = new StringBuilder();
+				debugString.AppendLine(parentParts.Count + " parts above decoupler to be connected to " + childParts.Count + " below decoupler.");
+				debugString.AppendLine("The following joints added by " + part.partInfo.title + " to increase stiffness:");
+			}
+
+			foreach(Part p in parentParts)
+			{
+				if(p == null || p.rb == null || p.Modules.Contains("ProceduralFairingDecoupler"))
+					continue;
+
+				foreach(Part q in childParts)
+				{
+					if(q == null || q.rb == null || p == q || q.Modules.Contains("ProceduralFairingDecoupler"))
+						continue;
+
+					if(p.vessel != q.vessel)
+						continue;
+
+					MultiPartJointBuildJoint(p, q, KJRMultiJointManager.Reason.ReinforceDecoupler);
+
+					if(KJRJointUtils.debug)
+						debugString.AppendLine(p.partInfo.title + " connected to part " + q.partInfo.title);
+				}
+			}
+
+
+			if(KJRJointUtils.debug)
+				Debug.Log(debugString.ToString());
+		}
+
+		private void ReinforceLaunchClamps(Part part)
+		{
+			part.breakingForce = Mathf.Infinity;
+			part.breakingTorque = Mathf.Infinity;
+			part.mass = Mathf.Max(part.mass, (part.parent.mass + part.parent.GetResourceMass()) * 0.01f);		  //We do this to make sure that there is a mass ratio of 100:1 between the clamp and what it's connected to.  This helps counteract some of the wobbliness simply, but also allows some give and springiness to absorb the initial physics kick
+			if(KJRJointUtils.debug)
+				Debug.Log("KJR: Launch Clamp Break Force / Torque increased");
+
+			StringBuilder debugString = null;
+
+			if(KJRJointUtils.debug)
+			{
+				debugString = new StringBuilder();
+				debugString.AppendLine("The following joints added by " + part.partInfo.title + " to increase stiffness:");
+			}
+
+			if(part.parent.Rigidbody != null)
+				MultiPartJointBuildJoint(part, part.parent, KJRMultiJointManager.Reason.ReinforceLaunchClamp);
+
+			if(KJRJointUtils.debug)
+			{
+				debugString.AppendLine(part.parent.partInfo.title + " connected to part " + part.partInfo.title);
+				Debug.Log(debugString.ToString());
+			}
 		}
 
 		public void MultiPartJointTreeChildren(Vessel v)
