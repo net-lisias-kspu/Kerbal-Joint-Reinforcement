@@ -46,8 +46,9 @@ namespace KerbalJointReinforcement
 			GameEvents.onVesselGoOffRails.Add(OnVesselOffRails);
 			GameEvents.onVesselGoOnRails.Add(OnVesselOnRails);
 
-			GameEvents.onPartDestroyed.Add(OnPartDestroyed);
-			GameEvents.onPartDie.Add(OnPartDestroyed);
+			GameEvents.onPartDestroyed.Add(RemovePartJoints);
+			GameEvents.onPartDie.Add(RemovePartJoints);
+			GameEvents.onPartDeCouple.Add(RemovePartJoints);
 
 			GameEvents.onPhysicsEaseStart.Add(OnEaseStart);
 			GameEvents.onPhysicsEaseStop.Add(OnEaseStop);
@@ -63,8 +64,9 @@ namespace KerbalJointReinforcement
 			GameEvents.onVesselGoOffRails.Remove(OnVesselOffRails);
 			GameEvents.onVesselGoOnRails.Remove(OnVesselOnRails);
 
-			GameEvents.onPartDestroyed.Remove(OnPartDestroyed);
-			GameEvents.onPartDie.Remove(OnPartDestroyed);
+			GameEvents.onPartDestroyed.Remove(RemovePartJoints);
+			GameEvents.onPartDie.Remove(RemovePartJoints);
+			GameEvents.onPartDeCouple.Remove(RemovePartJoints);
 
 			GameEvents.onPhysicsEaseStart.Remove(OnEaseStart);
 			GameEvents.onPhysicsEaseStop.Remove(OnEaseStop);
@@ -228,7 +230,7 @@ namespace KerbalJointReinforcement
 #endif
 		}
 
-		private void OnPartDestroyed(Part p)
+		private void RemovePartJoints(Part p)
 		{
 			multiJointManager.RemovePartJoints(p);
 		}

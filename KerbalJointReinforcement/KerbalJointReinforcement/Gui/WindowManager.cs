@@ -74,6 +74,7 @@ namespace KerbalJointReinforcement
 		public bool ShowMultiPartJointTreeChildrenRoot = false;
 
 		public bool UseAutoStrutSensor = true;
+		public bool ShowAutoStrutSensor = false;
 
 		internal bool GUIEnabled = false;
 
@@ -218,6 +219,9 @@ namespace KerbalJointReinforcement
 			var OptUseAutoStrutSensor = AddNewOption(content, "Use AutoStrut Sensors");
 			OptUseAutoStrutSensor.isOn = UseAutoStrutSensor;
 
+			var OptShowAutoStrutSensor = AddNewOption(content, "Show AutoStrut Sensors");
+			OptShowAutoStrutSensor.isOn = ShowAutoStrutSensor;
+
 			var OptAutoStrutDisplay = AddNewOption(content, "Show AutoStruts");
 			OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay;
 
@@ -236,6 +240,7 @@ namespace KerbalJointReinforcement
 					OptBuildMultiPartJointTreeChildrenRoot.isOn = BuildMultiPartJointTreeChildrenRoot;
 					OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot;
 					OptUseAutoStrutSensor.isOn = UseAutoStrutSensor;
+					OptShowAutoStrutSensor.isOn = ShowAutoStrutSensor;
 					OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay;
 				});
 	
@@ -271,6 +276,8 @@ namespace KerbalJointReinforcement
 					if(!UseAutoStrutSensor)
 						bReinitialize = true;
 					OptUseAutoStrutSensor.isOn = UseAutoStrutSensor = true;
+
+					OptShowAutoStrutSensor.isOn = ShowAutoStrutSensor = false;
 
 					OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay = false;
 
@@ -329,6 +336,8 @@ namespace KerbalJointReinforcement
 						bReinitialize = true;
 						UseAutoStrutSensor = OptUseAutoStrutSensor.isOn;
 					}
+
+					ShowAutoStrutSensor = OptShowAutoStrutSensor.isOn;
 
 					PhysicsGlobals.AutoStrutDisplay = OptAutoStrutDisplay.isOn;
 
@@ -594,6 +603,7 @@ namespace KerbalJointReinforcement
 			config.SetValue("BuildMultiPartJointTreeChildrenRoot", BuildMultiPartJointTreeChildrenRoot);
 			config.SetValue("ShowMultiPartJointTreeChildrenRoot", ShowMultiPartJointTreeChildrenRoot);
 			config.SetValue("UseAutoStrutSensor", UseAutoStrutSensor);
+			config.SetValue("ShowAutoStrutSensor", ShowAutoStrutSensor);
 
 			config.save();
 		}
@@ -616,6 +626,7 @@ namespace KerbalJointReinforcement
 			BuildMultiPartJointTreeChildrenRoot = config.GetValue<bool>("BuildMultiPartJointTreeChildrenRoot", true);
 			ShowMultiPartJointTreeChildrenRoot = config.GetValue<bool>("ShowMultiPartJointTreeChildrenRoot", true);
 			UseAutoStrutSensor = config.GetValue<bool>("UseAutoStrutSensor", true);
+			ShowAutoStrutSensor = config.GetValue<bool>("ShowAutoStrutSensor", false);
 		}
 	}
 
