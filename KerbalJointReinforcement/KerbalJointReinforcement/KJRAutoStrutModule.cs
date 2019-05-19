@@ -31,7 +31,7 @@ namespace KerbalJointReinforcement
 			part.name = name;
 			part.persistentId = FlightGlobals.CheckPartpersistentId(part.persistentId, part, false, true);
 
-			part.transform.position = v.rootPart.transform.position + ((v.rootPart == parent) ? (v.rootPart.transform.right * 0.1f) : (v.rootPart.transform.right * -0.1f));
+			part.transform.position = v.rootPart.transform.position; // + ((v.rootPart == parent) ? (v.rootPart.transform.up * 0.1f) : (v.rootPart.transform.up * -0.1f));
 
 			v.parts.Add(part);
 			part.vessel = v;
