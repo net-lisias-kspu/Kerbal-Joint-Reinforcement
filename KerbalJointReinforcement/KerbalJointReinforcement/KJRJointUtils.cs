@@ -32,6 +32,8 @@ namespace KerbalJointReinforcement
 
 		public static float stiffeningExtensionMassRatioThreshold = 5;
 
+		public static bool useOldJointCreation = false;
+
 		public static bool debug = false;
 
 		public static List<string> decouplerStiffeningExtensionType = new List<string>(); // FEHLER, evtl. später rausschmeissen
@@ -83,6 +85,8 @@ namespace KerbalJointReinforcement
 
 				i++;
 			}
+
+			useOldJointCreation = config.GetValue<bool>("useOldJointCreation", false);
 
 			debug = config.GetValue<bool>("debug", false);
 
@@ -257,7 +261,18 @@ namespace KerbalJointReinforcement
 
 		public static bool IsJointAdjustmentAllowed(Part p)
 		{
-			if(p.HasFreePivot())
+			KJR.IKJRJoint[] kjrjoints = p.GetComponents<KJR.IKJRJoint>();
+
+			foreach(KJR.IKJRJoint kjrjoint in kjrjoints)
+			{
+				if(kjrjoint.IsJointUnlocked())
+					return false;
+			}
+
+		//	if(p.HasFreePivot()) // checks IJointLockState of every module
+		//		return false;
+			// -> we cannot do that because we cannot get information about a cycling of the autostruts -> that's why we treat all of those joints as "unlocked"
+			if(p.GetComponent<IJointLockState>() != null)
 				return false;
 			
 			if(p.GetComponent<KerbalEVA>() != null)
@@ -393,19 +408,26 @@ namespace KerbalJointReinforcement
 		public static ConfigurableJoint BuildJoint(Part p, Part linkPart)
 		{
 			ConfigurableJoint newJoint;
-			
+
+// FEHLER, ist vielleicht falsch... nochmal prüen
+
 			if((p.mass >= linkPart.mass) || (p.rb == null))
 			{
 				newJoint = p.gameObject.AddComponent<ConfigurableJoint>();
 				newJoint.connectedBody = linkPart.Rigidbody;
 
 				newJoint.anchor = Vector3.zero;
-				newJoint.autoConfigureConnectedAnchor = false;
-				newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(linkPart.transform.position + linkPart.transform.rotation * Quaternion.Inverse(linkPart.orgRot) * (p.orgPos - linkPart.orgPos));
 
+				if(!KJRJointUtils.useOldJointCreation)
+				{
+				newJoint.autoConfigureConnectedAnchor = false;
+	//			newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(linkPart.transform.position + linkPart.transform.rotation * Quaternion.Inverse(linkPart.orgRot) * (p.orgPos - linkPart.orgPos));
+newJoint.connectedAnchor = Quaternion.Inverse(linkPart.orgRot) * (p.orgPos - linkPart.orgPos);
+	
 				Quaternion must = linkPart.transform.rotation * (Quaternion.Inverse(linkPart.orgRot) * p.orgRot);
 				newJoint.SetTargetRotationLocal(Quaternion.Inverse(p.transform.rotation) * must, Quaternion.identity);
 					// FEHLER, direkter machen
+				}
 			}
 			else
 			{
@@ -413,12 +435,17 @@ namespace KerbalJointReinforcement
 				newJoint.connectedBody = p.Rigidbody;
 
 				newJoint.anchor = Vector3.zero;
+
+				if(!KJRJointUtils.useOldJointCreation)
+				{
 				newJoint.autoConfigureConnectedAnchor = false;
-				newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * Quaternion.Inverse(p.orgRot) * (linkPart.orgPos - p.orgPos));
+	//			newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * Quaternion.Inverse(p.orgRot) * (linkPart.orgPos - p.orgPos));
+newJoint.connectedAnchor = Quaternion.Inverse(p.orgRot) * (linkPart.orgPos - p.orgPos);
 
 				Quaternion must = p.transform.rotation * (Quaternion.Inverse(p.orgRot) * linkPart.orgRot);
 				newJoint.SetTargetRotationLocal(Quaternion.Inverse(linkPart.transform.rotation) * must, Quaternion.identity);
 					// FEHLER, direkter machen
+				}
 			}
 
 			newJoint.xMotion = newJoint.yMotion = newJoint.zMotion = ConfigurableJointMotion.Free;

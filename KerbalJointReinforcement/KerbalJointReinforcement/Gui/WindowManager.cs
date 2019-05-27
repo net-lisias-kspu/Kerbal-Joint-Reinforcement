@@ -73,8 +73,10 @@ namespace KerbalJointReinforcement
 		public bool BuildMultiPartJointTreeChildrenRoot = true;
 		public bool ShowMultiPartJointTreeChildrenRoot = false;
 
+#if IncludeAutoStrutModule
 		public bool UseAutoStrutSensor = true;
 		public bool ShowAutoStrutSensor = false;
+#endif
 
 		internal bool GUIEnabled = false;
 
@@ -216,11 +218,13 @@ namespace KerbalJointReinforcement
 			var OptShowMultiPartJointTreeChildrenRoot = AddNewOption(content, "ShowMultiPartJointTreeChildrenRoot");
 			OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot;
 
+#if IncludeAutoStrutModule
 			var OptUseAutoStrutSensor = AddNewOption(content, "Use AutoStrut Sensors");
 			OptUseAutoStrutSensor.isOn = UseAutoStrutSensor;
 
 			var OptShowAutoStrutSensor = AddNewOption(content, "Show AutoStrut Sensors");
 			OptShowAutoStrutSensor.isOn = ShowAutoStrutSensor;
+#endif
 
 			var OptAutoStrutDisplay = AddNewOption(content, "Show AutoStruts");
 			OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay;
@@ -239,15 +243,20 @@ namespace KerbalJointReinforcement
 					OptShowMultiPartJointTreeChildren.isOn = ShowMultiPartJointTreeChildren;
 					OptBuildMultiPartJointTreeChildrenRoot.isOn = BuildMultiPartJointTreeChildrenRoot;
 					OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot;
+#if IncludeAutoStrutModule
 					OptUseAutoStrutSensor.isOn = UseAutoStrutSensor;
 					OptShowAutoStrutSensor.isOn = ShowAutoStrutSensor;
+#endif
 					OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay;
 				});
 	
 			var defaultButton = footerButtons.GetChild("DefaultButton").GetComponent<Button>();
 			defaultButton.onClick.AddListener(() =>
 				{
-					bool bCycle = false, bReinitialize = false;
+					bool bCycle = false;
+#if IncludeAutoStrutModule
+					bool bReinitialize = false;
+#endif
 
 					OptShowKSPJoints.isOn = ShowKSPJoints = false;
 
@@ -273,22 +282,26 @@ namespace KerbalJointReinforcement
 
 					OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot = false;
 
+#if IncludeAutoStrutModule
 					if(!UseAutoStrutSensor)
 						bReinitialize = true;
 					OptUseAutoStrutSensor.isOn = UseAutoStrutSensor = true;
 
 					OptShowAutoStrutSensor.isOn = ShowAutoStrutSensor = false;
+#endif
 
 					OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay = false;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
 
+#if IncludeAutoStrutModule
 					if(bReinitialize && HighLogic.LoadedSceneIsFlight)
 					{
 						KJRAutoStrutModule.UninitializeVessel(FlightGlobals.ActiveVessel);
 						if(!bCycle)
 							KJRAutoStrutModule.InitializeVessel(FlightGlobals.ActiveVessel);
 					}
+#endif
 
 					if(bCycle && HighLogic.LoadedSceneIsFlight)
 						KJRManager.Instance.OnVesselWasModified(FlightGlobals.ActiveVessel);
@@ -297,7 +310,10 @@ namespace KerbalJointReinforcement
 			var applyButton = footerButtons.GetChild("ApplyButton").GetComponent<Button>();
 			applyButton.onClick.AddListener(() => 
 				{
-					bool bCycle = false, bReinitialize = false;
+					bool bCycle = false;
+#if IncludeAutoStrutModule
+					bool bReinitialize = false;
+#endif
 
 					ShowKSPJoints = OptShowKSPJoints.isOn;
 
@@ -331,6 +347,7 @@ namespace KerbalJointReinforcement
 
 					ShowMultiPartJointTreeChildrenRoot = OptShowMultiPartJointTreeChildrenRoot.isOn;
 
+#if IncludeAutoStrutModule
 					if(UseAutoStrutSensor != OptUseAutoStrutSensor.isOn)
 					{
 						bReinitialize = true;
@@ -338,17 +355,20 @@ namespace KerbalJointReinforcement
 					}
 
 					ShowAutoStrutSensor = OptShowAutoStrutSensor.isOn;
+#endif
 
 					PhysicsGlobals.AutoStrutDisplay = OptAutoStrutDisplay.isOn;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
 
+#if IncludeAutoStrutModule
 					if(bReinitialize && HighLogic.LoadedSceneIsFlight)
 					{
 						KJRAutoStrutModule.UninitializeVessel(FlightGlobals.ActiveVessel);
 						if(!bCycle)
 							KJRAutoStrutModule.InitializeVessel(FlightGlobals.ActiveVessel);
 					}
+#endif
 
 					if(bCycle && HighLogic.LoadedSceneIsFlight)
 						KJRManager.Instance.OnVesselWasModified(FlightGlobals.ActiveVessel);
@@ -591,19 +611,23 @@ namespace KerbalJointReinforcement
 				_settingsWindowPosition = _settingsWindow.transform.position;
 
 			PluginConfiguration config = PluginConfiguration.CreateForType<WindowManager>();
-			config.SetValue("controlWindowPosition", _settingsWindowPosition);
-			config.SetValue("UIAlphaValue", (double) _UIAlphaValue);
-			config.SetValue("UIScaleValue", (double) _UIScaleValue);
-			config.SetValue("ShowKSPJoints", ShowKSPJoints);
-			config.SetValue("ReinforceExistingJoints", ReinforceExistingJoints);
-			config.SetValue("BuildAdditionalJointToParent", BuildAdditionalJointToParent);
-			config.SetValue("ShowAdditionalJointToParent", ShowAdditionalJointToParent);
-			config.SetValue("BuildMultiPartJointTreeChildren", BuildMultiPartJointTreeChildren);
-			config.SetValue("ShowMultiPartJointTreeChildren", ShowMultiPartJointTreeChildren);
-			config.SetValue("BuildMultiPartJointTreeChildrenRoot", BuildMultiPartJointTreeChildrenRoot);
-			config.SetValue("ShowMultiPartJointTreeChildrenRoot", ShowMultiPartJointTreeChildrenRoot);
-			config.SetValue("UseAutoStrutSensor", UseAutoStrutSensor);
-			config.SetValue("ShowAutoStrutSensor", ShowAutoStrutSensor);
+			config.load();
+
+			config.SetValue("dbg_controlWindowPosition", _settingsWindowPosition);
+			config.SetValue("dbg_UIAlphaValue", (double) _UIAlphaValue);
+			config.SetValue("dbg_UIScaleValue", (double) _UIScaleValue);
+			config.SetValue("dbg_ShowKSPJoints", ShowKSPJoints);
+			config.SetValue("dbg_ReinforceExistingJoints", ReinforceExistingJoints);
+			config.SetValue("dbg_BuildAdditionalJointToParent", BuildAdditionalJointToParent);
+			config.SetValue("dbg_ShowAdditionalJointToParent", ShowAdditionalJointToParent);
+			config.SetValue("dbg_BuildMultiPartJointTreeChildren", BuildMultiPartJointTreeChildren);
+			config.SetValue("dbg_ShowMultiPartJointTreeChildren", ShowMultiPartJointTreeChildren);
+			config.SetValue("dbg_BuildMultiPartJointTreeChildrenRoot", BuildMultiPartJointTreeChildrenRoot);
+			config.SetValue("dbg_ShowMultiPartJointTreeChildrenRoot", ShowMultiPartJointTreeChildrenRoot);
+#if IncludeAutoStrutModule
+			config.SetValue("dbg_UseAutoStrutSensor", UseAutoStrutSensor);
+			config.SetValue("dbg_ShowAutoStrutSensor", ShowAutoStrutSensor);
+#endif
 
 			config.save();
 		}
@@ -613,20 +637,22 @@ namespace KerbalJointReinforcement
 			PluginConfiguration config = PluginConfiguration.CreateForType<WindowManager>();
 			config.load();
 
-			_settingsWindowPosition = config.GetValue<Vector3>("controlWindowPosition");
+			_settingsWindowPosition = config.GetValue<Vector3>("dbg_controlWindowPosition");
 
-			_UIAlphaValue = (float) config.GetValue<double>("UIAlphaValue", 0.8);
-			_UIScaleValue = (float) config.GetValue<double>("UIScaleValue", 1.0);
-			ShowKSPJoints = config.GetValue<bool>("ShowKSPJoints", true);
-			ReinforceExistingJoints = config.GetValue<bool>("ReinforceExistingJoints", true);
-			BuildAdditionalJointToParent = config.GetValue<bool>("BuildAdditionalJointToParent", true);
-			ShowAdditionalJointToParent = config.GetValue<bool>("ShowAdditionalJointToParent", true);
-			BuildMultiPartJointTreeChildren = config.GetValue<bool>("BuildMultiPartJointTreeChildren", true);
-			ShowMultiPartJointTreeChildren = config.GetValue<bool>("ShowMultiPartJointTreeChildren", true);
-			BuildMultiPartJointTreeChildrenRoot = config.GetValue<bool>("BuildMultiPartJointTreeChildrenRoot", true);
-			ShowMultiPartJointTreeChildrenRoot = config.GetValue<bool>("ShowMultiPartJointTreeChildrenRoot", true);
-			UseAutoStrutSensor = config.GetValue<bool>("UseAutoStrutSensor", true);
-			ShowAutoStrutSensor = config.GetValue<bool>("ShowAutoStrutSensor", false);
+			_UIAlphaValue = (float) config.GetValue<double>("dbg_UIAlphaValue", 0.8);
+			_UIScaleValue = (float) config.GetValue<double>("dbg_UIScaleValue", 1.0);
+			ShowKSPJoints = config.GetValue<bool>("dbg_ShowKSPJoints", true);
+			ReinforceExistingJoints = config.GetValue<bool>("dbg_ReinforceExistingJoints", true);
+			BuildAdditionalJointToParent = config.GetValue<bool>("dbg_BuildAdditionalJointToParent", true);
+			ShowAdditionalJointToParent = config.GetValue<bool>("dbg_ShowAdditionalJointToParent", true);
+			BuildMultiPartJointTreeChildren = config.GetValue<bool>("dbg_BuildMultiPartJointTreeChildren", true);
+			ShowMultiPartJointTreeChildren = config.GetValue<bool>("dbg_ShowMultiPartJointTreeChildren", true);
+			BuildMultiPartJointTreeChildrenRoot = config.GetValue<bool>("dbg_BuildMultiPartJointTreeChildrenRoot", true);
+			ShowMultiPartJointTreeChildrenRoot = config.GetValue<bool>("dbg_ShowMultiPartJointTreeChildrenRoot", true);
+#if IncludeAutoStrutModule
+			UseAutoStrutSensor = config.GetValue<bool>("dbg_UseAutoStrutSensor", true);
+			ShowAutoStrutSensor = config.GetValue<bool>("dbg_ShowAutoStrutSensor", false);
+#endif
 		}
 	}
 

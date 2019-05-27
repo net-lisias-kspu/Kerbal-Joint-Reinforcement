@@ -41,7 +41,9 @@ namespace KerbalJointReinforcement
 			GameEvents.onVesselCreate.Add(OnVesselCreate);
 			GameEvents.onVesselWasModified.Add(OnVesselWasModified);
 			GameEvents.onVesselDestroy.Add(OnVesselDestroy); // FEHLER, evtl. onAboutToDestroy nutzen??
+#if IncludeAutoStrutModule
 			GameEvents.onProtoVesselSave.Add(OnProtoVesselSave);
+#endif
 
 			GameEvents.onVesselGoOffRails.Add(OnVesselOffRails);
 			GameEvents.onVesselGoOnRails.Add(OnVesselOnRails);
@@ -61,7 +63,9 @@ namespace KerbalJointReinforcement
 			GameEvents.onVesselCreate.Remove(OnVesselCreate);
 			GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
 			GameEvents.onVesselDestroy.Remove(OnVesselDestroy);
+#if IncludeAutoStrutModule
 			GameEvents.onProtoVesselSave.Remove(OnProtoVesselSave);
+#endif
 
 			GameEvents.onVesselGoOffRails.Remove(OnVesselOffRails);
 			GameEvents.onVesselGoOnRails.Remove(OnVesselOnRails);
@@ -81,10 +85,24 @@ namespace KerbalJointReinforcement
 			multiJointManager = null;
 		}
 
+		IEnumerator RunVesselJointUpdateFunctionDelayed(Vessel v)
+		{
+			yield return new WaitForFixedUpdate();
+
+			RunVesselJointUpdateFunction(v);
+
+#if IncludeAnalyzer
+			KJRAnalyzer.WasModified(v);
+#endif
+		}
+
 		private void OnVesselCreate(Vessel v)
 		{
 			multiJointManager.RemoveAllVesselJoints(v);
+
+#if IncludeAutoStrutModule
 			KJRAutoStrutModule.UninitializeVessel(v);
+#endif
 
 			updatedVessels.Remove(v);
 
@@ -112,21 +130,16 @@ namespace KerbalJointReinforcement
 				Debug.Log(debugString);
 			}
 
+#if IncludeAutoStrutModule
 			KJRAutoStrutModule.InitializeVessel(v);
-
-			RunVesselJointUpdateFunction(v);
-
-#if IncludeAnalyzer
-			KJRAnalyzer.WasModified(v);
 #endif
+
+			StartCoroutine(RunVesselJointUpdateFunctionDelayed(v));
 		}
 
 		private void OnVesselDestroy(Vessel v)
 		{
 			easingVessels.Remove(v);
-
-			multiJointManager.RemoveAllVesselJoints(v);
-		//	KJRAutoStrutModule.UninitializeVessel(v); -> the vessel is destroying right now... everything we do can cause NullReferenceExceptions
 
 			updatedVessels.Remove(v);
 
@@ -135,68 +148,24 @@ namespace KerbalJointReinforcement
 #endif
 		}
 
+#if IncludeAutoStrutModule
 		public void OnProtoVesselSave(GameEvents.FromToAction<ProtoVessel, ConfigNode> data)
 		{
 			if(data.to == null)
 			{
-				List<ProtoPartSnapshot> toRemove = new List<ProtoPartSnapshot>();
-
-				foreach(ProtoPartSnapshot pps in data.from.protoPartSnapshots)
+				for(int i = 0; i < 2; i++)
 				{
-					if(pps.partName == "KJRAutoStrutHelper")
-						toRemove.Add(pps);
-				}
+					if(data.from.protoPartSnapshots.Count < 1)
+						return;
 
-				if(toRemove.Count > 0)
-				{
-					foreach(ProtoPartSnapshot pps in toRemove)
-						data.from.protoPartSnapshots.Remove(pps);
+					if(data.from.protoPartSnapshots[data.from.protoPartSnapshots.Count - 1].partName != "KJRAutoStrutHelper")
+						return;
 
-					foreach(ProtoPartSnapshot pps in data.from.protoPartSnapshots)
-						pps.storePartRefs();
+					data.from.protoPartSnapshots.RemoveAt(data.from.protoPartSnapshots.Count - 1);
 				}
 			}
-/*
-			if((data.to == null) || (data.to.name != "VESSEL"))
-				return;
-
-			ConfigNode v = data.to;
-			ConfigNode[] ap = v.GetNodes("PART");
-
-			int i = ap.Length;
-			while(i-- > 0)
-			{
-				if(ap[i].GetValue("name") == "KJRAutoStrutHelper")
-				{
-					for(int j = i + 1; j < ap.Length; j++)
-					{
-						int parent = int.Parse(ap[j].GetValue("parent"));
-
-						if(parent > i)
-							ap[j].SetValue("parent", parent - 1);
-
-
-						List<string> av = ap[j].GetValuesList("sym");
-						ap[j].RemoveValues("sym");
-
-						for(int k = 0; k < av.Count; k++)
-						{
-							int sym = int.Parse(av[k]);
-
-							if(sym > i)
-								--sym;
-
-							ap[j].AddValue("sym", sym);
-						}
-					}
-
-					v.RemoveNode(ap[i]);
-
-					ap = v.GetNodes("PART");
-					i = ap.Length;
-				}
-			}
-*/		}
+		}
+#endif
 
 		// this function can be called by compatible modules instead of calling
 		// Vessel.CycleAllAutoStrut, if you want only KJR to cycle the extra joints
@@ -212,11 +181,13 @@ namespace KerbalJointReinforcement
 
 			if(updatedVessels.Contains(v))
 			{
-// FEHLER, die Frage ist, ob man hier die Joints abräumen will... aber... ganz ehrlich... wozu??
+				multiJointManager.RemoveAllVesselJoints(v);
+
+#if IncludeAutoStrutModule
+				KJRAutoStrutModule.UninitializeVessel(v);
+#endif
 
 				updatedVessels.Remove(v);
-
-				KJRAutoStrutModule.UninitializeVessel(v);
 			}
 		}
 
@@ -224,14 +195,12 @@ namespace KerbalJointReinforcement
 		{
 			if((object)v == null || v.isEVA || v.GetComponent<KerbalEVA>())
 				return; 
-			
+
+#if IncludeAutoStrutModule
 			KJRAutoStrutModule.InitializeVessel(v);
-
-			RunVesselJointUpdateFunction(v);
-
-#if IncludeAnalyzer
-			KJRAnalyzer.WasModified(v);
 #endif
+
+			StartCoroutine(RunVesselJointUpdateFunctionDelayed(v));
 		}
 
 		private void RemovePartJoints(Part p)
@@ -245,6 +214,9 @@ namespace KerbalJointReinforcement
 
 			foreach(Part p in v.Parts)
 			{
+				if(p.GetComponent<KJR.IKJRJoint>() != null) // exclude those actions from joints that can be dynamically unlocked
+					continue;
+
 				if(p.GetComponent<IJointLockState>() != null) // exclude those actions from joints that can be dynamically unlocked
 					continue;
 
@@ -276,6 +248,9 @@ namespace KerbalJointReinforcement
 
 			foreach(Part p in v.Parts)
 			{
+				if(p.GetComponent<KJR.IKJRJoint>() != null) // exclude those actions from joints that can be dynamically unlocked
+					continue;
+
 				if(p.GetComponent<IJointLockState>() != null) // exclude those actions from joints that can be dynamically unlocked
 					continue;
 
@@ -284,16 +259,14 @@ namespace KerbalJointReinforcement
 					p.attachJoint.SetUnbreakable(false, false);
 			}
 
-			RunVesselJointUpdateFunction(v);
-
-#if IncludeAnalyzer
-			KJRAnalyzer.WasModified(v);
-#endif
+			StartCoroutine(RunVesselJointUpdateFunctionDelayed(v));
 		}
 
 		private void RunVesselJointUpdateFunction(Vessel v)
 		{
+#if IncludeAutoStrutModule
 			KJRAutoStrutModule.bIgnore = true;
+#endif
 
 			if(KJRJointUtils.debug)
 			{
@@ -350,18 +323,20 @@ namespace KerbalJointReinforcement
 			if(KJRJointUtils.reinforceAttachNodes && KJRJointUtils.multiPartAttachNodeReinforcement)
 				MultiPartJointTreeChildren(v);
 
+#if IncludeAutoStrutModule
 			KJRAutoStrutModule.bIgnore = false;
+#endif
 		}
 
+#if IncludeAnalyzer
 		public void FixedUpdate()
 		{
-#if IncludeAnalyzer
 			if(FlightGlobals.ready && FlightGlobals.Vessels != null)
 			{
 				KJRAnalyzer.Update();
 			}
-#endif
 	   }
+#endif
 
 		private void ReinforceAttachJoints(Part p)
 		{
@@ -426,7 +401,7 @@ namespace KerbalJointReinforcement
 			//addAdditionalJointToParent &= !(p.Modules.Contains("LaunchClamp") || (p.parent.Modules.Contains("ModuleDecouple") || p.parent.Modules.Contains("ModuleAnchoredDecoupler")));
 			addAdditionalJointToParent &= !p.Modules.Contains<CModuleStrut>();
 
-			if(p.GetComponent<IJointLockState>() == null) // exclude those actions from joints that can be dynamically unlocked
+			if((p.GetComponent<KJR.IKJRJoint>() == null) && (p.GetComponent<IJointLockState>() == null)) // exclude those actions from joints that can be dynamically unlocked
 			{
 				float partMass = p.mass + p.GetResourceMass();
 				for(int i = 0; i < jointList.Count; i++)
@@ -800,12 +775,17 @@ namespace KerbalJointReinforcement
 						newJoint.connectedBody = newConnectedPart.rb;
 
 						newJoint.anchor = Vector3.zero;
+
+						if(!KJRJointUtils.useOldJointCreation)
+						{
 						newJoint.autoConfigureConnectedAnchor = false;
-						newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(newConnectedPart.transform.position + newConnectedPart.transform.rotation * Quaternion.Inverse(newConnectedPart.orgRot) * (p.orgPos - newConnectedPart.orgPos));
+	//					newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(newConnectedPart.transform.position + newConnectedPart.transform.rotation * Quaternion.Inverse(newConnectedPart.orgRot) * (p.orgPos - newConnectedPart.orgPos));
+newJoint.connectedAnchor = Quaternion.Inverse(newConnectedPart.orgRot) * (p.orgPos - newConnectedPart.orgPos);
 
 						Quaternion must = newConnectedPart.transform.rotation * (Quaternion.Inverse(newConnectedPart.orgRot) * p.orgRot);
 						newJoint.SetTargetRotationLocal(Quaternion.Inverse(p.transform.rotation) * must, Quaternion.identity);
 							// FEHLER, direkter machen
+						}
 					}
 					else
 					{
@@ -813,12 +793,17 @@ namespace KerbalJointReinforcement
 						newJoint.connectedBody = p.rb;
 
 						newJoint.anchor = Vector3.zero;
+
+						if(!KJRJointUtils.useOldJointCreation)
+						{
 						newJoint.autoConfigureConnectedAnchor = false;
-						newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * Quaternion.Inverse(p.orgRot) * (newConnectedPart.orgPos - p.orgPos));
+	//					newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * Quaternion.Inverse(p.orgRot) * (newConnectedPart.orgPos - p.orgPos));
+newJoint.connectedAnchor = Quaternion.Inverse(p.orgRot) * (newConnectedPart.orgPos - p.orgPos);
 
 						Quaternion must = p.transform.rotation * (Quaternion.Inverse(p.orgRot) * newConnectedPart.orgRot);
 						newJoint.SetTargetRotationLocal(Quaternion.Inverse(newConnectedPart.transform.rotation) * must, Quaternion.identity);
 							// FEHLER, direkter machen
+						}
 					}
 
 		//			newJoint.linearLimit = newJoint.angularYLimit = newJoint.angularZLimit = newJoint.lowAngularXLimit = newJoint.highAngularXLimit

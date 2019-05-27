@@ -27,6 +27,7 @@
     <DefineConstants>TRACE;DEBUG;IncludeAnalyzer</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -60,6 +61,7 @@
     <Compile Include="Gui\WindowManager.cs" />
     <Compile Include="KJRAnalyzer.cs" />
     <Compile Include="KJRExcluded.cs" />
+    <Compile Include="KJRHooker.cs" />
     <Compile Include="KJRManager.cs" />
     <Compile Include="KJRJointUtils.cs" />
     <Compile Include="KJRMultiJointManager.cs" />
@@ -67,6 +69,12 @@
     <Compile Include="KJRAutoStrutModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Gui\TextureLoader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KJRjoint\KJRjoint.csproj">
+      <Project>{839E2E42-3228-4076-BF6B-260C17C71624}</Project>
+      <Name>KJRjoint</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

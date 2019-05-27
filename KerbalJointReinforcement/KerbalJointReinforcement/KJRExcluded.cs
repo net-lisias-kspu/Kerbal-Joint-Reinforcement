@@ -17,8 +17,16 @@ namespace KerbalJointReinforcement
 	 * }
 	 */
 
-	public class KJRExcluded : PartModule, IJointLockState
+	public class KJRExcluded : PartModule, KJR.IKJRJoint, IJointLockState
 	{
+		////////////////////////////////////////
+		// KJR.IKJRJoint (KJR Next support)
+
+		bool KJR.IKJRJoint.IsJointUnlocked()
+		{
+			return true;
+		}
+
 		////////////////////////////////////////
 		// IJointLockState (AutoStrut support)
 
