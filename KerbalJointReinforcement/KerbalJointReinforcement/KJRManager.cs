@@ -174,6 +174,23 @@ namespace KerbalJointReinforcement
 			OnVesselWasModified(v);
 		}
 
+		// this function cann be called by compatible modules to add a KJRExcluded
+		// to a part with a callback function (instead of linking to KJRjoint)
+		public bool AddJointCallback(Part p, KJRExcluded.IsJointUnlockedCallback callback)
+		{
+			KJRExcluded m = p.GetComponent<KJRExcluded>();
+			if(!m) m = p.gameObject.AddComponent<KJRExcluded>();
+			if(!m) return false;
+			m.callback = callback;
+			return true;
+		}
+
+		public void RemoveJointCallback(Part p)
+		{
+			KJRExcluded m = p.GetComponent<KJRExcluded>();
+			if(m) Destroy(m);
+		}
+
 		private void OnVesselOnRails(Vessel v)
 		{
 			if((object)v == null)

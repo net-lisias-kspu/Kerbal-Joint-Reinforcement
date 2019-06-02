@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace KerbalJointReinforcement
 {
-	// class to explicity exclude a part from handling by KJR (and AutoStruts)
+	// class to explicity exclude a part from handling by KJR
 	
 	/*
 	 * to use it add this into your cfg file of the part
@@ -17,22 +17,29 @@ namespace KerbalJointReinforcement
 	 * }
 	 */
 
-	public class KJRExcluded : PartModule, KJR.IKJRJoint, IJointLockState
+	public class KJRExcluded : PartModule, KJR.IKJRJoint
 	{
+		public delegate bool IsJointUnlockedCallback();
+
+		public IsJointUnlockedCallback callback = null;
+
 		////////////////////////////////////////
 		// KJR.IKJRJoint (KJR Next support)
 
 		bool KJR.IKJRJoint.IsJointUnlocked()
 		{
+			if(callback != null)
+				return callback();
+
 			return true;
 		}
 
 		////////////////////////////////////////
 		// IJointLockState (AutoStrut support)
 
-		bool IJointLockState.IsJointUnlocked()
-		{
-			return true;
-		}
+	//	bool IJointLockState.IsJointUnlocked()
+	//	{
+	//		return true;
+	//	}
 	}
 }
