@@ -83,13 +83,19 @@ namespace KerbalJointReinforcement
 
         public static bool JointAdjustmentValid(Part p)
         {
-            foreach (string s in exemptPartTypes)
-                if (p.GetType().ToString() == s)
+            for (int i = 0; i < p.Modules.Count; i++)
+            {
+                var pm = p.Modules[i];
+                if (pm is IJointLockState || exemptModuleTypes.Contains(pm.ClassName))
                     return false;
+            }
 
-            foreach (string s in exemptModuleTypes)
-                if (p.Modules.Contains(s))
+            for (int i = 0; i < exemptPartTypes.Count; i++)
+            {
+                string s = exemptPartTypes[i];
+                if (p.PartAttributes.className == s)
                     return false;
+            }
 
             return true;
         }
