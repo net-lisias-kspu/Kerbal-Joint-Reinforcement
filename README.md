@@ -1,9 +1,10 @@
-Kerbal Joint Reinforcement, v3.4.0
+Kerbal Joint Reinforcement, v3.4.1
 ==========================
 
 Physics stabilizer plugin for Kerbal Space Program
 
-Source available at: https://github.com/ferram4/Kerbal-Joint-Reinforcement
+Source available at: https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued
+Based on the original work of ferram4: https://github.com/ferram4/Kerbal-Joint-Reinforcement
 
 ***************************************************
 ****** INSTALLING KERBAL JOINT REINFORCEMENT ******
@@ -119,6 +120,9 @@ These types are currently not used, but removing the a in front of them will cau
 ***********************
 ****** CHANGELOG ******
 ***********************
+v3.4.1
+	Features
+	--Added basic support for robotic parts
 v3.4.0
 	Features
 	--Recompile for use in KSP 1.3.x through 1.7.x
