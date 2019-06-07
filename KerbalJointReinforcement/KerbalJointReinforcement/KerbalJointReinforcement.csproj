@@ -71,9 +71,9 @@
     <Compile Include="Gui\TextureLoader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KJRjoint\KJRjoint.csproj">
+    <ProjectReference Include="..\KJRjoint\KJRJoint.csproj">
       <Project>{839E2E42-3228-4076-BF6B-260C17C71624}</Project>
-      <Name>KJRjoint</Name>
+      <Name>KJRJoint</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
