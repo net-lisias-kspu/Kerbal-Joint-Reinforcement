@@ -169,14 +169,14 @@ namespace KerbalJointReinforcement
 
 		// this function can be called by compatible modules instead of calling
 		// Vessel.CycleAllAutoStrut, if you want only KJR to cycle the extra joints
-		public void CycleAllAutoStrut(Vessel v)
+		public static void CycleAllAutoStrut(Vessel v)
 		{
-			OnVesselWasModified(v);
+			_instance.OnVesselWasModified(v);
 		}
 
 		// this function cann be called by compatible modules to add a KJRExcluded
 		// to a part with a callback function (instead of linking to KJRjoint)
-		public bool AddJointCallback(Part p, KJRExcluded.IsJointUnlockedCallback callback)
+		public static bool AddJointCallback(Part p, KJRExcluded.IsJointUnlockedCallback callback)
 		{
 			KJRExcluded m = p.GetComponent<KJRExcluded>();
 			if(!m) m = p.gameObject.AddComponent<KJRExcluded>();
@@ -185,7 +185,7 @@ namespace KerbalJointReinforcement
 			return true;
 		}
 
-		public void RemoveJointCallback(Part p)
+		public static void RemoveJointCallback(Part p)
 		{
 			KJRExcluded m = p.GetComponent<KJRExcluded>();
 			if(m) Destroy(m);
