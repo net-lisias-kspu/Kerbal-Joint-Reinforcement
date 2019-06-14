@@ -216,3 +216,21 @@ namespace KerbalJointReinforcement
 		}
 	}
 }
+
+/*	-> how to call KJR from a mod
+
+	Type KJRManagerType = null;
+	System.Reflection.MethodInfo KJRManagerCycleAllAutoStrutMethod = null;
+
+	if(KJRManagerCycleAllAutoStrutMethod == null)
+	{
+		AssemblyLoader.loadedAssemblies.TypeOperation (t => {
+			if(t.FullName == "KerbalJointReinforcement.KJRManager") { KJRManagerType = t; } });
+
+		if(KJRManagerType != null)
+			KJRManagerCycleAllAutoStrutMethod = KJRManagerType.GetMethod("CycleAllAutoStrut");
+	}
+
+	if(KJRManagerCycleAllAutoStrutMethod != null)
+		KJRManagerCycleAllAutoStrutMethod.Invoke(null, new object[] { v });
+*/

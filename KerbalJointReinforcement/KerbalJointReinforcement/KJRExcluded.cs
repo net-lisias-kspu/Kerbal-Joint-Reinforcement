@@ -17,29 +17,14 @@ namespace KerbalJointReinforcement
 	 * }
 	 */
 
-	public class KJRExcluded : PartModule, KJR.IKJRJoint
+	public class KJRExcluded : PartModule, IJointLockState
 	{
-		public delegate bool IsJointUnlockedCallback();
-
-		public IsJointUnlockedCallback callback = null;
-
 		////////////////////////////////////////
-		// KJR.IKJRJoint (KJR Next support)
+		// IJointLockState
 
-		bool KJR.IKJRJoint.IsJointUnlocked()
+		bool IJointLockState.IsJointUnlocked()
 		{
-			if(callback != null)
-				return callback();
-
 			return true;
 		}
-
-		////////////////////////////////////////
-		// IJointLockState (AutoStrut support)
-
-	//	bool IJointLockState.IsJointUnlocked()
-	//	{
-	//		return true;
-	//	}
 	}
 }

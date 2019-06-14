@@ -110,7 +110,7 @@ namespace KerbalJointReinforcement
 				else
 				{
 					while(lists.Count > 0)
-						Destroy(lists[0].vessel);
+						Clear(lists[0].vessel);
 				}
 			}
 		}
@@ -154,7 +154,7 @@ namespace KerbalJointReinforcement
 			if(!bShow)
 				return;
 
-			Destroy(v); // zuerst rausräumen, falls schon vorhanden
+			Clear(v); // zuerst rausräumen, falls schon vorhanden
 
 			KJRMultiJointManager mjm = KJRManager.Instance.GetMultiJointManager();
 
@@ -164,9 +164,6 @@ namespace KerbalJointReinforcement
 
 			foreach(Part p in v.Parts)
 			{
-				if(p.partInfo.name == "KJRAutoStrutHelper")
-					continue;
-
 				ConfigurableJoint[] joints = p.GetComponents<ConfigurableJoint>();
 
 				for(int i = 0; i < joints.Length; i++)
@@ -216,7 +213,7 @@ namespace KerbalJointReinforcement
 				lists.Add(l);
 		}
 
-		public static void Destroy(Vessel v)
+		public static void Clear(Vessel v)
 		{
 			for(int i = 0; i < lists.Count; i++)
 			{

@@ -10,6 +10,9 @@ namespace KerbalJointReinforcement
 {
 	public static class KJRJointUtils
 	{
+		// VERSION not in 1.7.2 and later
+		internal static System.Type BaseServoType = null; // exclude this one if defined -> we do this for 1.7.1 only
+
 		public static bool reinforceAttachNodes = false;
 		public static bool multiPartAttachNodeReinforcement = true;
 		public static bool reinforceDecouplersFurther = false;
@@ -259,27 +262,46 @@ namespace KerbalJointReinforcement
 		////////////////////////////////////////
 		// find joint reinforcement information
 
-		public static bool IsJointAdjustmentAllowed(Part p)
+		public static bool IsJointUnlockable(Part p)
 		{
-			KJR.IKJRJoint[] kjrjoints = p.GetComponents<KJR.IKJRJoint>();
-
-			foreach(KJR.IKJRJoint kjrjoint in kjrjoints)
+			for(int i = 0; i < p.Modules.Count; i++)
 			{
-				if(kjrjoint.IsJointUnlocked())
-					return false;
+				if(p.Modules[i] is IJointLockState)
+					return true;
 			}
 
-		//	if(p.HasFreePivot()) // checks IJointLockState of every module
-		//		return false;
-			// -> we cannot do that because we cannot get information about a cycling of the autostruts -> that's why we treat all of those joints as "unlocked"
-			if(p.GetComponent<IJointLockState>() != null)
-				return false;
-			
-			if(p.GetComponent<KerbalEVA>() != null)
-				return false;
+			return false;
+		}
 
-			if(p.GetComponent<ModuleWheelBase>() != null)
-				return false;
+		// VERSION not in 1.7.2 and later
+		internal static bool IsOfClass(PartModule module, Type typeSearched)
+		{
+			Type typeModule = module.GetType();
+			return ((typeModule == typeSearched) || typeModule.IsSubclassOf(typeSearched));
+		}
+
+		public static bool IsJointAdjustmentAllowed(Part p)
+		{
+			IJointLockState jointLockState;
+
+			for(int i = 0; i < p.Modules.Count; i++)
+			{
+				jointLockState = p.Modules[i] as IJointLockState;
+				
+				if((jointLockState != null) && (jointLockState.IsJointUnlocked()))
+					return false;
+
+				PartModule module = p.Modules[i];
+
+				if((module is KerbalEVA)
+				|| (module is ModuleWheelBase)
+				|| (module is ModuleGrappleNode))
+					return false;
+
+				// VERSION not in 1.7.2 and later
+				if((BaseServoType != null) && (IsOfClass(module, BaseServoType)))
+					return false;
+			}
 
 			return true;
 		}

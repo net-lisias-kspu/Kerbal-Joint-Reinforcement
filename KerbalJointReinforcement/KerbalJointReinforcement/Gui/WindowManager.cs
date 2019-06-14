@@ -73,11 +73,6 @@ namespace KerbalJointReinforcement
 		public bool BuildMultiPartJointTreeChildrenRoot = true;
 		public bool ShowMultiPartJointTreeChildrenRoot = false;
 
-#if IncludeAutoStrutModule
-		public bool UseAutoStrutSensor = true;
-		public bool ShowAutoStrutSensor = false;
-#endif
-
 		internal bool GUIEnabled = false;
 
 		private static bool isKeyboardLocked = false;
@@ -188,7 +183,6 @@ namespace KerbalJointReinforcement
 				t.tooltipText = "Close window";
 			}
 
-
 			var content = _settingsWindow.GetChild("WindowContent");
 
 			var OptShowKSPJoints = AddNewOption(content, "ShowKSPJoints");
@@ -218,17 +212,8 @@ namespace KerbalJointReinforcement
 			var OptShowMultiPartJointTreeChildrenRoot = AddNewOption(content, "ShowMultiPartJointTreeChildrenRoot");
 			OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot;
 
-#if IncludeAutoStrutModule
-			var OptUseAutoStrutSensor = AddNewOption(content, "Use AutoStrut Sensors");
-			OptUseAutoStrutSensor.isOn = UseAutoStrutSensor;
-
-			var OptShowAutoStrutSensor = AddNewOption(content, "Show AutoStrut Sensors");
-			OptShowAutoStrutSensor.isOn = ShowAutoStrutSensor;
-#endif
-
 			var OptAutoStrutDisplay = AddNewOption(content, "Show AutoStruts");
 			OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay;
-
 
 			var footerButtons = _settingsWindow.GetChild("WindowFooter").GetChild("WindowFooterButtonsHLG");
 	
@@ -243,10 +228,6 @@ namespace KerbalJointReinforcement
 					OptShowMultiPartJointTreeChildren.isOn = ShowMultiPartJointTreeChildren;
 					OptBuildMultiPartJointTreeChildrenRoot.isOn = BuildMultiPartJointTreeChildrenRoot;
 					OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot;
-#if IncludeAutoStrutModule
-					OptUseAutoStrutSensor.isOn = UseAutoStrutSensor;
-					OptShowAutoStrutSensor.isOn = ShowAutoStrutSensor;
-#endif
 					OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay;
 				});
 	
@@ -254,9 +235,6 @@ namespace KerbalJointReinforcement
 			defaultButton.onClick.AddListener(() =>
 				{
 					bool bCycle = false;
-#if IncludeAutoStrutModule
-					bool bReinitialize = false;
-#endif
 
 					OptShowKSPJoints.isOn = ShowKSPJoints = false;
 
@@ -282,26 +260,9 @@ namespace KerbalJointReinforcement
 
 					OptShowMultiPartJointTreeChildrenRoot.isOn = ShowMultiPartJointTreeChildrenRoot = false;
 
-#if IncludeAutoStrutModule
-					if(!UseAutoStrutSensor)
-						bReinitialize = true;
-					OptUseAutoStrutSensor.isOn = UseAutoStrutSensor = true;
-
-					OptShowAutoStrutSensor.isOn = ShowAutoStrutSensor = false;
-#endif
-
 					OptAutoStrutDisplay.isOn = PhysicsGlobals.AutoStrutDisplay = false;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
-
-#if IncludeAutoStrutModule
-					if(bReinitialize && HighLogic.LoadedSceneIsFlight)
-					{
-						KJRAutoStrutModule.UninitializeVessel(FlightGlobals.ActiveVessel);
-						if(!bCycle)
-							KJRAutoStrutModule.InitializeVessel(FlightGlobals.ActiveVessel);
-					}
-#endif
 
 					if(bCycle && HighLogic.LoadedSceneIsFlight)
 						KJRManager.Instance.OnVesselWasModified(FlightGlobals.ActiveVessel);
@@ -311,9 +272,6 @@ namespace KerbalJointReinforcement
 			applyButton.onClick.AddListener(() => 
 				{
 					bool bCycle = false;
-#if IncludeAutoStrutModule
-					bool bReinitialize = false;
-#endif
 
 					ShowKSPJoints = OptShowKSPJoints.isOn;
 
@@ -347,28 +305,9 @@ namespace KerbalJointReinforcement
 
 					ShowMultiPartJointTreeChildrenRoot = OptShowMultiPartJointTreeChildrenRoot.isOn;
 
-#if IncludeAutoStrutModule
-					if(UseAutoStrutSensor != OptUseAutoStrutSensor.isOn)
-					{
-						bReinitialize = true;
-						UseAutoStrutSensor = OptUseAutoStrutSensor.isOn;
-					}
-
-					ShowAutoStrutSensor = OptShowAutoStrutSensor.isOn;
-#endif
-
 					PhysicsGlobals.AutoStrutDisplay = OptAutoStrutDisplay.isOn;
 
 					KJRAnalyzer.Show = ShowKSPJoints | ShowAdditionalJointToParent | ShowMultiPartJointTreeChildren | ShowMultiPartJointTreeChildrenRoot;
-
-#if IncludeAutoStrutModule
-					if(bReinitialize && HighLogic.LoadedSceneIsFlight)
-					{
-						KJRAutoStrutModule.UninitializeVessel(FlightGlobals.ActiveVessel);
-						if(!bCycle)
-							KJRAutoStrutModule.InitializeVessel(FlightGlobals.ActiveVessel);
-					}
-#endif
 
 					if(bCycle && HighLogic.LoadedSceneIsFlight)
 						KJRManager.Instance.OnVesselWasModified(FlightGlobals.ActiveVessel);
@@ -555,7 +494,6 @@ namespace KerbalJointReinforcement
 
 		internal void KeyboardLock(Boolean apply)
 		{
-			
 			if(apply) // only do this lock in the editor - no point elsewhere
 			{
 				//only add a new lock if there isnt already one there
@@ -566,7 +504,6 @@ namespace KerbalJointReinforcement
 					InputLockManager.SetControlLock(ControlTypes.KEYBOARDINPUT, "KJRKeyboardLock");
 				}
 			}
-			
 			else // otherwise make sure the lock is removed
 			{
 				// only try and remove it if there was one there in the fKJRst place
@@ -624,10 +561,6 @@ namespace KerbalJointReinforcement
 			config.SetValue("dbg_ShowMultiPartJointTreeChildren", ShowMultiPartJointTreeChildren);
 			config.SetValue("dbg_BuildMultiPartJointTreeChildrenRoot", BuildMultiPartJointTreeChildrenRoot);
 			config.SetValue("dbg_ShowMultiPartJointTreeChildrenRoot", ShowMultiPartJointTreeChildrenRoot);
-#if IncludeAutoStrutModule
-			config.SetValue("dbg_UseAutoStrutSensor", UseAutoStrutSensor);
-			config.SetValue("dbg_ShowAutoStrutSensor", ShowAutoStrutSensor);
-#endif
 
 			config.save();
 		}
@@ -649,10 +582,6 @@ namespace KerbalJointReinforcement
 			ShowMultiPartJointTreeChildren = config.GetValue<bool>("dbg_ShowMultiPartJointTreeChildren", true);
 			BuildMultiPartJointTreeChildrenRoot = config.GetValue<bool>("dbg_BuildMultiPartJointTreeChildrenRoot", true);
 			ShowMultiPartJointTreeChildrenRoot = config.GetValue<bool>("dbg_ShowMultiPartJointTreeChildrenRoot", true);
-#if IncludeAutoStrutModule
-			UseAutoStrutSensor = config.GetValue<bool>("dbg_UseAutoStrutSensor", true);
-			ShowAutoStrutSensor = config.GetValue<bool>("dbg_ShowAutoStrutSensor", false);
-#endif
 		}
 	}
 

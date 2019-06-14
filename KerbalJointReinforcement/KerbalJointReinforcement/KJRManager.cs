@@ -10,16 +10,24 @@ namespace KerbalJointReinforcement
 	[KSPAddon(KSPAddon.Startup.Flight, false)]
 	public class KJRManager : MonoBehaviour
 	{
-		List<Vessel> updatedVessels;
-		HashSet<Vessel> easingVessels;
-		KJRMultiJointManager multiJointManager;
-
 		private static KJRManager _instance;
+
+		// VERSION only in 1.7 and later
+		internal static System.Type ModuleDecoupleType;
+		internal static System.Reflection.FieldInfo isDecoupledField;
+
+		// VERSION only in 1.7.2 and later
+		internal static System.Reflection.FieldInfo onRoboticPartLockChangingField = null;
 
 		internal static KJRManager Instance
 		{
 			get { return _instance; }
 		}
+
+		List<Vessel> updatedVessels;
+		HashSet<Vessel> easingVessels;
+		KJRMultiJointManager multiJointManager;
+		List<Vessel> updatingVessels;
 
 		internal KJRMultiJointManager GetMultiJointManager()
 		{
@@ -32,6 +40,16 @@ namespace KerbalJointReinforcement
 			updatedVessels = new List<Vessel>();
 			easingVessels = new HashSet<Vessel>();
 			multiJointManager = new KJRMultiJointManager();
+			updatingVessels = new List<Vessel>();
+
+			// VERSION not in 1.7 and later
+			ModuleDecoupleType = Type.GetType("ModuleDecouple, Assembly-CSharp");
+			isDecoupledField = ModuleDecoupleType.GetField("isDecoupled");
+
+			// VERSION not in 1.7.2 and later
+			onRoboticPartLockChangingField = typeof(GameEvents).GetField("onRoboticPartLockChanging"); // >= 1.7.2
+			if(onRoboticPartLockChangingField == null)
+				KJRJointUtils.BaseServoType = Type.GetType("Expansions.Serenity.BaseServo, Assembly-CSharp"); // 1.7.1 only
 
 			_instance = this;
 		}
@@ -41,9 +59,6 @@ namespace KerbalJointReinforcement
 			GameEvents.onVesselCreate.Add(OnVesselCreate);
 			GameEvents.onVesselWasModified.Add(OnVesselWasModified);
 			GameEvents.onVesselDestroy.Add(OnVesselDestroy); // FEHLER, evtl. onAboutToDestroy nutzen??
-#if IncludeAutoStrutModule
-			GameEvents.onProtoVesselSave.Add(OnProtoVesselSave);
-#endif
 
 			GameEvents.onVesselGoOffRails.Add(OnVesselOffRails);
 			GameEvents.onVesselGoOnRails.Add(OnVesselOnRails);
@@ -55,6 +70,16 @@ namespace KerbalJointReinforcement
 			GameEvents.onPhysicsEaseStart.Add(OnEaseStart);
 			GameEvents.onPhysicsEaseStop.Add(OnEaseStop);
 
+			// VERSION direct in 1.7.2 and later
+			if(onRoboticPartLockChangingField != null)
+			{
+				EventData<Part, bool> onRoboticPartLockChanging = (EventData<Part, bool>)onRoboticPartLockChangingField.GetValue(null);
+				onRoboticPartLockChanging.Add(OnRoboticPartLockChanging);
+			}
+
+		//	VERSION direct code for 1.7.2 and later
+		//	GameEvents.onRoboticPartLockChanging.Add(OnRoboticPartLockChanging);
+
 // FHELER, der decoupler hat noch das Pack behandelt... müsste man das auch noch? ist das nicht immer dann, wenn man onrails geht??? -> doch, wird genau nur dann gesendet
 		}
 
@@ -63,9 +88,6 @@ namespace KerbalJointReinforcement
 			GameEvents.onVesselCreate.Remove(OnVesselCreate);
 			GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
 			GameEvents.onVesselDestroy.Remove(OnVesselDestroy);
-#if IncludeAutoStrutModule
-			GameEvents.onProtoVesselSave.Remove(OnProtoVesselSave);
-#endif
 
 			GameEvents.onVesselGoOffRails.Remove(OnVesselOffRails);
 			GameEvents.onVesselGoOnRails.Remove(OnVesselOnRails);
@@ -77,8 +99,16 @@ namespace KerbalJointReinforcement
 			GameEvents.onPhysicsEaseStart.Remove(OnEaseStart);
 			GameEvents.onPhysicsEaseStop.Remove(OnEaseStop);
 
-			if(InputLockManager.GetControlLock("KJRLoadLock") == ControlTypes.ALL_SHIP_CONTROLS)
-				InputLockManager.RemoveControlLock("KJRLoadLock");
+			// VERSION direct in 1.7.2 and later
+			if(onRoboticPartLockChangingField != null)
+			{
+				EventData<Part, bool> onRoboticPartLockChanging = (EventData<Part, bool>)onRoboticPartLockChangingField.GetValue(null);
+				onRoboticPartLockChanging.Remove(OnRoboticPartLockChanging);
+			}
+
+		//	VERSION direct code for 1.7.2 and later
+		//	GameEvents.onRoboticPartLockChanging.Remove(OnRoboticPartLockChanging);
+
 			updatedVessels = null;
 			easingVessels = null;
 
@@ -88,6 +118,8 @@ namespace KerbalJointReinforcement
 		IEnumerator RunVesselJointUpdateFunctionDelayed(Vessel v)
 		{
 			yield return new WaitForFixedUpdate();
+
+			updatingVessels.Remove(v);
 
 			RunVesselJointUpdateFunction(v);
 
@@ -99,10 +131,6 @@ namespace KerbalJointReinforcement
 		private void OnVesselCreate(Vessel v)
 		{
 			multiJointManager.RemoveAllVesselJoints(v);
-
-#if IncludeAutoStrutModule
-			KJRAutoStrutModule.UninitializeVessel(v);
-#endif
 
 			updatedVessels.Remove(v);
 
@@ -130,11 +158,11 @@ namespace KerbalJointReinforcement
 				Debug.Log(debugString);
 			}
 
-#if IncludeAutoStrutModule
-			KJRAutoStrutModule.InitializeVessel(v);
-#endif
-
-			StartCoroutine(RunVesselJointUpdateFunctionDelayed(v));
+			if(!updatingVessels.Contains(v))
+			{
+				updatingVessels.Add(v);
+				StartCoroutine(RunVesselJointUpdateFunctionDelayed(v));
+			}
 		}
 
 		private void OnVesselDestroy(Vessel v)
@@ -144,51 +172,20 @@ namespace KerbalJointReinforcement
 			updatedVessels.Remove(v);
 
 #if IncludeAnalyzer
-			KJRAnalyzer.Destroy(v);
+			KJRAnalyzer.Clear(v);
 #endif
 		}
 
-#if IncludeAutoStrutModule
-		public void OnProtoVesselSave(GameEvents.FromToAction<ProtoVessel, ConfigNode> data)
+		private void OnRoboticPartLockChanging(Part p, bool b)
 		{
-			if(data.to == null)
-			{
-				for(int i = 0; i < 2; i++)
-				{
-					if(data.from.protoPartSnapshots.Count < 1)
-						return;
-
-					if(data.from.protoPartSnapshots[data.from.protoPartSnapshots.Count - 1].partName != "KJRAutoStrutHelper")
-						return;
-
-					data.from.protoPartSnapshots.RemoveAt(data.from.protoPartSnapshots.Count - 1);
-				}
-			}
+			OnVesselWasModified(p.vessel);
 		}
-#endif
 
 		// this function can be called by compatible modules instead of calling
 		// Vessel.CycleAllAutoStrut, if you want only KJR to cycle the extra joints
 		public static void CycleAllAutoStrut(Vessel v)
 		{
 			_instance.OnVesselWasModified(v);
-		}
-
-		// this function cann be called by compatible modules to add a KJRExcluded
-		// to a part with a callback function (instead of linking to KJRjoint)
-		public static bool AddJointCallback(Part p, KJRExcluded.IsJointUnlockedCallback callback)
-		{
-			KJRExcluded m = p.GetComponent<KJRExcluded>();
-			if(!m) m = p.gameObject.AddComponent<KJRExcluded>();
-			if(!m) return false;
-			m.callback = callback;
-			return true;
-		}
-
-		public static void RemoveJointCallback(Part p)
-		{
-			KJRExcluded m = p.GetComponent<KJRExcluded>();
-			if(m) Destroy(m);
 		}
 
 		private void OnVesselOnRails(Vessel v)
@@ -200,10 +197,6 @@ namespace KerbalJointReinforcement
 			{
 				multiJointManager.RemoveAllVesselJoints(v);
 
-#if IncludeAutoStrutModule
-				KJRAutoStrutModule.UninitializeVessel(v);
-#endif
-
 				updatedVessels.Remove(v);
 			}
 		}
@@ -213,11 +206,11 @@ namespace KerbalJointReinforcement
 			if((object)v == null || v.isEVA || v.GetComponent<KerbalEVA>())
 				return; 
 
-#if IncludeAutoStrutModule
-			KJRAutoStrutModule.InitializeVessel(v);
-#endif
-
-			StartCoroutine(RunVesselJointUpdateFunctionDelayed(v));
+			if(!updatingVessels.Contains(v))
+			{
+				updatingVessels.Add(v);
+				StartCoroutine(RunVesselJointUpdateFunctionDelayed(v));
+			}
 		}
 
 		private void RemovePartJoints(Part p)
@@ -231,11 +224,8 @@ namespace KerbalJointReinforcement
 
 			foreach(Part p in v.Parts)
 			{
-				if(p.GetComponent<KJR.IKJRJoint>() != null) // exclude those actions from joints that can be dynamically unlocked
-					continue;
-
-				if(p.GetComponent<IJointLockState>() != null) // exclude those actions from joints that can be dynamically unlocked
-					continue;
+				if(KJRJointUtils.IsJointUnlockable(p))
+					continue; // exclude those actions from joints that can be dynamically unlocked
 
 				p.crashTolerance = p.crashTolerance * 10000f;
 				if(p.attachJoint)
@@ -265,26 +255,23 @@ namespace KerbalJointReinforcement
 
 			foreach(Part p in v.Parts)
 			{
-				if(p.GetComponent<KJR.IKJRJoint>() != null) // exclude those actions from joints that can be dynamically unlocked
-					continue;
-
-				if(p.GetComponent<IJointLockState>() != null) // exclude those actions from joints that can be dynamically unlocked
-					continue;
+				if(KJRJointUtils.IsJointUnlockable(p))
+					continue; // exclude those actions from joints that can be dynamically unlocked
 
 				p.crashTolerance = p.crashTolerance / 10000f;
 				if(p.attachJoint)
 					p.attachJoint.SetUnbreakable(false, false);
 			}
 
-			StartCoroutine(RunVesselJointUpdateFunctionDelayed(v));
+			if(!updatingVessels.Contains(v))
+			{
+				updatingVessels.Add(v);
+				StartCoroutine(RunVesselJointUpdateFunctionDelayed(v));
+			}
 		}
 
 		private void RunVesselJointUpdateFunction(Vessel v)
 		{
-#if IncludeAutoStrutModule
-			KJRAutoStrutModule.bIgnore = true;
-#endif
-
 			if(KJRJointUtils.debug)
 			{
 				Debug.Log("KJR: Processing vessel " + v.id + " (" + v.GetName() + "); root " +
@@ -311,14 +298,33 @@ namespace KerbalJointReinforcement
 
 				if(KJRJointUtils.reinforceDecouplersFurther)
 				{
-					ModuleDecouplerBase d = p.GetComponent<ModuleDecouplerBase>(); // FEHLER, wieso nicht auch ModuleDockingNode ??
-
-					if(p.parent && (p.children.Count > 0) && d && !d.isDecoupled)
+					// VERSION direct in 1.7 and later
+					if(p.parent && (p.children.Count > 0))
 					{
-						bReinforced = true;
-						ReinforceDecouplers(p);
-						continue;
+						for(int i = 0; i < p.Modules.Count; i++)
+						{
+							if(KJRJointUtils.IsOfClass(p.Modules[i], ModuleDecoupleType))
+							{
+								if(!(bool)isDecoupledField.GetValue(p.Modules[i]))
+								{
+									bReinforced = true;
+									ReinforceDecouplers(p);
+									goto continue_;
+								}
+							}
+						}
 					}
+
+				//	VERSION direct code for 1.7 and later
+				//
+				//	ModuleDecouplerBase d = p.GetComponent<ModuleDecouplerBase>(); // FEHLER, wieso nicht auch ModuleDockingNode ??
+				//
+				//	if(p.parent && (p.children.Count > 0) && d && !d.isDecoupled)
+				//	{
+				//		bReinforced = true;
+				//		ReinforceDecouplers(p);
+				//		continue;
+				//	}
 				}
 
 				if(KJRJointUtils.reinforceLaunchClampsFurther)
@@ -328,21 +334,18 @@ namespace KerbalJointReinforcement
 						ReinforceLaunchClamps(p);
 					}
 				}
+continue_:;
 			}
 
 #if IncludeAnalyzer
 			}
 #endif
 
-			if(bReinforced)
+			if(bReinforced && !updatedVessels.Contains(v))
 				updatedVessels.Add(v);
 
 			if(KJRJointUtils.reinforceAttachNodes && KJRJointUtils.multiPartAttachNodeReinforcement)
 				MultiPartJointTreeChildren(v);
-
-#if IncludeAutoStrutModule
-			KJRAutoStrutModule.bIgnore = false;
-#endif
 		}
 
 #if IncludeAnalyzer
@@ -418,7 +421,7 @@ namespace KerbalJointReinforcement
 			//addAdditionalJointToParent &= !(p.Modules.Contains("LaunchClamp") || (p.parent.Modules.Contains("ModuleDecouple") || p.parent.Modules.Contains("ModuleAnchoredDecoupler")));
 			addAdditionalJointToParent &= !p.Modules.Contains<CModuleStrut>();
 
-			if((p.GetComponent<KJR.IKJRJoint>() == null) && (p.GetComponent<IJointLockState>() == null)) // exclude those actions from joints that can be dynamically unlocked
+			if(!KJRJointUtils.IsJointUnlockable(p)) // exclude those actions from joints that can be dynamically unlocked
 			{
 				float partMass = p.mass + p.GetResourceMass();
 				for(int i = 0; i < jointList.Count; i++)
