@@ -50,7 +50,7 @@ namespace KerbalJointReinforcement
             neighbours.Add(part.parent);
 
             StringBuilder debugString = null;
-            if (KJRJointUtils.debug)
+            if (KJRJointUtils.settings.debug)
             {
                 debugString = new StringBuilder();
                 debugString.AppendLine("The following joints added by " + part.partInfo.title + " to increase stiffness:");
@@ -68,7 +68,7 @@ namespace KerbalJointReinforcement
                 }
             }
 
-            if (KJRJointUtils.debug)
+            if (KJRJointUtils.settings.debug)
             {
                 debugString.AppendLine(part.parent.partInfo.title + " connected to part " + part.partInfo.title);
                 Debug.Log(debugString.ToString());
@@ -92,7 +92,7 @@ namespace KerbalJointReinforcement
                 if (p.vessel == part.vessel)
                     continue;
 
-                if (KJRJointUtils.debug)
+                if (KJRJointUtils.settings.debug)
                     Debug.Log("[KJR] Decoupling part " + part.partInfo.title + "; destroying all extra joints");
                 
                 BreakAllInvalidJoints();
@@ -169,8 +169,8 @@ namespace KerbalJointReinforcement
         private void StrutConnectParts(Part partWithJoint, Part partConnectedByJoint)
         {
             Rigidbody rigidBody = partConnectedByJoint.rb;
-            float breakForce = KJRJointUtils.decouplerAndClampJointStrength;
-            float breakTorque = KJRJointUtils.decouplerAndClampJointStrength;
+            float breakForce = KJRJointUtils.settings.decouplerAndClampJointStrength;
+            float breakTorque = KJRJointUtils.settings.decouplerAndClampJointStrength;
             Vector3 anchor, axis;
             anchor = Vector3.zero;
             axis = Vector3.right;

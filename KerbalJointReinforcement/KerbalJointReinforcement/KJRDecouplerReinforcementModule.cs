@@ -81,7 +81,7 @@ namespace KerbalJointReinforcement
                 if (p.vessel == part.vessel)
                     continue;
 
-                if (KJRJointUtils.debug)
+                if (KJRJointUtils.settings.debug)
                     Debug.Log("Decoupling part " + part.partInfo.title + "; destroying all extra joints");
 
                 BreakAllInvalidJointsAndRebuild();
@@ -111,7 +111,7 @@ namespace KerbalJointReinforcement
 
             StringBuilder debugString = null;
 
-            if (KJRJointUtils.debug)
+            if (KJRJointUtils.settings.debug)
             {
                 debugString = new StringBuilder();
                 debugString.AppendLine(parentParts.Count + " parts above decoupler to be connected to " + childParts.Count + " below decoupler.");
@@ -129,7 +129,7 @@ namespace KerbalJointReinforcement
 
                     StrutConnectParts(p, q);
 
-                    if (KJRJointUtils.debug)
+                    if (KJRJointUtils.settings.debug)
                         debugString.AppendLine(p.partInfo.title + " connected to part " + q.partInfo.title);
                 }
             }
@@ -140,7 +140,7 @@ namespace KerbalJointReinforcement
                 GameEvents.onVesselCreate.Add(OnVesselWasModified);
             }
 
-            if (KJRJointUtils.debug)
+            if (KJRJointUtils.settings.debug)
                 Debug.Log(debugString.ToString());
         }
 
@@ -225,8 +225,8 @@ namespace KerbalJointReinforcement
         private void StrutConnectParts(Part partWithJoint, Part partConnectedByJoint)
         {
             Rigidbody rigidBody = partConnectedByJoint.rb;
-            float breakForce = KJRJointUtils.decouplerAndClampJointStrength;
-            float breakTorque = KJRJointUtils.decouplerAndClampJointStrength;
+            float breakForce = KJRJointUtils.settings.decouplerAndClampJointStrength;
+            float breakTorque = KJRJointUtils.settings.decouplerAndClampJointStrength;
             Vector3 anchor, axis;
 
             anchor = Vector3.zero;
