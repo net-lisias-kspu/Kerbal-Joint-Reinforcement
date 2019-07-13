@@ -46,6 +46,9 @@ namespace KerbalJointReinforcement
 			ModuleDecoupleType = Type.GetType("ModuleDecouple, Assembly-CSharp");
 			isDecoupledField = ModuleDecoupleType.GetField("isDecoupled");
 
+			// VERSION in 1.7.1 and later
+			KJRJointUtils.IRoboticServoType = Type.GetType("Expansions.Serenity.IRoboticServo, Assembly-CSharp"); // >= 1.7.1
+
 			// VERSION not in 1.7.2 and later
 			onRoboticPartLockChangingField = typeof(GameEvents).GetField("onRoboticPartLockChanging"); // >= 1.7.2
 			if(onRoboticPartLockChangingField == null)
@@ -358,18 +361,17 @@ continue_:;
 	   }
 #endif
 
+		// attachJoint's are always joints from a part to its parent
 		private void ReinforceAttachJoints(Part p)
 		{
 			if(p.rb == null || p.attachJoint == null || !KJRJointUtils.IsJointAdjustmentAllowed(p))
 				return;
 
-			if(p.attachMethod == AttachNodeMethod.LOCKED_JOINT)
+			if((p.attachMethod == AttachNodeMethod.LOCKED_JOINT)
+			&& KJRJointUtils.debug)
 			{
-				if(KJRJointUtils.debug)
-				{
-					Debug.Log("KJR: Already processed part before: " + p.partInfo.name + " (" + p.flightID + ") -> " +
-								p.parent.partInfo.name + " (" + p.parent.flightID + ")");
-				}
+				Debug.Log("KJR: Already processed part before: " + p.partInfo.name + " (" + p.flightID + ") -> " +
+							p.parent.partInfo.name + " (" + p.parent.flightID + ")");
 			}
 
 			List<ConfigurableJoint> jointList;
@@ -378,7 +380,7 @@ continue_:;
 			{
 				CModuleStrut s = p.Modules.GetModule<CModuleStrut>();
 
-				if(!(s.jointTarget == null || s.jointRoot == null))
+				if((s.jointTarget != null) && (s.jointRoot != null))
 				{
 					jointList = s.strutJoint.joints;
 
@@ -724,12 +726,8 @@ continue_:;
 #endif
 
 			if(addAdditionalJointToParent && p.parent.parent != null
-			&& KJRJointUtils.IsJointAdjustmentAllowed(p.parent)		  // verify that parent is not an excluded part
-			&& KJRJointUtils.IsJointAdjustmentAllowed(p.parent.parent))  // verify that parent of parent (our target part) is not an excluded part
+			&& KJRJointUtils.IsJointAdjustmentAllowed(p.parent))	// verify that parent is not an excluded part -> we will skip this in our calculation, that's why we need to check it now
 			{
-				/*if(ValidDecoupler(p) || ValidDecoupler(p.parent))
-					continue;*/
-
 				ConfigurableJoint j = p.attachJoint.Joint; // second steps uses the first/main joint as reference
 
 				Part newConnectedPart = p.parent.parent;
@@ -741,9 +739,7 @@ continue_:;
 				List<Part> partsCrossed = new List<Part>();
 				List<Part> possiblePartsCrossed = new List<Part>();
 
-			//	partsCrossed.Add(p);
 				partsCrossed.Add(p.parent);
-			//	partsCrossed.Add(newConnectedPart);
 
 				Part connectedRbPart = newConnectedPart;
 
@@ -764,7 +760,7 @@ continue_:;
 						else
 						{
 							if((newConnectedPart.parent == null)
-							|| !KJRJointUtils.IsJointAdjustmentAllowed(newConnectedPart.parent))
+							|| !KJRJointUtils.IsJointAdjustmentAllowed(newConnectedPart))
 								break;
 
 							newConnectedPart = newConnectedPart.parent;
@@ -798,12 +794,11 @@ continue_:;
 
 						if(!KJRJointUtils.useOldJointCreation)
 						{
-						newJoint.autoConfigureConnectedAnchor = false;
-	//					newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(newConnectedPart.transform.position + newConnectedPart.transform.rotation * Quaternion.Inverse(newConnectedPart.orgRot) * (p.orgPos - newConnectedPart.orgPos));
-newJoint.connectedAnchor = Quaternion.Inverse(newConnectedPart.orgRot) * (p.orgPos - newConnectedPart.orgPos);
+							newJoint.autoConfigureConnectedAnchor = false;
+							newJoint.connectedAnchor = Quaternion.Inverse(newConnectedPart.orgRot) * (p.orgPos - newConnectedPart.orgPos);
 
-						Quaternion must = newConnectedPart.transform.rotation * (Quaternion.Inverse(newConnectedPart.orgRot) * p.orgRot);
-						newJoint.SetTargetRotationLocal(Quaternion.Inverse(p.transform.rotation) * must, Quaternion.identity);
+							Quaternion must = newConnectedPart.transform.rotation * (Quaternion.Inverse(newConnectedPart.orgRot) * p.orgRot);
+							newJoint.SetTargetRotationLocal(Quaternion.Inverse(p.transform.rotation) * must, Quaternion.identity);
 							// FEHLER, direkter machen
 						}
 					}
@@ -816,12 +811,11 @@ newJoint.connectedAnchor = Quaternion.Inverse(newConnectedPart.orgRot) * (p.orgP
 
 						if(!KJRJointUtils.useOldJointCreation)
 						{
-						newJoint.autoConfigureConnectedAnchor = false;
-	//					newJoint.connectedAnchor = newJoint.connectedBody.transform.InverseTransformPoint(p.transform.position + p.transform.rotation * Quaternion.Inverse(p.orgRot) * (newConnectedPart.orgPos - p.orgPos));
-newJoint.connectedAnchor = Quaternion.Inverse(p.orgRot) * (newConnectedPart.orgPos - p.orgPos);
+							newJoint.autoConfigureConnectedAnchor = false;
+							newJoint.connectedAnchor = Quaternion.Inverse(p.orgRot) * (newConnectedPart.orgPos - p.orgPos);
 
-						Quaternion must = p.transform.rotation * (Quaternion.Inverse(p.orgRot) * newConnectedPart.orgRot);
-						newJoint.SetTargetRotationLocal(Quaternion.Inverse(newConnectedPart.transform.rotation) * must, Quaternion.identity);
+							Quaternion must = p.transform.rotation * (Quaternion.Inverse(p.orgRot) * newConnectedPart.orgRot);
+							newJoint.SetTargetRotationLocal(Quaternion.Inverse(newConnectedPart.transform.rotation) * must, Quaternion.identity);
 							// FEHLER, direkter machen
 						}
 					}

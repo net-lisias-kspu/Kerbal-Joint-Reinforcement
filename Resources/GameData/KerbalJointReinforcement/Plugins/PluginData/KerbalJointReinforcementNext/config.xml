@@ -7,19 +7,19 @@
     <bool name="useVolumeNotArea">1</bool>
     <bool name="debug">0</bool>
 
-    <float name="angularDriveSpring">5e12</float>
-    <float name="angularDriveDamper">25</float>
-    <float name="angularMaxForceFactor">-1</float>
+    <double name="angularDriveSpring">5e12</double>
+    <double name="angularDriveDamper">25</double>
+    <double name="angularMaxForceFactor">-1</double>
 
-    <float name="decouplerAndClampJointStrength">-1</float>
+    <double name="decouplerAndClampJointStrength">-1</double>
 
-    <float name="breakForceMultiplier">1</float>
-    <float name="breakTorqueMultiplier">1</float>
-    <float name="breakStrengthPerArea">1500</float>
-    <float name="breakTorquePerMOI">6000</float>
+    <double name="breakForceMultiplier">1</double>
+    <double name="breakTorqueMultiplier">1</double>
+    <double name="breakStrengthPerArea">1500</double>
+    <double name="breakTorquePerMOI">6000</double>
 
-    <float name="massForAdjustment">0.01</float>
-    <float name="upperMassForLockedJoint">0</float>
+    <double name="massForAdjustment">0.01</double>
+    <double name="upperMassForLockedJoint">0</double>
 
     <string name="decouplerStiffeningExtensionType0">ModuleEngines</string>
     <string name="decouplerStiffeningExtensionType1">ModuleEnginesFX</string>
@@ -30,5 +30,5 @@
     <string name="adecouplerStiffeningExtensionType6">ModuleAnchoredDecoupler</string>
     <string name="adecouplerStiffeningExtensionType7">ProceduralFairingBase</string>
 
-    <float name="stiffeningExtensionMassRatioThreshold">5</float>
+    <double name="stiffeningExtensionMassRatioThreshold">5</double>
 </config>

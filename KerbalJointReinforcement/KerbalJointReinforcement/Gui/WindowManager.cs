@@ -551,8 +551,8 @@ namespace KerbalJointReinforcement
 			config.load();
 
 			config.SetValue("dbg_controlWindowPosition", _settingsWindowPosition);
-			config.SetValue("dbg_UIAlphaValue", (double) _UIAlphaValue);
-			config.SetValue("dbg_UIScaleValue", (double) _UIScaleValue);
+			config.SetValue("dbg_UIAlphaValue", (double)_UIAlphaValue);
+			config.SetValue("dbg_UIScaleValue", (double)_UIScaleValue);
 			config.SetValue("dbg_ShowKSPJoints", ShowKSPJoints);
 			config.SetValue("dbg_ReinforceExistingJoints", ReinforceExistingJoints);
 			config.SetValue("dbg_BuildAdditionalJointToParent", BuildAdditionalJointToParent);
@@ -572,8 +572,8 @@ namespace KerbalJointReinforcement
 
 			_settingsWindowPosition = config.GetValue<Vector3>("dbg_controlWindowPosition");
 
-			_UIAlphaValue = (float) config.GetValue<double>("dbg_UIAlphaValue", 0.8);
-			_UIScaleValue = (float) config.GetValue<double>("dbg_UIScaleValue", 1.0);
+			_UIAlphaValue = (float)config.GetValue<double>("dbg_UIAlphaValue", 0.8);
+			_UIScaleValue = (float)config.GetValue<double>("dbg_UIScaleValue", 1.0);
 			ShowKSPJoints = config.GetValue<bool>("dbg_ShowKSPJoints", true);
 			ReinforceExistingJoints = config.GetValue<bool>("dbg_ReinforceExistingJoints", true);
 			BuildAdditionalJointToParent = config.GetValue<bool>("dbg_BuildAdditionalJointToParent", true);

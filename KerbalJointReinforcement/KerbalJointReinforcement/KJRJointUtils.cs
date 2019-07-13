@@ -10,6 +10,9 @@ namespace KerbalJointReinforcement
 {
 	public static class KJRJointUtils
 	{
+		// VERISON special for 1.7.1 and later
+		internal static System.Type IRoboticServoType = null;
+
 		// VERSION not in 1.7.2 and later
 		internal static System.Type BaseServoType = null; // exclude this one if defined -> we do this for 1.7.1 only
 
@@ -54,25 +57,25 @@ namespace KerbalJointReinforcement
 			reinforceLaunchClampsFurther = config.GetValue<bool>("reinforceLaunchClampsFurther", true);
 			useVolumeNotArea = config.GetValue<bool>("useVolumeNotArea", true);
 
-			angularDriveSpring = config.GetValue<float>("angularDriveSpring");
-			angularDriveDamper = config.GetValue<float>("angularDriveDamper");
-			angularMaxForceFactor = config.GetValue<float>("angularMaxForceFactor");
+			angularDriveSpring = (float)config.GetValue<double>("angularDriveSpring");
+			angularDriveDamper = (float)config.GetValue<double>("angularDriveDamper");
+			angularMaxForceFactor = (float)config.GetValue<double>("angularMaxForceFactor");
 			if(angularMaxForceFactor < 0)
 				angularMaxForceFactor = float.MaxValue;
 
-			breakForceMultiplier = config.GetValue<float>("breakForceMultiplier", 1);
-			breakTorqueMultiplier = config.GetValue<float>("breakTorqueMultiplier", 1);
+			breakForceMultiplier = (float)config.GetValue<double>("breakForceMultiplier", 1);
+			breakTorqueMultiplier = (float)config.GetValue<double>("breakTorqueMultiplier", 1);
 
-			breakStrengthPerArea = config.GetValue<float>("breakStrengthPerArea", 40);
-			breakTorquePerMOI = config.GetValue<float>("breakTorquePerMOI", 40000);
+			breakStrengthPerArea = (float)config.GetValue<double>("breakStrengthPerArea", 40);
+			breakTorquePerMOI = (float)config.GetValue<double>("breakTorquePerMOI", 40000);
 
-			decouplerAndClampJointStrength = config.GetValue<float>("decouplerAndClampJointStrength", float.PositiveInfinity);
+			decouplerAndClampJointStrength = (float)config.GetValue<double>("decouplerAndClampJointStrength", float.PositiveInfinity);
 			if(decouplerAndClampJointStrength < 0)
 				decouplerAndClampJointStrength = float.PositiveInfinity;
 
-			stiffeningExtensionMassRatioThreshold = config.GetValue<float>("stiffeningExtensionMassRatioThreshold", 5);
+			stiffeningExtensionMassRatioThreshold = (float)config.GetValue<double>("stiffeningExtensionMassRatioThreshold", 5);
 
-			massForAdjustment = config.GetValue<float>("massForAdjustment", 1);
+			massForAdjustment = (float)config.GetValue<double>("massForAdjustment", 1);
 
 			decouplerStiffeningExtensionType.Clear();
 
@@ -301,6 +304,18 @@ namespace KerbalJointReinforcement
 				// VERSION not in 1.7.2 and later
 				if((BaseServoType != null) && (IsOfClass(module, BaseServoType)))
 					return false;
+			}
+
+			// VERSION 1.7.1 and later
+			if((IRoboticServoType != null) && (p.parent != null))
+			{
+				for(int i = 0; i < p.parent.Modules.Count; i++)
+				{
+					PartModule module = p.parent.Modules[i];
+
+					if(IsOfClass(module, IRoboticServoType))
+						return false;
+				}
 			}
 
 			return true;
