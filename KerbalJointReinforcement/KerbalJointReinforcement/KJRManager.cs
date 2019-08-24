@@ -12,12 +12,12 @@ namespace KerbalJointReinforcement
 	{
 		private static KJRManager _instance;
 
-		// VERSION only in 1.7 and later
+#if Compatible
 		internal static System.Type ModuleDecoupleType;
 		internal static System.Reflection.FieldInfo isDecoupledField;
 
-		// VERSION only in 1.7.2 and later
 		internal static System.Reflection.FieldInfo onRoboticPartLockChangingField = null;
+#endif
 
 		internal static KJRManager Instance
 		{
@@ -42,17 +42,18 @@ namespace KerbalJointReinforcement
 			multiJointManager = new KJRMultiJointManager();
 			updatingVessels = new List<Vessel>();
 
-			// VERSION not in 1.7 and later
+#if Compatible
 			ModuleDecoupleType = Type.GetType("ModuleDecouple, Assembly-CSharp");
 			isDecoupledField = ModuleDecoupleType.GetField("isDecoupled");
 
-			// VERSION in 1.7.1 and later
+			// >= 1.7.1
 			KJRJointUtils.IRoboticServoType = Type.GetType("Expansions.Serenity.IRoboticServo, Assembly-CSharp"); // >= 1.7.1
 
-			// VERSION not in 1.7.2 and later
+			// 1.7.1 detection
 			onRoboticPartLockChangingField = typeof(GameEvents).GetField("onRoboticPartLockChanging"); // >= 1.7.2
 			if(onRoboticPartLockChangingField == null)
 				KJRJointUtils.BaseServoType = Type.GetType("Expansions.Serenity.BaseServo, Assembly-CSharp"); // 1.7.1 only
+#endif
 
 			_instance = this;
 		}
@@ -73,15 +74,18 @@ namespace KerbalJointReinforcement
 			GameEvents.onPhysicsEaseStart.Add(OnEaseStart);
 			GameEvents.onPhysicsEaseStop.Add(OnEaseStop);
 
-			// VERSION direct in 1.7.2 and later
+#if Compatible
+			// >= 1.7.2
 			if(onRoboticPartLockChangingField != null)
 			{
 				EventData<Part, bool> onRoboticPartLockChanging = (EventData<Part, bool>)onRoboticPartLockChangingField.GetValue(null);
 				onRoboticPartLockChanging.Add(OnRoboticPartLockChanging);
 			}
+#endif
 
-		//	VERSION direct code for 1.7.2 and later
-		//	GameEvents.onRoboticPartLockChanging.Add(OnRoboticPartLockChanging);
+#if !Compatible
+			GameEvents.onRoboticPartLockChanging.Add(OnRoboticPartLockChanging);
+#endif
 
 // FHELER, der decoupler hat noch das Pack behandelt... müsste man das auch noch? ist das nicht immer dann, wenn man onrails geht??? -> doch, wird genau nur dann gesendet
 		}
@@ -102,15 +106,18 @@ namespace KerbalJointReinforcement
 			GameEvents.onPhysicsEaseStart.Remove(OnEaseStart);
 			GameEvents.onPhysicsEaseStop.Remove(OnEaseStop);
 
-			// VERSION direct in 1.7.2 and later
+#if Compatible
+			// >= 1.7.2
 			if(onRoboticPartLockChangingField != null)
 			{
 				EventData<Part, bool> onRoboticPartLockChanging = (EventData<Part, bool>)onRoboticPartLockChangingField.GetValue(null);
 				onRoboticPartLockChanging.Remove(OnRoboticPartLockChanging);
 			}
+#endif
 
-		//	VERSION direct code for 1.7.2 and later
-		//	GameEvents.onRoboticPartLockChanging.Remove(OnRoboticPartLockChanging);
+#if !Compatible
+			GameEvents.onRoboticPartLockChanging.Remove(OnRoboticPartLockChanging);
+#endif
 
 			updatedVessels = null;
 			easingVessels = null;
@@ -127,6 +134,8 @@ namespace KerbalJointReinforcement
 			RunVesselJointUpdateFunction(v);
 
 #if IncludeAnalyzer
+			KJRAnalyzerJoint.RunVesselJointUpdateFunction(v);
+
 			KJRAnalyzer.WasModified(v);
 #endif
 		}
@@ -223,7 +232,8 @@ namespace KerbalJointReinforcement
 
 		public void OnEaseStart(Vessel v)
 		{
-			Debug.Log("KJR easing " + v.vesselName);
+			if(KJRJointUtils.debug)
+				Debug.Log("KJR easing " + v.vesselName);
 
 			foreach(Part p in v.Parts)
 			{
@@ -301,7 +311,7 @@ namespace KerbalJointReinforcement
 
 				if(KJRJointUtils.reinforceDecouplersFurther)
 				{
-					// VERSION direct in 1.7 and later
+#if Compatible
 					if(p.parent && (p.children.Count > 0))
 					{
 						for(int i = 0; i < p.Modules.Count; i++)
@@ -317,17 +327,18 @@ namespace KerbalJointReinforcement
 							}
 						}
 					}
+#endif
 
-				//	VERSION direct code for 1.7 and later
-				//
-				//	ModuleDecouplerBase d = p.GetComponent<ModuleDecouplerBase>(); // FEHLER, wieso nicht auch ModuleDockingNode ??
-				//
-				//	if(p.parent && (p.children.Count > 0) && d && !d.isDecoupled)
-				//	{
-				//		bReinforced = true;
-				//		ReinforceDecouplers(p);
-				//		continue;
-				//	}
+#if !Compatible
+					ModuleDecouplerBase d = p.GetComponent<ModuleDecouplerBase>(); // FEHLER, wieso nicht auch ModuleDockingNode ??
+				
+					if(p.parent && (p.children.Count > 0) && d && !d.isDecoupled)
+					{
+						bReinforced = true;
+						ReinforceDecouplers(p);
+						continue;
+					}
+#endif
 				}
 
 				if(KJRJointUtils.reinforceLaunchClampsFurther)
@@ -919,6 +930,7 @@ continue_:;
 			part.breakingForce = Mathf.Infinity;
 			part.breakingTorque = Mathf.Infinity;
 			part.mass = Mathf.Max(part.mass, (part.parent.mass + part.parent.GetResourceMass()) * 0.01f);		  //We do this to make sure that there is a mass ratio of 100:1 between the clamp and what it's connected to.  This helps counteract some of the wobbliness simply, but also allows some give and springiness to absorb the initial physics kick
+
 			if(KJRJointUtils.debug)
 				Debug.Log("KJR: Launch Clamp Break Force / Torque increased");
 

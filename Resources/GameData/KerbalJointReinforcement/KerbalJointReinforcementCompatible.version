@@ -1,14 +1,14 @@
 {
   "NAME"     : "Kerbal Joint Reinforcement",
   "DOWNLOAD" : "https://github.com/meirumeiru/Kerbal-Joint-Reinforcement/releases",
-  "URL"      : "https://raw.githubusercontent.com/meirumeiru/Kerbal-Joint-Reinforcement/master/GameData/KerbalJointReinforcement/KerbalJointReinforcement.version",
+  "URL"      : "https://raw.githubusercontent.com/meirumeiru/Kerbal-Joint-Reinforcement/master/GameData/KerbalJointReinforcement/KerbalJointReinforcementCompatible.version",
   "GITHUB" : {
       "USERNAME"   : "meirumeiru",
       "REPOSITORY" : "Kerbal-Joint-Reinforcement"
   },
   "VERSION" : {
     "MAJOR" : 4,
-    "MINOR" : 1,
+    "MINOR" : 0,
     "PATCH" : 15
   },
   "KSP_VERSION" : {
@@ -18,7 +18,7 @@
   },
   "KSP_VERSION_MIN" : {
     "MAJOR" : 1,
-    "MINOR" : 7,
-    "PATCH" : 3
+    "MINOR" : 4,
+    "PATCH" : 0
   }
 }

@@ -10,11 +10,13 @@ namespace KerbalJointReinforcement
 {
 	public static class KJRJointUtils
 	{
-		// VERISON special for 1.7.1 and later
+#if Compatible
+		// >= 1.7.1
 		internal static System.Type IRoboticServoType = null;
 
-		// VERSION not in 1.7.2 and later
-		internal static System.Type BaseServoType = null; // exclude this one if defined -> we do this for 1.7.1 only
+		// 1.7.1
+		internal static System.Type BaseServoType = null; // exclude this one if defined
+#endif
 
 		public static bool reinforceAttachNodes = false;
 		public static bool multiPartAttachNodeReinforcement = true;
@@ -276,12 +278,14 @@ namespace KerbalJointReinforcement
 			return false;
 		}
 
-		// VERSION not in 1.7.2 and later
+#if Compatible
+		// >= 1.7.1
 		internal static bool IsOfClass(PartModule module, Type typeSearched)
 		{
 			Type typeModule = module.GetType();
 			return ((typeModule == typeSearched) || typeModule.IsSubclassOf(typeSearched));
 		}
+#endif
 
 		public static bool IsJointAdjustmentAllowed(Part p)
 		{
@@ -301,22 +305,31 @@ namespace KerbalJointReinforcement
 				|| (module is ModuleGrappleNode))
 					return false;
 
-				// VERSION not in 1.7.2 and later
+#if Compatible
+				// 1.7.1
 				if((BaseServoType != null) && (IsOfClass(module, BaseServoType)))
 					return false;
+#endif
 			}
 
-			// VERSION 1.7.1 and later
+#if Compatible
+			// >= 1.7.1
 			if((IRoboticServoType != null) && (p.parent != null))
 			{
 				for(int i = 0; i < p.parent.Modules.Count; i++)
 				{
 					PartModule module = p.parent.Modules[i];
 
-					if(IsOfClass(module, IRoboticServoType))
+					if(IRoboticServoType.IsAssignableFrom(module.GetType()))
 						return false;
 				}
 			}
+#endif
+
+#if !Compatible
+			if((p.parent != null) && p.parent.isRobotic())
+				return false;
+#endif
 
 			return true;
 		}
