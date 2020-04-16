@@ -10,8 +10,8 @@ Based on the original work of ferram4: https://github.com/ferram4/Kerbal-Joint-R
 ****** INSTALLING KERBAL JOINT REINFORCEMENT ******
 ***************************************************
 
-Merge the GameData folder with the existing one in your KSP directory.  KSP will then load it as an add-on.
-The source folder simply contains the source code (in C#) for the plugin.  If you didn't already know what it was, you don't need to worry about it; don't copy it over.
+Merge the GameData folder with the existing one in your KSP directory. KSP will then load it as an add-on.
+The source folder simply contains the source code (in C#) for the plugin. If you didn't already know what it was, you don't need to worry about it; don't copy it over.
 
 
 ********************************
@@ -122,100 +122,125 @@ These types are currently not used, but removing the a in front of them will cau
 ****** CHANGELOG ******
 ***********************
 v3.5.1
+
 	Bugfixes
 	--Improve Rigid clamp behavior
+
 v3.5.0
+
 	Features
 	--Integrated settings into stock UI
+
 v3.4.1
+
 	Features
 	--Added basic support for robotic parts
+
 v3.4.0
+
 	Features
 	--Recompile for use in KSP 1.3.x through 1.7.x
 	--Launch Clamps can now be set to completely rigid (siimav)
 	--Removed compatibility checker
+
 v3.3.4
+
 	Features
 	--Bouncing ships no longer think they are in flight. If there is a clamp attach, it is reset to PREFLIGHT status (Starwaster)
 	--Recompile against KSP 1.4.5
+
 v3.3.3
-	Features  
+
+	Features
 	--Recompile against KSP 1.3, ensure CompatChecker compatibility with 1.3  
 
-v3.3.2  
-	Bugfixes  
+v3.3.2
+
+	Bugfixes
 	--Fix multijoints breaking IR joints and any other exempted parts from moving  
 
-v3.3.1  
-	Bugfixes  
+v3.3.1
+
+	Bugfixes
 	--Fix a critical bug involving unphysical forces applied to vessels on load / unload of other vessels and SOI switches  
 
-v3.3.0  
-	Features  
+v3.3.0
+
+	Features
 	--Recompile to fix for KSP 1.2  
 	--Update method of handling multi-part-joints to ensure compatibility with Konstruction mod  
 	--Removal of old symmetry-based multi-part stabilization due to ineffectiveness in all situations to reduce overhead  
 	--Implementation of new vessel-part-tree leaf-based stabilization for greater stability on space stations and other convoluted shapes  
 
-v3.2.0  
-	Features  
+v3.2.0
+
+	Features
 	--Recompile to ensure KSP 1.1.3 compatibility  
 	--Change multi-part-joint system to stabilize space stations and similar vehicles with very large masses connected by very flexy parts  
 
-v3.1.7  
-	Features  
+v3.1.7
+
+	Features
 	--Recompile to ensure KSP 1.1.2 compatibility, especially within CompatibilityChecker utility  
 
-v3.1.6  
-	Features  
+v3.1.6
+
+	Features
 	--Update to ensure KSP 1.1.1 compatibility  
 	--Minor optimization in joint setups  
 	--Remove B9 pWings from stiffening exemption, as it is unnecessary  
 
-v3.1.5  
-	Features  
+v3.1.5
+
+	Features
 	--Updated to be compatible with KSP 1.1  
 	--Very minor efficiency improvements in physics easing and stiffening of joints  
 	--Fully exempt EVAs from all KJR effects  
 	--Update config parameters to function with stock fixing of never-breakable joints bug  
 
-v3.1.4  
-	Misc  
+v3.1.4
+
+	Misc
 	--Fixed issue with .version file and compatible KSP versions
 
-v3.1.3  
-	Features  
+v3.1.3
+
+	Features
 	--Updated compatibility for KSP 1.0
 
-v3.1.2  
-	Features  
+v3.1.2
+
+	Features
 	--Added code to slightly stiffen connections between symmetrically-connected parts attached to a central part; should reduce some physics weirdness
 
-	BugFixes  
+	BugFixes
 	--Fixed issue where undocking was impossible.
 
-v3.1.1  
-	BugFixes  
+v3.1.1
+
+	BugFixes
 	--Fixed a serious lock-to-worldspace issue involving multipart joints and physicsless parts
 
-v3.1  
-	Features  
+v3.1
+
+	Features
 	--Set multipart joints to account for large mass ratios in choosing which parts to join  
 	--Set Decoupler Stiffenning to require the connection of immediate decoupler children to stiffen things even further
 
-	BugFixes  
+	BugFixes
 	--Fixed a decoupling issues with multipart joints  
 	--Fixed multipart joint lock-to-worldspace issues  
 	--Fixed some issues on loading very large, heavy parts
 
-v3.0.1  
-	BugFixes  
+v3.0.1
+
+	BugFixes
 	--Fix some issues involving multipart joints  
 	--More null checking for situations that shouldn't happen, but might  
 
-v3.0  
-	Features  
+v3.0
+
+	Features
 	--MultiPart joints: weak, but stiff connections along a stack that will add even more stiffness without making the connection cheatingly strong  
 	--Proper, guaranteed application of stiffened properties, regardless of stock joint parameters  
 	--Updated default config values for greater sanity  
@@ -226,21 +251,25 @@ v3.0
 	--Many NREs from bad events or bad states now avoided
 	
 v2.4.5
+
 	Features
-	--KSP 0.90 compatibility
+	--KSP 0.90 compatibility  
 	--Include some extra checks to prevent errors from occurring
 
 v2.4.4
+
 	Features
 	--KSP 0.25 compatibility  
 	--Update CompatibilityChecker  
 	--Shutdown functionality if CompatibilityChecker returns warnings
 
 v2.4.3
+
 	Features
 	--KSP 0.24.2 compatibility
 
 v2.4.2
+
 	Features
 	--KSP 0.24.1 compatibility
 	
