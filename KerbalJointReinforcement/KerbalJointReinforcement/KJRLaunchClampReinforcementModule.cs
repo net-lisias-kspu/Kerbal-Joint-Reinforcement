@@ -19,6 +19,7 @@ Copyright 2015, Michael Ferrara, aka Ferram4
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -30,6 +31,7 @@ namespace KerbalJointReinforcement
     {
         public bool clampJointHasInfiniteStrength = false;
 
+        private bool createHackedJoints = false;
         private List<ConfigurableJoint> joints;
         private List<ConfigurableJoint> hackedJoints;
         private List<Part> neighbours = new List<Part>();
@@ -60,7 +62,8 @@ namespace KerbalJointReinforcement
             {
                 if (clampJointHasInfiniteStrength)
                 {
-                    CreateInfiniteStrengthJoint(part.parent);
+                    createHackedJoints = true;
+                    StartCoroutine(CreateInfiniteStrengthJointRoutine());
                 }
                 else
                 {
@@ -74,7 +77,7 @@ namespace KerbalJointReinforcement
                 Debug.Log(debugString.ToString());
             }
 
-            if (joints.Count > 0 || hackedJoints.Count > 0)
+            if (joints.Count > 0 || createHackedJoints)
                 GameEvents.onVesselWasModified.Add(OnVesselWasModified);
         }
 
@@ -86,6 +89,7 @@ namespace KerbalJointReinforcement
                 GameObject.Destroy(hj);
 
             hackedJoints.Clear();
+            createHackedJoints = false;
 
             foreach (Part p in neighbours)
             {
@@ -114,11 +118,12 @@ namespace KerbalJointReinforcement
             joints.Clear();
             hackedJoints.Clear();
             neighbours.Clear();
+            createHackedJoints = false;
         }
 
         public void OnDestroy()
         {
-            if (joints.Count > 0 || hackedJoints.Count > 0)
+            if (joints.Count > 0 || createHackedJoints)
                 GameEvents.onVesselWasModified.Remove(OnVesselWasModified);
         }
 
@@ -190,7 +195,17 @@ namespace KerbalJointReinforcement
 
             joints.Add(newJoint);
         }
-        
+
+        private IEnumerator CreateInfiniteStrengthJointRoutine()
+        {
+            yield return new WaitForFixedUpdate();
+
+            if (part.parent != null && part.parent.Rigidbody != null)
+            {
+                CreateInfiniteStrengthJoint(part.parent);
+            }
+        }
+
         private void CreateInfiniteStrengthJoint(Part parentOfClamp)
         {
             Vector3 anchor, axis;

@@ -1,4 +1,4 @@
-Kerbal Joint Reinforcement, v3.4.1
+Kerbal Joint Reinforcement, v3.5.1
 ==========================
 
 Physics stabilizer plugin for Kerbal Space Program
@@ -121,6 +121,9 @@ These types are currently not used, but removing the a in front of them will cau
 ***********************
 ****** CHANGELOG ******
 ***********************
+v3.5.1
+	Bugfixes
+	--Improve Rigid clamp behavior
 v3.5.0
 	Features
 	--Integrated settings into stock UI
