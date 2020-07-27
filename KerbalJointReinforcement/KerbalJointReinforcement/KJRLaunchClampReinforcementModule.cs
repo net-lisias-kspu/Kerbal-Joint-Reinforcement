@@ -198,7 +198,12 @@ namespace KerbalJointReinforcement
 
         private IEnumerator CreateInfiniteStrengthJointRoutine()
         {
-            yield return new WaitForFixedUpdate();
+            const int maxFramesWaited = 250;
+            int i = 0;
+            do
+            {
+                yield return new WaitForFixedUpdate();
+            } while (part.vessel.packed && i++ < maxFramesWaited);
 
             if (part.parent != null && part.parent.Rigidbody != null)
             {
