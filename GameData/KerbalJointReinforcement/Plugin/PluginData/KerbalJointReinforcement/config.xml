@@ -4,7 +4,7 @@
     <bool name="multiPartAttachNodeReinforcement">1</bool>
     <bool name="reinforceDecouplersFurther">1</bool>
     <bool name="reinforceLaunchClampsFurther">1</bool>
-    <bool name="clampJointHasInfiniteStrength">1</bool>
+    <bool name="clampJointHasInfiniteStrength">0</bool>
     <bool name="useVolumeNotArea">1</bool>
     <bool name="debug">0</bool>
 

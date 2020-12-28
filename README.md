@@ -1,4 +1,4 @@
-Kerbal Joint Reinforcement, v3.5.1
+Kerbal Joint Reinforcement, v3.5.2
 ==========================
 
 Physics stabilizer plugin for Kerbal Space Program
@@ -61,7 +61,7 @@ General Values
 	bool	multiPartAttachNodeReinforcement	1			--Toggles additional stiffening by connecting parts in a stack one part further, but at a weaker strength
 	bool	reinforceDecouplersFurther		1			--Toggles stiffening of interstage connections
 	bool	reinforceLaunchClampsFurther		1			--Toggles stiffening of launch clamp connections
-	bool	clampJointHasInfiniteStrength		1			--Toggles clamp joints that are completely rigid
+	bool	clampJointHasInfiniteStrength		0			--Toggles clamp joints that are completely rigid
 	bool	useVolumeNotArea			1			--Switches to calculating connection area based on volume, not area; not technically correct, but allows a better approximation of very large rockets
 	bool	debug					0			--Toggles debug output to log; please activate and provide log if making a bug report
 	float	massForAdjustment			0.01			--Parts below this mass will not be stiffened
@@ -121,6 +121,11 @@ These types are currently not used, but removing the a in front of them will cau
 ***********************
 ****** CHANGELOG ******
 ***********************
+v3.5.2
+
+	--Disable Rigid clamp option by default
+	--Further improve Rigid clamp behavior
+
 v3.5.1
 
 	Bugfixes

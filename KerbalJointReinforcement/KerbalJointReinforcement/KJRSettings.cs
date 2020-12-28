@@ -34,7 +34,7 @@ namespace KerbalJointReinforcement
 
         [GameParameters.CustomParameterUI("Toggle clamp connections that are completely rigid", autoPersistance = false,
             toolTip = "With this option enabled, even the heaviest of rockets shouldn't move a millimeter when loaded onto the launch pad")]
-        public bool clampJointHasInfiniteStrength = true;
+        public bool clampJointHasInfiniteStrength = false;
 
         [GameParameters.CustomParameterUI("Calculate by area", autoPersistance = false,
             toolTip = "Switches to calculating connection area based on volume, not area; not technically correct, but allows a better approximation of very large rockets")]
@@ -85,7 +85,7 @@ namespace KerbalJointReinforcement
             multiPartAttachNodeReinforcement = config.GetValue(nameof(multiPartAttachNodeReinforcement), true);
             reinforceDecouplersFurther = config.GetValue(nameof(reinforceDecouplersFurther), true);
             reinforceLaunchClampsFurther = config.GetValue(nameof(reinforceLaunchClampsFurther), true);
-            clampJointHasInfiniteStrength = config.GetValue(nameof(clampJointHasInfiniteStrength), true);
+            clampJointHasInfiniteStrength = config.GetValue(nameof(clampJointHasInfiniteStrength), false);
             useVolumeNotArea = config.GetValue(nameof(useVolumeNotArea), true);
             debug = config.GetValue(nameof(debug), false);
 
