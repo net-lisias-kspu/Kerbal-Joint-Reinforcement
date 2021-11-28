@@ -163,11 +163,24 @@ These types are currently not used, but removing the a in front of them will cau
 
 Detailed installation instructions are now on its own file (see the [In a Hurry](#in-a-hurry) section) and on the distribution file.
 
-### License
+### Licensing
 
-GPL3. See [here](./LICENSE).
+This work is licensed under the [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.txt). See [here](./LICENSE)
 
-Please note the copyrights and trademarks in [NOTICE](./NOTICE).
++ You are free to:
+	- Use : unpack and use the material in any computer or device
+	- Redistribute : redistribute the original package in any medium
+	- Adapt : Reuse, modify or incorporate source code into your works (and redistribute it!) 
++ Under the following terms:
+	- You retain any copyright notices
+	- You recognize and respect any trademarks
+	- You don't impersonate the authors, neither redistribute a derivative that could be misrepresented as theirs.
+	- You credit the author and republish the copyright notices on your works where the code is used.
+	- You relicense (and fully comply) your works using GPL 3.0
+		- Please note that upgrading the license to any future license version  **IS NOT ALLOWED** for this work, as the author **DID NOT** added the "or (at your option) any later version" on the license.
+	- You don't mix your work with GPL incompatible works.
+
+See [NOTICE](./NOTICE) for further copyright and trademarks notices.
 
 
 ## UPSTREAM
@@ -184,5 +197,5 @@ Please note the copyrights and trademarks in [NOTICE](./NOTICE).
 	+ [GitHub](https://github.com/KSP-RO/Kerbal-Joint-Reinforcement-Continued)
 * [linuxgurugamer](https://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/) Parallel fork
 	+ [GitHub](https://github.com/linuxgurugamer/Kerbal-Joint-Reinforcement)
-* [oeteletroll](https://forum.kerbalspaceprogram.com/index.php?/profile/144573-peteletroll/) Parallel?
+* [peteletroll](https://forum.kerbalspaceprogram.com/index.php?/profile/144573-peteletroll/) Parallel?
 	+ [GitHub](https://github.com/peteletroll/Kerbal-Joint-Reinforcement)
