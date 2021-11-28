@@ -1,12 +1,14 @@
-# Kerbal Joint Reinforcement /L Experimental
+# Kerbal Joint Reinforcement /L Unleashed
 *Lasciate ogne speranza, voi ch'intrate*
 - - -
 
-Physics stabilizer plugin for Kerbal Space Program. Fork by Lisias.
+Physics stabilizer plugin for Kerbal Space Program.
+
+[Unleashed](https://ksp.lisias.net/add-ons-unleashed/) fork by Lisias.
 
 This branch is confirmed to be KSP 1.2 to 1.7 compatible (and probably above!), with configuration/settings files saved to `<KSP_ROOT>/PluginData` and some new and fancy features.
 
-This **have no** assured backward compatibility with ferram4's KJR neither wth any supported fork. It's intended to test new features that may or may not reach the mainstream later.
+This **have no** assured backward compatibility with ferram4's KJR neither with any Forum supported fork. It's intended to test new features that may or may not reach the mainstream later.
 
 
 ## In a Hurry
@@ -170,7 +172,7 @@ Please note the copyrights and trademarks in [NOTICE](./NOTICE).
 
 ## UPSTREAM
 
-* [ferram4](https://forum.kerbalspaceprogram.com/index.php?/profile/21328-ferram4/) ROOT, currently unamaintained
+* [ferram4](https://forum.kerbalspaceprogram.com/index.php?/profile/21328-ferram4/) ROOT, currently unmaintained
 	+ [Forum](https://forum.kerbalspaceprogram.com/index.php?/topic/50911-13-kerbal-joint-reinforcement-v333-72417/)
 	+ [SpaceDock](http://spacedock.info/mod/153/Kerbal%20Joint%20Reinforcement)
 	+ [GitHub](https://github.com/ferram4/Kerbal-Joint-Reinforcement)

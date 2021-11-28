@@ -1,4 +1,4 @@
-# Kerbal Joint Reinforcement /L Experimental :: Changes
+# Kerbal Joint Reinforcement /L Unleashed :: Changes
 
 * 2018-1229: 3.4.0.4 (lisias) for KSP >= 1.2
 	+ Adding support for ConfigNode (CFG) file format for the *user serviceable settings file* (`user.cfg`) on `<KSP_ROOT>/PluginData/KerbalJointReinforcement`

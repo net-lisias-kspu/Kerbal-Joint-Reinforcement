@@ -1,9 +1,9 @@
 {
-	"NAME":		"Kerbal Joint Reinforcement /L",
-	"URL":		"https://raw.githubusercontent.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/KerbalJointReinforcement.version",
-	"DOWNLOAD":	"https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/releases",
-	"CHANGE_LOG":	"https://github.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/blob/master/CHANGE_LOG.md",
-	"CHANGE_LOG_URL":"https://raw.githubusercontent.com/net-lisias-ksp/Kerbal-Joint-Reinforcement/master/CHANGES.md",
+	"NAME":		"Kerbal Joint Reinforcement /L Unleashed",
+	"URL":		"https://raw.githubusercontent.com/net-lisias-kspu/Kerbal-Joint-Reinforcement/master/KerbalJointReinforcement.version"
+	"DOWNLOAD":	"https://github.com/net-lisias-kspu/Kerbal-Joint-Reinforcement/releases",
+	"CHANGE_LOG":	"https://raw.githubusercontent.com/net-lisias-kspu/Kerbal-Joint-Reinforcement/master/CHANGE_LOG.md",
+	"CHANGE_LOG_URL":"https://raw.githubusercontent.com/net-lisias-kspu/Kerbal-Joint-Reinforcement/master/CHANGES.md",
 	"VERSION":{
 		"MAJOR":3,
 		"MINOR":4,

@@ -1,4 +1,4 @@
-# Kerbal Joint Reinforcement /L Experimental
+# Kerbal Joint Reinforcement /L Unleashed
 
 Physics stabilizer plugin for Kerbal Space Program. Fork by Lisias.
 
