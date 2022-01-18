@@ -900,7 +900,7 @@ namespace KerbalJointReinforcement
                 if (!rootRb || p.rb == rootRb)
                     continue;
 
-                if (multiJointManager.CheckMultiJointBetweenParts(p, v.rootPart) && multiJointManager.TrySetValidLinkedSet(p, v.rootPart))
+                if (!multiJointManager.CheckMultiJointBetweenParts(p, v.rootPart) && multiJointManager.TrySetValidLinkedSet(p, v.rootPart))
                 {
 
                     ConfigurableJoint toRootJoint;
