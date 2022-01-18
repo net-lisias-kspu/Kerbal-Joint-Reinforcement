@@ -193,7 +193,7 @@ namespace KerbalJointReinforcement
                     --i;
                     continue;
                 }
-                if (joint.connectedBody == testRb)
+                if (joint.connectedBody == testRb || joint.gameObject == testPart2.gameObject)
                     return true;
             }
 
