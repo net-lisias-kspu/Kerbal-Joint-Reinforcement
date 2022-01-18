@@ -56,7 +56,7 @@ namespace KerbalJointReinforcement
             for (int i = 0; i < p.Modules.Count; i++)
             {
                 var pm = p.Modules[i];
-                if (pm is IJointLockState || settings.exemptModuleTypes.Contains(pm.ClassName))
+                if ((pm is IJointLockState jls) && jls.IsJointUnlocked() || settings.exemptModuleTypes.Contains(pm.ClassName))
                     return false;
             }
 

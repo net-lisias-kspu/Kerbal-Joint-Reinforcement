@@ -57,6 +57,7 @@ namespace KerbalJointReinforcement
             GameEvents.onVesselGoOnRails.Add(OnVesselOnRails);
             GameEvents.onVesselDestroy.Add(OnVesselOnRails);
             GameEvents.OnGameSettingsApplied.Add(OnSettingsApplied);
+            GameEvents.onRoboticPartLockChanged.Add(OnRoboticPartLockChanged);
         }
 
         public void OnDestroy()
@@ -66,6 +67,7 @@ namespace KerbalJointReinforcement
             GameEvents.onVesselGoOnRails.Remove(OnVesselOnRails);
             GameEvents.onVesselDestroy.Remove(OnVesselOnRails);
             GameEvents.OnGameSettingsApplied.Remove(OnSettingsApplied);
+            GameEvents.onRoboticPartLockChanged.Remove(OnRoboticPartLockChanged);
 
             if (InputLockManager.GetControlLock("KJRLoadLock") == ControlTypes.ALL_SHIP_CONTROLS)
                 InputLockManager.RemoveControlLock("KJRLoadLock");
@@ -203,6 +205,15 @@ namespace KerbalJointReinforcement
         {
             KJRJointUtils.LoadConstants();
             if (!KJRJointUtils.settings.debug) CleanUpDebugRenderers();
+        }
+
+        private void OnRoboticPartLockChanged(Part part, bool servoIsLocked)
+        {
+            if (!servoIsLocked)
+            {
+                multiJointManager.OnJointBreak(part);
+            }
+            OnVesselWasModified(part.vessel);
         }
 
         private void RunVesselJointUpdateFunction(Vessel v)
