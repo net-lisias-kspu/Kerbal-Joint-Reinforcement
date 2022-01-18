@@ -29,10 +29,17 @@ namespace KerbalJointReinforcement
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class KJRManager : MonoBehaviour
     {
-        List<Vessel> updatedVessels;
-        HashSet<Vessel> vesselOffRails;
-        Dictionary<Vessel, List<Joint>> vesselJointStrengthened;
-        KJRMultiJointManager multiJointManager;
+        private List<Vessel> updatedVessels;
+        private HashSet<Vessel> vesselOffRails;
+        private Dictionary<Vessel, List<Joint>> vesselJointStrengthened;
+        private KJRMultiJointManager multiJointManager;
+
+        private List<LineRenderer> jointRenderers;
+        private List<string> jointNames;
+        private Material material;
+
+        private Rect windowRect;
+        private Vector2 scrollPos;
 
         public void Awake()
         {
@@ -49,6 +56,7 @@ namespace KerbalJointReinforcement
             GameEvents.onVesselGoOffRails.Add(OnVesselOffRails);
             GameEvents.onVesselGoOnRails.Add(OnVesselOnRails);
             GameEvents.onVesselDestroy.Add(OnVesselOnRails);
+            GameEvents.OnGameSettingsApplied.Add(OnSettingsApplied);
         }
 
         public void OnDestroy()
@@ -57,6 +65,7 @@ namespace KerbalJointReinforcement
             GameEvents.onVesselGoOffRails.Remove(OnVesselOffRails);
             GameEvents.onVesselGoOnRails.Remove(OnVesselOnRails);
             GameEvents.onVesselDestroy.Remove(OnVesselOnRails);
+            GameEvents.OnGameSettingsApplied.Remove(OnSettingsApplied);
 
             if (InputLockManager.GetControlLock("KJRLoadLock") == ControlTypes.ALL_SHIP_CONTROLS)
                 InputLockManager.RemoveControlLock("KJRLoadLock");
@@ -66,6 +75,20 @@ namespace KerbalJointReinforcement
 
             multiJointManager.OnDestroy();
             multiJointManager = null;
+
+            CleanUpDebugRenderers();
+        }
+
+        public void Update()
+        {
+            if (!KJRJointUtils.settings.debug) return;
+            GatherAndShowDebugInformation();
+        }
+
+        public void OnGUI()
+        {
+            if (!KJRJointUtils.settings.debug) return;
+            windowRect = GUILayout.Window(GetInstanceID(), windowRect, WindowFunction, "KJR Debug", HighLogic.Skin.window);
         }
 
         private void OnVesselWasModified(Vessel v)
@@ -174,6 +197,12 @@ namespace KerbalJointReinforcement
                 vesselJointStrengthened.Remove(v);
                 updatedVessels.Remove(v);
             }
+        }
+
+        private void OnSettingsApplied()
+        {
+            KJRJointUtils.LoadConstants();
+            if (!KJRJointUtils.settings.debug) CleanUpDebugRenderers();
         }
 
         private void RunVesselJointUpdateFunction(Vessel v)
@@ -893,6 +922,87 @@ namespace KerbalJointReinforcement
                     //multiJointManager.RegisterMultiJoint(v.rootPart, toRootJoint);
                 }
             }
+        }
+
+        private void GatherAndShowDebugInformation()
+        {
+            if (jointRenderers != null)
+            {
+                foreach (LineRenderer r in jointRenderers)
+                {
+                    Destroy(r.gameObject);
+                }
+            }
+
+            jointRenderers = new List<LineRenderer>();
+            jointNames = new List<string>();
+            var uniqueJoints = new HashSet<ConfigurableJoint>();
+
+            if (material == null)
+                material = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
+
+            foreach (KeyValuePair<Part, List<ConfigurableJoint>> kvp in multiJointManager.multiJointDict)
+            {
+                List<ConfigurableJoint> joints = kvp.Value;
+                foreach (ConfigurableJoint joint in joints)
+                {
+                    if (joint == null || uniqueJoints.Contains(joint))
+                        continue;
+                    uniqueJoints.Add(joint);
+                    jointNames.Add($"{joint.name} -> {joint.connectedBody.name}");
+
+                    var go = new GameObject("JointLineRenderer");
+                    var rend = go.AddComponent<LineRenderer>();
+                    rend.enabled = true;
+                    rend.material = material;
+                    rend.startColor = Color.yellow;
+                    rend.endColor = Color.magenta;
+                    rend.startWidth = 0.02f;
+                    rend.endWidth = 0.02f;
+                    rend.positionCount = 2;
+                    rend.SetPositions(new Vector3[] { joint.transform.position, joint.connectedBody.transform.position });
+                    rend.gameObject.layer = 2;
+
+                    jointRenderers.Add(rend);
+                }
+            }
+        }
+
+        private void WindowFunction(int windowID)
+        {
+            scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Width(400), GUILayout.Height(500));
+            GUILayout.BeginVertical();
+            GUILayout.Label($"{jointNames.Count} unique joints:");
+            if (jointNames != null)
+            {
+                foreach (string jn in jointNames)
+                {
+                    GUILayout.Label(jn);
+                }
+            }
+            GUILayout.EndVertical();
+            GUILayout.EndScrollView();
+            GUI.DragWindow();
+        }
+
+        private void CleanUpDebugRenderers()
+        {
+            if (jointRenderers != null)
+            {
+                foreach (var r in jointRenderers)
+                {
+                    Destroy(r.gameObject);
+                }
+                jointRenderers = null;
+            }
+
+            if (material != null)
+            {
+                Destroy(material);
+                material = null;
+            }
+
+            jointNames = null;
         }
     }
 }

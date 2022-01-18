@@ -31,10 +31,10 @@ namespace KerbalJointReinforcement
     {
         public static KJRMultiJointManager fetch;
 
-        Dictionary<Part, List<ConfigurableJoint>> multiJointDict;
-        List<Part> linkPart1List;
-        List<Part> linkPart2List;
-        HashSet<Part> linkedSet;
+        internal Dictionary<Part, List<ConfigurableJoint>> multiJointDict;
+        private List<Part> linkPart1List;
+        private List<Part> linkPart2List;
+        private HashSet<Part> linkedSet;
 
         public KJRMultiJointManager()
         {
