@@ -1,4 +1,4 @@
-Kerbal Joint Reinforcement, v3.5.2
+Kerbal Joint Reinforcement, v3.6.0
 ==========================
 
 Physics stabilizer plugin for Kerbal Space Program
@@ -121,6 +121,15 @@ These types are currently not used, but removing the a in front of them will cau
 ***********************
 ****** CHANGELOG ******
 ***********************
+v3.6.0
+
+	--Add support for the stock EVA construction feature
+	--Improve robotics support. Note however that since the new KSP1.12 docking port doesn't fire onRoboticPartLockChanged event, it will stay locked forever.
+	--Enabling the Debug setting now lists all extra joints KJR created and draws them onscreen
+	--Fix typo that caused duplicate joints to be created to root part
+	--Make CheckMultiJointBetweenParts() check existence of a joint in both directions
+
+
 v3.5.2
 
 	--Disable Rigid clamp option by default
