@@ -105,7 +105,7 @@ else
 				for(int i = 0; i < 16; i++)
 					val = Math.Max(val, valH[i]);
 			}
-				// FEHLER, mal so ein erster Versuch das hier... jetzt bauen wir mal was scheiss instabiles und schauen, ob es sich verfärbt
+				// FEHLER, mal so ein erster Versuch das hier...
 		}
 	}
 

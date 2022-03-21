@@ -12,13 +12,6 @@ namespace KerbalJointReinforcement
 	{
 		private static KJRManager _instance;
 
-#if Compatible
-		internal static System.Type ModuleDecoupleType;
-		internal static System.Reflection.FieldInfo isDecoupledField;
-
-		internal static System.Reflection.FieldInfo onRoboticPartLockChangingField = null;
-#endif
-
 		internal static KJRManager Instance
 		{
 			get { return _instance; }
@@ -28,6 +21,7 @@ namespace KerbalJointReinforcement
 		HashSet<Vessel> easingVessels;
 		KJRMultiJointManager multiJointManager;
 		List<Vessel> updatingVessels;
+		List<Vessel> constructingVessels;
 
 		internal KJRMultiJointManager GetMultiJointManager()
 		{
@@ -41,19 +35,7 @@ namespace KerbalJointReinforcement
 			easingVessels = new HashSet<Vessel>();
 			multiJointManager = new KJRMultiJointManager();
 			updatingVessels = new List<Vessel>();
-
-#if Compatible
-			ModuleDecoupleType = Type.GetType("ModuleDecouple, Assembly-CSharp");
-			isDecoupledField = ModuleDecoupleType.GetField("isDecoupled");
-
-			// >= 1.7.1
-			KJRJointUtils.IRoboticServoType = Type.GetType("Expansions.Serenity.IRoboticServo, Assembly-CSharp"); // >= 1.7.1
-
-			// 1.7.1 detection
-			onRoboticPartLockChangingField = typeof(GameEvents).GetField("onRoboticPartLockChanging"); // >= 1.7.2
-			if(onRoboticPartLockChangingField == null)
-				KJRJointUtils.BaseServoType = Type.GetType("Expansions.Serenity.BaseServo, Assembly-CSharp"); // 1.7.1 only
-#endif
+			constructingVessels = new List<Vessel>();
 
 			_instance = this;
 		}
@@ -74,18 +56,11 @@ namespace KerbalJointReinforcement
 			GameEvents.onPhysicsEaseStart.Add(OnEaseStart);
 			GameEvents.onPhysicsEaseStop.Add(OnEaseStop);
 
-#if Compatible
-			// >= 1.7.2
-			if(onRoboticPartLockChangingField != null)
-			{
-				EventData<Part, bool> onRoboticPartLockChanging = (EventData<Part, bool>)onRoboticPartLockChangingField.GetValue(null);
-				onRoboticPartLockChanging.Add(OnRoboticPartLockChanging);
-			}
-#endif
-
-#if !Compatible
 			GameEvents.onRoboticPartLockChanging.Add(OnRoboticPartLockChanging);
-#endif
+
+			GameEvents.OnEVAConstructionMode.Add(OnEVAConstructionMode);
+			GameEvents.OnEVAConstructionModePartAttached.Add(OnEVAConstructionModePartAttached);
+			GameEvents.OnEVAConstructionModePartDetached.Add(OnEVAConstructionModePartDetached);
 
 // FHELER, der decoupler hat noch das Pack behandelt... müsste man das auch noch? ist das nicht immer dann, wenn man onrails geht??? -> doch, wird genau nur dann gesendet
 		}
@@ -106,18 +81,11 @@ namespace KerbalJointReinforcement
 			GameEvents.onPhysicsEaseStart.Remove(OnEaseStart);
 			GameEvents.onPhysicsEaseStop.Remove(OnEaseStop);
 
-#if Compatible
-			// >= 1.7.2
-			if(onRoboticPartLockChangingField != null)
-			{
-				EventData<Part, bool> onRoboticPartLockChanging = (EventData<Part, bool>)onRoboticPartLockChangingField.GetValue(null);
-				onRoboticPartLockChanging.Remove(OnRoboticPartLockChanging);
-			}
-#endif
-
-#if !Compatible
 			GameEvents.onRoboticPartLockChanging.Remove(OnRoboticPartLockChanging);
-#endif
+
+			GameEvents.OnEVAConstructionMode.Remove(OnEVAConstructionMode);
+			GameEvents.OnEVAConstructionModePartAttached.Remove(OnEVAConstructionModePartAttached);
+			GameEvents.OnEVAConstructionModePartDetached.Remove(OnEVAConstructionModePartDetached);
 
 			updatedVessels = null;
 			easingVessels = null;
@@ -129,15 +97,18 @@ namespace KerbalJointReinforcement
 		{
 			yield return new WaitForFixedUpdate();
 
-			updatingVessels.Remove(v);
+			if (!EVAConstructionModeController.Instance.IsOpen || (EVAConstructionModeController.Instance.panelMode != EVAConstructionModeController.PanelMode.Construction))
+			{
+				updatingVessels.Remove(v);
 
-			RunVesselJointUpdateFunction(v);
+				RunVesselJointUpdateFunction(v);
 
 #if IncludeAnalyzer
-			KJRAnalyzerJoint.RunVesselJointUpdateFunction(v);
+				KJRAnalyzerJoint.RunVesselJointUpdateFunction(v);
 
-			KJRAnalyzer.WasModified(v);
+				KJRAnalyzer.WasModified(v);
 #endif
+			}
 		}
 
 		private void OnVesselCreate(Vessel v)
@@ -191,6 +162,29 @@ namespace KerbalJointReinforcement
 		private void OnRoboticPartLockChanging(Part p, bool b)
 		{
 			OnVesselWasModified(p.vessel);
+		}
+
+		private void OnEVAConstructionMode(bool active)
+		{
+			if(!active)
+            {
+				foreach (Vessel v in constructingVessels)
+					OnVesselWasModified(v);
+				constructingVessels.Clear();
+            }
+		}
+
+		private void OnEVAConstructionModePartAttached(Vessel v, Part p)
+		{
+			if (!constructingVessels.Contains(v))
+				constructingVessels.Add(v);
+		}
+		private void OnEVAConstructionModePartDetached(Vessel v, Part p)
+		{
+			multiJointManager.RemovePartJoints(p);
+
+			if (!constructingVessels.Contains(v))
+				constructingVessels.Add(v);
 		}
 
 		// this function can be called by compatible modules instead of calling
@@ -300,6 +294,8 @@ namespace KerbalJointReinforcement
 
 			foreach(Part p in v.Parts)
 			{
+				KJRDockingNode.InitializePart(p);
+
 				if(KJRJointUtils.reinforceAttachNodes)
 				{
 					if((p.parent != null) && (p.physicalSignificance == Part.PhysicalSignificance.FULL))
@@ -311,25 +307,6 @@ namespace KerbalJointReinforcement
 
 				if(KJRJointUtils.reinforceDecouplersFurther)
 				{
-#if Compatible
-					if(p.parent && (p.children.Count > 0))
-					{
-						for(int i = 0; i < p.Modules.Count; i++)
-						{
-							if(KJRJointUtils.IsOfClass(p.Modules[i], ModuleDecoupleType))
-							{
-								if(!(bool)isDecoupledField.GetValue(p.Modules[i]))
-								{
-									bReinforced = true;
-									ReinforceDecouplers(p);
-									goto continue_;
-								}
-							}
-						}
-					}
-#endif
-
-#if !Compatible
 					ModuleDecouplerBase d = p.GetComponent<ModuleDecouplerBase>(); // FEHLER, wieso nicht auch ModuleDockingNode ??
 				
 					if(p.parent && (p.children.Count > 0) && d && !d.isDecoupled)
@@ -338,7 +315,6 @@ namespace KerbalJointReinforcement
 						ReinforceDecouplers(p);
 						continue;
 					}
-#endif
 				}
 
 				if(KJRJointUtils.reinforceLaunchClampsFurther)
@@ -348,7 +324,6 @@ namespace KerbalJointReinforcement
 						ReinforceLaunchClamps(p);
 					}
 				}
-continue_:;
 			}
 
 #if IncludeAnalyzer

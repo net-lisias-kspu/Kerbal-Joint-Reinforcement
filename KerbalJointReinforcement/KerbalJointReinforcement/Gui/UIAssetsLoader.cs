@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Networking;
 
 
 namespace KerbalJointReinforcement
@@ -32,10 +33,11 @@ namespace KerbalJointReinforcement
 			while(!Caching.ready)
 				yield return null;
 
-			using (WWW www = WWW.LoadFromCacheOrDownload(location, 1))
+			using(UnityWebRequest www = UnityWebRequestAssetBundle.GetAssetBundle(location))
 			{
-				yield return www;
-				KJRAssetBundle = www.assetBundle;
+				yield return www.SendWebRequest();
+
+				KJRAssetBundle = DownloadHandlerAssetBundle.GetContent(www);
 
 				LoadBundleAssets();
 			}
@@ -115,7 +117,7 @@ namespace KerbalJointReinforcement
 
 			Logger.Log("Loading bundles from BundlePath: " + bundlePath, Logger.Level.Debug);
 
-			Caching.CleanCache();
+			Caching.ClearCache();
 
 			StartCoroutine(LoadBundle(bundlePath + "kjr_ui_objects.ksp"));
 		}

@@ -52,10 +52,12 @@ namespace KerbalJointReinforcement
 			}
 
 			//Set color
-			lineRenderer.SetColors(Color.Lerp(color, Color.black, 0.8f), color);
+			lineRenderer.startColor = Color.Lerp(color, Color.black, 0.8f);
+			lineRenderer.endColor = color;
 
 			//Set width
-			lineRenderer.SetWidth(lineSize, lineSize);
+			lineRenderer.startWidth = lineSize;
+			lineRenderer.endWidth = lineSize;
 
 			//Set line count which is 2
 			lineRenderer.SetPosition(0, start);
