@@ -121,6 +121,11 @@ These types are currently not used, but removing the a in front of them will cau
 ***********************
 ****** CHANGELOG ******
 ***********************
+v3.6.1
+
+	--Enable the DockingPortLockedEvents patch in KSPCommunityFixes to properly support the rotation feature on stock docking ports
+
+
 v3.6.0
 
 	--Add support for the stock EVA construction feature
