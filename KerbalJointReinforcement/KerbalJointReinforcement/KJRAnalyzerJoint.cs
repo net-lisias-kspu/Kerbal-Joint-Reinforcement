@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using UnityEngine;
 
@@ -52,7 +49,10 @@ namespace KerbalJointReinforcement
 			if(!module || (module.relVessel != part.vessel))
 			{
 				if(!module)
+				{
 					module = part.gameObject.AddComponent<KJRAnalyzerJoint>();
+					module.u = new MaterialColorUpdater(part.transform, PhysicsGlobals.TemperaturePropertyID, part);
+				}
 
 				module.relVessel = part.vessel;
 
@@ -61,23 +61,32 @@ namespace KerbalJointReinforcement
 			}
 		}
 
-		MaterialColorUpdater u = null;
+		MaterialColorUpdater u;
+		int oldVal = 0;
+		int val = 0;
 
 		int[] valH = new int[16];
-		int valC = 0;
-		int val = 0;
+		int valHidx = 0;
 
 		public void Update()
 		{
-if(u == null)
-	u = new MaterialColorUpdater(part.transform, PhysicsGlobals.TemperaturePropertyID, part);
+			if(val < 2)
+			{
+				if(oldVal >= 2)
+					u.Update(Color.clear, true);
+			}
+			else if(val < 5)
+			{
+				if((oldVal < 2) || (oldVal >= 5))
+					u.Update(new Color(Color.green.r, Color.green.g, Color.green.b, 0.2f), true);
+			}
+			else
+			{
+				if(oldVal != val)
+					u.Update(new Color(Color.magenta.r, Color.magenta.g, Color.magenta.b, (val - 4) * 0.2f), true);
+			}
 
-if(val < 2)
-	u.Update(Color.clear, true);
-else if(val < 5)
-	u.Update(new Color(Color.green.r, Color.green.g, Color.green.b, 0.2f), true);
-else
-	u.Update(new Color(Color.magenta.r, Color.magenta.g, Color.magenta.b, (val - 4) * 0.2f), true);
+			oldVal = val;
 
 			return;
 		}
@@ -93,19 +102,18 @@ else
 			float fV = curPos.sqrMagnitude - relPos.sqrMagnitude;
 			float fR = Quaternion.Angle(relRot, curRot);
 
-			badPoint += (int)(fV / 0.002); // ist schon eine ziemliche Abweichung gegenüber dem Parent...
-			badPoint += (int)(fR / 0.1); // pro 0.1 Grad... ja, könnte schon ein BadPoint sein
+			badPoint += (int)(fV / 0.002);
+			badPoint += (int)(fR / 0.1);
 
 			if(++badPointFrames > 100)
 			{
 				badPointFrames = 0;
 
-				valH[valC++ & 0xf] = Math.Min(badPoint / 1000, 10);
+				valH[valHidx++ & 0xf] = Math.Min(badPoint / 1000, 10);
 
 				for(int i = 0; i < 16; i++)
 					val = Math.Max(val, valH[i]);
 			}
-				// FEHLER, mal so ein erster Versuch das hier...
 		}
 	}
 

@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-
 using KSP.IO;
-using KSP.UI.Screens;
 using KSP.UI;
-
+using KSP.UI.Screens;
 
 namespace KerbalJointReinforcement
 {
@@ -33,7 +28,7 @@ namespace KerbalJointReinforcement
 
 		private static WindowManager _instance;
 
-		private bool guiHidden;
+		private bool GUIHidden = false;
 
 		// windows
 		private static GameObject _settingsWindow;
@@ -112,12 +107,17 @@ namespace KerbalJointReinforcement
 
 		private void OnShowUI()
 		{
-			guiHidden = false;
+			if(GUIHidden)
+            {
+				GUIHidden = false;
+				ShowKJRWindow();
+            }
 		}
 
 		private void OnHideUI()
 		{
-			guiHidden = true;
+			if(GUIHidden = GUIEnabled)
+				HideKJRWindow();
 		}
 
 		private void SetGlobalAlpha(float newAlpha)
@@ -140,7 +140,6 @@ namespace KerbalJointReinforcement
 
 		////////////////////////////////////////
 		// Settings
-
 		private Toggle AddNewOption(GameObject content, string text)
 		{
 			var Opt = GameObject.Instantiate(UIAssetsLoader.optionLinePrefab);
@@ -492,7 +491,6 @@ namespace KerbalJointReinforcement
 				Logger.Log("[GUI] Failed unregistering AppLauncher handlers," + e.Message);
 			}
 		}
-
 		private void OnDestroy()
 		{
 			Logger.Log("[GUI] destroy");
@@ -521,7 +519,7 @@ namespace KerbalJointReinforcement
 		{
 			if(apply) // only do this lock in the editor - no point elsewhere
 			{
-				//only add a new lock if there isnt already one there
+				// only add a new lock if there isnt already one there
 				if(InputLockManager.GetControlLock("KJRKeyboardLock") != ControlTypes.KEYBOARDINPUT)
 				{
 					Logger.Log(String.Format("[GUI] AddingLock-{0}", "KJRKeyboardLock"), Logger.Level.SuperVerbose);
@@ -531,7 +529,7 @@ namespace KerbalJointReinforcement
 			}
 			else // otherwise make sure the lock is removed
 			{
-				// only try and remove it if there was one there in the fKJRst place
+				// only try and remove it if there was one there in the first place
 				if(InputLockManager.GetControlLock("KJRKeyboardLock") == ControlTypes.KEYBOARDINPUT)
 				{
 					Logger.Log(String.Format("[GUI] Removing-{0}", "KJRKeyboardLock"), Logger.Level.SuperVerbose);

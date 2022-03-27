@@ -18,10 +18,7 @@ namespace KerbalJointReinforcement
 		{
 			GameObject lineObj = new GameObject("LineObj");
 			lineRenderer = lineObj.AddComponent<LineRenderer>();
-			//Particles/Additive
 			lineRenderer.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-
-		//	lineRenderer.material.SetOverrideTag("_ZTest", "Always");
 			lineRenderer.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
 
 			this.lineSize = lineSize;
@@ -33,17 +30,14 @@ namespace KerbalJointReinforcement
 			{
 				GameObject lineObj = new GameObject("LineObj");
 				lineRenderer = lineObj.AddComponent<LineRenderer>();
-				//Particles/Additive
 				lineRenderer.material = new Material(Shader.Find("Hidden/Internal-Colored"));
-
-			//	lineRenderer.material.SetOverrideTag("_ZTest", "Always");
 				lineRenderer.material.SetInt("_ZTest", (int)UnityEngine.Rendering.CompareFunction.Always);
 
 				this.lineSize = lineSize;
 			}
 		}
 
-		//Draws lines through the provided vertices
+		// draws lines through the provided vertices
 		public void DrawLineInGameView(Vector3 start, Vector3 end, Color color)
 		{
 			if(lineRenderer == null)
@@ -51,15 +45,12 @@ namespace KerbalJointReinforcement
 				init(0.02f);
 			}
 
-			//Set color
 			lineRenderer.startColor = Color.Lerp(color, Color.black, 0.8f);
 			lineRenderer.endColor = color;
 
-			//Set width
 			lineRenderer.startWidth = lineSize;
 			lineRenderer.endWidth = lineSize;
 
-			//Set line count which is 2
 			lineRenderer.SetPosition(0, start);
 			lineRenderer.SetPosition(1, end);
 		}

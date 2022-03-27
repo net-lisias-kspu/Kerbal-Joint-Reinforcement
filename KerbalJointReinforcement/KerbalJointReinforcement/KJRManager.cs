@@ -44,7 +44,7 @@ namespace KerbalJointReinforcement
 		{
 			GameEvents.onVesselCreate.Add(OnVesselCreate);
 			GameEvents.onVesselWasModified.Add(OnVesselWasModified);
-			GameEvents.onVesselDestroy.Add(OnVesselDestroy); // FEHLER, evtl. onAboutToDestroy nutzen??
+			GameEvents.onVesselDestroy.Add(OnVesselDestroy); // maybe use onAboutToDestroy instead?? -> doesn't seem to have a benefit
 
 			GameEvents.onVesselGoOffRails.Add(OnVesselOffRails);
 			GameEvents.onVesselGoOnRails.Add(OnVesselOnRails);
@@ -61,8 +61,6 @@ namespace KerbalJointReinforcement
 			GameEvents.OnEVAConstructionMode.Add(OnEVAConstructionMode);
 			GameEvents.OnEVAConstructionModePartAttached.Add(OnEVAConstructionModePartAttached);
 			GameEvents.OnEVAConstructionModePartDetached.Add(OnEVAConstructionModePartDetached);
-
-// FHELER, der decoupler hat noch das Pack behandelt... müsste man das auch noch? ist das nicht immer dann, wenn man onrails geht??? -> doch, wird genau nur dann gesendet
 		}
 
 		public void OnDestroy()
@@ -432,18 +430,18 @@ namespace KerbalJointReinforcement
 						continue;
 					}				
 				
-					// Check attachment nodes for better orientation data
+					// check attachment nodes for better orientation data
 					AttachNode attach = p.FindAttachNodeByPart(p.parent);
 					AttachNode p_attach = p.parent.FindAttachNodeByPart(p);
 					AttachNode node = attach ?? p_attach;
 
 					if(node == null)
 					{
-						// Check if it's a pair of coupled docking ports
+						// check if it's a pair of coupled docking ports
 						var dock1 = p.Modules.GetModule<ModuleDockingNode>();
 						var dock2 = p.parent.Modules.GetModule<ModuleDockingNode>();
 
-						//Debug.Log(dock1 + " " + (dock1 ? ""+dock1.dockedPartUId : "?") + " " + dock2 + " " + (dock2 ? ""+dock2.dockedPartUId : "?"));
+						//Debug.Log(dock1 + " " + (dock1 ? "" + dock1.dockedPartUId : "?") + " " + dock2 + " " + (dock2 ? "" + dock2.dockedPartUId : "?"));
 
 						if(dock1 && dock2 && (dock1.dockedPartUId == p.parent.flightID || dock2.dockedPartUId == p.flightID))
 						{
@@ -453,7 +451,7 @@ namespace KerbalJointReinforcement
 						}
 					}
 
-					// If still no node and apparently surface attached, use the normal one if it's there
+					// if still no node and apparently surface attached, use the normal one if it's there
 					if(node == null && p.attachMode == AttachModes.SRF_ATTACH)
 						node = attach = p.srfAttachNode;
 
@@ -512,7 +510,6 @@ namespace KerbalJointReinforcement
 						debugString.AppendLine("Max Force: " + p.attachJoint.Joint.angularYZDrive.maximumForce);
 						debugString.AppendLine("");
 
-
 						//Debug.Log(debugString.ToString());
 					}
 
@@ -529,20 +526,19 @@ namespace KerbalJointReinforcement
 
 					if(node != null)
 					{
-						// Part that owns the node. For surface attachment,
-						// this can only be parent if docking flips hierarchy.
+						// part that owns the node -> for surface attachment, this can only be parent if docking flips hierarchy
 						Part main = (node == attach) ? p : p.parent;
 
-						// Orientation and position of the node in owner's local coords
+						// orientation and position of the node in owner's local coords
 						Vector3 ndir = node.orientation.normalized;
 						Vector3 npos = node.position + node.offset;
 
-						// And in the current part's local coords
+						// and in the current part's local coords
 						Vector3 dir = axis = p.transform.InverseTransformDirection(main.transform.TransformDirection(ndir));
 
 						if(node.nodeType == AttachNode.NodeType.Surface)
 						{
-							// Guessed main axis; for parts with stack nodes should be the axis of the stack
+							// guessed main axis / for parts with stack nodes should be the axis of the stack
 							Vector3 up = KJRJointUtils.GuessUpVector(main).normalized;
 
 							// if guessed up direction is same as node direction, it's basically stack
@@ -552,8 +548,8 @@ namespace KerbalJointReinforcement
 								radius = Mathf.Min(KJRJointUtils.CalculateRadius(main, ndir), KJRJointUtils.CalculateRadius(connectedPart, ndir));
 								if(radius <= 0.001)
 									radius = node.size * 1.25f;
-								area = Mathf.PI * radius * radius;					  //Area of cylinder
-								momentOfInertia = area * radius * radius / 4;		   //Moment of Inertia of cylinder
+								area = Mathf.PI * radius * radius;				// area of cylinder
+								momentOfInertia = area * radius * radius / 4;	// moment of inertia of cylinder
 							}
 							else
 							{
@@ -576,7 +572,7 @@ namespace KerbalJointReinforcement
 									radius = Mathf.Max(size2.y, width2);
 								}
 
-								momentOfInertia = area * radius / 12;		  //Moment of Inertia of a rectangle bending along the longer length
+								momentOfInertia = area * radius / 12;			// moment of inertia of a rectangle bending along the longer length
 							}
 						}
 						else
@@ -584,18 +580,18 @@ namespace KerbalJointReinforcement
 							radius = Mathf.Min(KJRJointUtils.CalculateRadius(p, dir), KJRJointUtils.CalculateRadius(connectedPart, dir));
 							if(radius <= 0.001)
 								radius = node.size * 1.25f;
-							area = Mathf.PI * radius * radius;					  //Area of cylinder
-							momentOfInertia = area * radius * radius / 4;		   //Moment of Inertia of cylinder
+							area = Mathf.PI * radius * radius;					// area of cylinder
+							momentOfInertia = area * radius * radius / 4;		// moment of inertia of cylinder
 						}
 					}
-					//Assume part is attached along its "up" cross section; use a cylinder to approximate properties
+					// assume part is attached along its "up" cross section / use a cylinder to approximate properties
 					else if(p.attachMode == AttachModes.STACK)
 					{
 						radius = Mathf.Min(KJRJointUtils.CalculateRadius(p, Vector3.up), KJRJointUtils.CalculateRadius(connectedPart, Vector3.up));
 						if(radius <= 0.001)
 							radius = 1.25f; // FEHLER, komisch, wieso setzen wir dann nicht alles < 1.25f auf 1.25f? -> zudem hatten wir hier sowieso einen Bug, das ist also sowieso zu hinterfragen
-						area = Mathf.PI * radius * radius;					  //Area of cylinder
-						momentOfInertia = area * radius * radius / 4;		   //Moment of Inertia of cylinder
+						area = Mathf.PI * radius * radius;						// area of cylinder
+						momentOfInertia = area * radius * radius / 4;			// moment of Inertia of cylinder
 					}
 					else if(p.attachMode == AttachModes.SRF_ATTACH)
 					{					
@@ -619,10 +615,11 @@ namespace KerbalJointReinforcement
 							area = size2.y * width2;
 							radius = Mathf.Max(size2.y, width2);
 						}
-						momentOfInertia = area * radius / 12;		  //Moment of Inertia of a rectangle bending along the longer length
+						momentOfInertia = area * radius / 12;					// moment of inertia of a rectangle bending along the longer length
 					}
 
-					if(KJRJointUtils.useVolumeNotArea)				//If using volume, raise al stiffness-affecting parameters to the 1.5 power
+					// if using volume, raise al stiffness-affecting parameters to the 1.5 power
+					if (KJRJointUtils.useVolumeNotArea)
 					{
 						area = Mathf.Pow(area, 1.5f);
 						momentOfInertia = Mathf.Pow(momentOfInertia, 1.5f);
@@ -769,54 +766,8 @@ namespace KerbalJointReinforcement
 
 				if(newConnectedPart.rb != null && !multiJointManager.CheckDirectJointBetweenParts(p, newConnectedPart))
 				{
-					ConfigurableJoint newJoint;
-
-					if((p.mass >= newConnectedPart.mass) || (p.rb == null))
-					{
-						newJoint = p.gameObject.AddComponent<ConfigurableJoint>();
-						newJoint.connectedBody = newConnectedPart.rb;
-
-						newJoint.anchor = Vector3.zero;
-
-						if(!KJRJointUtils.useOldJointCreation)
-						{
-							newJoint.autoConfigureConnectedAnchor = false;
-							newJoint.connectedAnchor = Quaternion.Inverse(newConnectedPart.orgRot) * (p.orgPos - newConnectedPart.orgPos);
-
-							Quaternion must = newConnectedPart.transform.rotation * (Quaternion.Inverse(newConnectedPart.orgRot) * p.orgRot);
-							newJoint.SetTargetRotationLocal(Quaternion.Inverse(p.transform.rotation) * must, Quaternion.identity);
-							// FEHLER, direkter machen
-						}
-					}
-					else
-					{
-						newJoint = newConnectedPart.gameObject.AddComponent<ConfigurableJoint>();
-						newJoint.connectedBody = p.rb;
-
-						newJoint.anchor = Vector3.zero;
-
-						if(!KJRJointUtils.useOldJointCreation)
-						{
-							newJoint.autoConfigureConnectedAnchor = false;
-							newJoint.connectedAnchor = Quaternion.Inverse(p.orgRot) * (newConnectedPart.orgPos - p.orgPos);
-
-							Quaternion must = p.transform.rotation * (Quaternion.Inverse(p.orgRot) * newConnectedPart.orgRot);
-							newJoint.SetTargetRotationLocal(Quaternion.Inverse(newConnectedPart.transform.rotation) * must, Quaternion.identity);
-							// FEHLER, direkter machen
-						}
-					}
-
-		//			newJoint.linearLimit = newJoint.angularYLimit = newJoint.angularZLimit = newJoint.lowAngularXLimit = newJoint.highAngularXLimit
-		//				= new SoftJointLimit { limit = 0, bounciness = 0 }; // FEHLER, hab das mal rausgenommen -> evtl. später doch wieder Limited arbeiten??
-
-					newJoint.xMotion = newJoint.yMotion = newJoint.zMotion = ConfigurableJointMotion.Free;
-					newJoint.angularYMotion = newJoint.angularZMotion = newJoint.angularXMotion = ConfigurableJointMotion.Free;
-
-					newJoint.xDrive = j.xDrive; newJoint.yDrive = j.yDrive; newJoint.zDrive = j.zDrive;
-					newJoint.angularXDrive = newJoint.angularYZDrive = newJoint.slerpDrive = j.angularXDrive;
-
-					newJoint.breakForce = j.breakForce;
-					newJoint.breakTorque = j.breakTorque;
+					ConfigurableJoint newJoint = KJRJointUtils.BuildJoint(p, newConnectedPart,
+						j.xDrive, j.yDrive, j.zDrive, j.angularXDrive, j.breakForce, j.breakTorque);
 
 					// register joint
 					multiJointManager.RegisterMultiJoint(p, newJoint, true, KJRMultiJointManager.Reason.AdditionalJointToParent);
@@ -904,7 +855,7 @@ namespace KerbalJointReinforcement
 		{
 			part.breakingForce = Mathf.Infinity;
 			part.breakingTorque = Mathf.Infinity;
-			part.mass = Mathf.Max(part.mass, (part.parent.mass + part.parent.GetResourceMass()) * 0.01f);		  //We do this to make sure that there is a mass ratio of 100:1 between the clamp and what it's connected to.  This helps counteract some of the wobbliness simply, but also allows some give and springiness to absorb the initial physics kick
+			part.mass = Mathf.Max(part.mass, (part.parent.mass + part.parent.GetResourceMass()) * 0.01f); // We do this to make sure that there is a mass ratio of 100:1 between the clamp and what it's connected to. This helps counteract some of the wobbliness simply, but also allows some give and springiness to absorb the initial physics kick.
 
 			if(KJRJointUtils.debug)
 				Debug.Log("KJR: Launch Clamp Break Force / Torque increased");
@@ -1021,3 +972,21 @@ namespace KerbalJointReinforcement
 		}
 	}
 }
+
+/*	-> how to call KJR from a mod
+
+	Type KJRManagerType = null;
+	System.Reflection.MethodInfo KJRManagerCycleAllAutoStrutMethod = null;
+
+	if(KJRManagerCycleAllAutoStrutMethod == null)
+	{
+		AssemblyLoader.loadedAssemblies.TypeOperation (t => {
+			if(t.FullName == "KerbalJointReinforcement.KJRManager") { KJRManagerType = t; } });
+
+		if(KJRManagerType != null)
+			KJRManagerCycleAllAutoStrutMethod = KJRManagerType.GetMethod("CycleAllAutoStrut");
+	}
+
+	if(KJRManagerCycleAllAutoStrutMethod != null)
+		KJRManagerCycleAllAutoStrutMethod.Invoke(null, new object[] { v });
+*/

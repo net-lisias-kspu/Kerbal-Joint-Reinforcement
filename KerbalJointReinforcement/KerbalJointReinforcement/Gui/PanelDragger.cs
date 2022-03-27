@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections;
-using KSP.UI.Screens;
 using KSP.UI;
 
 namespace KerbalJointReinforcement

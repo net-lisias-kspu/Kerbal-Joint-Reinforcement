@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace KerbalJointReinforcement
 {
 #if IncludeAnalyzer
@@ -14,7 +13,7 @@ namespace KerbalJointReinforcement
 			Info,
 			Verbose,
 
-			// Only for debug
+			// only for debug
 			Debug,
 			SuperVerbose
 		}

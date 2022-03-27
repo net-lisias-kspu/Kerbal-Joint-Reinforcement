@@ -1,11 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
-
 
 namespace KerbalJointReinforcement
 {
@@ -63,7 +61,6 @@ namespace KerbalJointReinforcement
 					prefabCounter++;
 					Logger.Log("Successfully loaded OptionLinePrefab", Logger.Level.Debug);
 				}
-
 			/*
 				if(prefabs[i].name == "UISettingsWindowPrefab")
 				{

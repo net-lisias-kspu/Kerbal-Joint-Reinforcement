@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace KerbalJointReinforcement
 {
-	//All this class exists to do is to act as a box attached to 
-	//For a sequence of three parts (A, B, C), connected in series, this will exist on B and hold the strengthening joint from A to C
-	//If the joint from A to B or B to C is broken, this will destroy the joint A to C and then destroy itself
+	// all this class exists to do is to act as a box attached to 
+	// for a sequence of three parts (A, B, C), connected in series, this will exist on B and hold the strengthening joint from A to C
+	// if the joint from A to B or B to C is broken, this will destroy the joint A to C and then destroy itself
 	internal class KJRMultiJointManager
 	{
 		internal enum Reason
@@ -216,21 +216,3 @@ namespace KerbalJointReinforcement
 		}
 	}
 }
-
-/*	-> how to call KJR from a mod
-
-	Type KJRManagerType = null;
-	System.Reflection.MethodInfo KJRManagerCycleAllAutoStrutMethod = null;
-
-	if(KJRManagerCycleAllAutoStrutMethod == null)
-	{
-		AssemblyLoader.loadedAssemblies.TypeOperation (t => {
-			if(t.FullName == "KerbalJointReinforcement.KJRManager") { KJRManagerType = t; } });
-
-		if(KJRManagerType != null)
-			KJRManagerCycleAllAutoStrutMethod = KJRManagerType.GetMethod("CycleAllAutoStrut");
-	}
-
-	if(KJRManagerCycleAllAutoStrutMethod != null)
-		KJRManagerCycleAllAutoStrutMethod.Invoke(null, new object[] { v });
-*/
